@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mell Footage — API документация</title>
+<style>
+  :root {
+    --green: #7ec384;
+    --green-dark: #5fa368;
+    --bg: #f4f8f4;
+    --card: #ffffff;
+    --card-dark: #242738;
+    --text: #1e2422;
+    --muted: #6b756b;
+    --border: #d7e4d4;
+    --get: #2e9e57;
+    --post: #2d7fd6;
+    --patch: #e08a1e;
+    --delete: #d64545;
+    --code-bg: #101418;
+    --code-text: #d9e6dc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 20px; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+  }
+  code, pre { font-family: 'SF Mono', 'Cascadia Code', Consolas, Menlo, monospace; }
+
+  .layout { display: flex; min-height: 100vh; }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: 280px; flex-shrink: 0;
+    background: var(--card-dark);
+    color: #e6e9f2;
+    padding: 24px 18px;
+    position: sticky; top: 0;
+    height: 100vh; overflow-y: auto;
+  }
+  .sidebar h1 { font-size: 1.15rem; margin-bottom: 4px; color: #fff; }
+  .sidebar h1 span { color: var(--green); }
+  .sidebar .version { font-size: .75rem; color: #8a92a6; margin-bottom: 18px; }
+  .sidebar a {
+    display: block; padding: 7px 10px; border-radius: 8px;
+    color: #c9cfdc; text-decoration: none; font-size: .88rem;
+    margin-bottom: 2px;
+  }
+  .sidebar a:hover { background: rgba(126,195,132,.14); color: #fff; }
+  .sidebar .group-label {
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .12em;
+    color: #6f7890; margin: 18px 0 6px; font-weight: 700;
+  }
+
+  /* ===== MAIN ===== */
+  .main { flex: 1; min-width: 0; padding: 36px 44px 90px; max-width: 1060px; }
+  .doc-header { margin-bottom: 30px; }
+  .doc-header h2 { font-size: 1.9rem; margin-bottom: 6px; }
+  .doc-header h2 em { color: var(--green-dark); font-style: normal; }
+  .doc-header p { color: var(--muted); font-size: .95rem; max-width: 720px; }
+
+  /* фильтры */
+  .toolbar {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    margin-bottom: 28px; position: sticky; top: 0; z-index: 30;
+    background: var(--bg); padding: 10px 0;
+  }
+  .search-box {
+    flex: 1; min-width: 220px; display: flex; align-items: center; gap: 8px;
+    background: var(--card); border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 9px 14px;
+  }
+  .search-box input {
+    border: none; outline: none; background: none; font-size: .92rem; width: 100%; color: var(--text);
+  }
+  .f-btn {
+    border: 1.5px solid var(--border); background: var(--card); color: var(--text);
+    border-radius: 10px; padding: 8px 14px; font-size: .82rem; font-weight: 700;
+    cursor: pointer; transition: all .15s;
+  }
+  .f-btn:hover { border-color: var(--green); }
+  .f-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
+  .count-chip { font-size: .8rem; color: var(--muted); white-space: nowrap; }
+
+  section.anchor { margin-bottom: 44px; }
+  section.anchor > h3 {
+    font-size: 1.35rem; margin-bottom: 14px; padding-bottom: 10px;
+    border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 10px;
+  }
+  section.anchor > h3 .num {
+    background: var(--green); color: #fff; border-radius: 8px;
+    font-size: .75rem; padding: 3px 9px; font-weight: 800;
+  }
+  section.anchor > .sec-note { color: var(--muted); font-size: .88rem; margin-bottom: 16px; max-width: 780px; }
+
+  /* ===== ENDPOINT CARD ===== */
+  .ep {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    margin-bottom: 14px; overflow: hidden;
+    transition: box-shadow .15s;
+  }
+  .ep:hover { box-shadow: 0 4px 18px rgba(30,60,30,.08); }
+  .ep.hidden { display: none; }
+  .ep-head {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 13px 18px; border-bottom: 1px solid var(--border);
+    background: linear-gradient(0deg, rgba(126,195,132,.045), rgba(126,195,132,.045));
+  }
+  .ep-head code { font-size: .92rem; font-weight: 700; word-break: break-all; }
+  .ep-head .spacer { flex: 1; }
+  .m {
+    font-size: .7rem; font-weight: 800; letter-spacing: .05em;
+    padding: 4px 10px; border-radius: 7px; color: #fff; flex-shrink: 0;
+    font-family: Consolas, monospace;
+  }
+  .m-get { background: var(--get); }
+  .m-post { background: var(--post); }
+  .m-patch { background: var(--patch); }
+  .m-delete { background: var(--delete); }
+  .auth-badge {
+    font-size: .72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+    border: 1px solid var(--border); color: var(--muted); background: #fff; white-space: nowrap;
+  }
+  .auth-badge.req { color: #b35900; border-color: #f0c88a; background: #fdf6ea; }
+  .auth-badge.open { color: var(--green-dark); border-color: #b7dcb9; background: #f0f8f0; }
+  .ep-body { padding: 14px 18px 16px; }
+  .ep-desc { font-size: .88rem; margin-bottom: 10px; color: var(--text); }
+  .ep-desc small { color: var(--muted); }
+  .cols { display: flex; gap: 14px; flex-wrap: wrap; }
+  .col { flex: 1; min-width: 260px; }
+  .col h5 {
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); margin-bottom: 6px; font-weight: 800;
+  }
+  pre {
+    background: var(--code-bg); color: var(--code-text);
+    border-radius: 10px; padding: 12px 14px; font-size: .8rem;
+    overflow-x: auto; line-height: 1.5;
+  }
+  .cols pre { min-height: 30px; }
+  table.params { width: 100%; border-collapse: collapse; font-size: .84rem; margin-bottom: 10px; }
+  table.params th, table.params td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.params th { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: .07em; }
+  table.params td code { background: #eef4ee; border-radius: 5px; padding: 1px 6px; font-size: .8rem; }
+  .note {
+    background: #fdf6ea; border: 1px solid #f0c88a; border-radius: 10px;
+    padding: 10px 14px; font-size: .84rem; margin-top: 10px;
+  }
+  .note b { color: #b35900; }
+  .warn {
+    background: #fdeeee; border: 1px solid #eeb3b3; border-radius: 10px;
+    padding: 10px 14px; font-size: .84rem; margin-top: 10px;
+  }
+
+  /* ===== INFO TABLES ===== */
+  .info-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 24px; margin-bottom: 18px;
+  }
+  .info-card h4 { margin-bottom: 10px; color: var(--green-dark); font-size: 1rem; }
+  .info-card ul { padding-left: 20px; font-size: .9rem; }
+  .info-card li { margin-bottom: 7px; }
+  .kv { display: grid; grid-template-columns: 220px 1fr; gap: 6px 16px; font-size: .9rem; }
+  .kv dt { font-weight: 700; color: var(--muted); }
+  .kv dd { margin: 0; }
+
+  .role-pill {
+    display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: .78rem;
+    font-weight: 700; background: #eef4ee; border: 1px solid var(--border); margin: 2px 4px 2px 0;
+    font-family: Consolas, monospace;
+  }
+  .role-pill.hl { background: var(--green); color: #fff; border-color: var(--green); }
+
+  footer.doc-footer {
+    margin-top: 50px; padding-top: 18px; border-top: 1px solid var(--border);
+    color: var(--muted); font-size: .8rem;
+  }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { padding: 22px 16px 70px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ======================= SIDEBAR ======================= -->
+<nav class="sidebar">
+  <h1>Mell <span>Footage</span></h1>
+  <div class="version">API · v2026-10</div>
+
+  <div class="group-label">Общее</div>
+  <a href="#general">Базовая информация</a>
+  <a href="#roles">Роли и доступ</a>
+  <a href="#errors">Ошибки и лимиты</a>
+
+  <div class="group-label">Публичное API</div>
+  <a href="#videos">Футажи и медиа</a>
+  <a href="#music">Музыка</a>
+  <a href="#reactions">Лайки и скачивания</a>
+  <a href="#profiles">Профили</a>
+  <a href="#collections">Коллекции</a>
+  <a href="#reports">Жалобы</a>
+  <a href="#news">Новости</a>
+  <a href="#submissions">Заявки на футажи</a>
+  <a href="#tags">Теги</a>
+
+  <div class="group-label">Аккаунт</div>
+  <a href="#auth">Вход и регистрация</a>
+  <a href="#account">Профиль: настройки</a>
+  <a href="#telegram">Telegram</a>
+  <a href="#terms">Условия использования</a>
+
+  <div class="group-label">Модерация и админка</div>
+  <a href="#admin-videos">Админ: видео</a>
+  <a href="#admin-subs">Админ: заявки</a>
+  <a href="#admin-users">Админ: пользователи</a>
+  <a href="#admin-misc">Админ: коллекции/статистика</a>
+  <a href="#admin-tags">Админ: теги</a>
+
+  <div class="group-label">Прочее</div>
+  <a href="#pages">HTML-страницы</a>
+  <a href="#db">Схема БД</a>
+</nav>
+
+<!-- ======================= MAIN ======================= -->
+<main class="main">
+  <div class="doc-header">
+    <h2>API <em>server.js</em> — Mell Footage</h2>
+    <p>Полная документация REST API сайта футажей. Сервер: Node.js + Express, БД — SQLite (WAL). Аутентификация — сессии (cookie). Всего эндпоинтов: <b id="ep-total">—</b>.</p>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8a92a6" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="search" id="search" placeholder="Поиск по пути или описанию…">
+    </div>
+    <button class="f-btn active" data-filter="all">Все</button>
+    <button class="f-btn" data-filter="get">GET</button>
+    <button class="f-btn" data-filter="post">POST</button>
+    <button class="f-btn" data-filter="patch">PATCH</button>
+    <button class="f-btn" data-filter="delete">DELETE</button>
+    <span class="count-chip" id="count-chip"></span>
+  </div>
+
+  <section id="general" class="anchor">
+    <h3><span class="num">00</span>Базовая информация</h3>
+    <div class="info-card">
+      <dl class="kv">
+        <dt>Базовый URL</dt><dd><code>http(s)://&lt;host&gt;</code> — порт из <code>PORT</code> (по умолчанию 80)</dd>
+        <dt>Формат данных</dt><dd>JSON (<code>application/json</code>), лимит тела — 10 МБ. Загрузки файлов — <code>multipart/form-data</code></dd>
+        <dt>Аутентификация</dt><dd>Session-cookie (express-session, хранилище SQLite <code>sessions.db</code>): <code>httpOnly</code>, <code>sameSite=lax</code>, <code>secure</code> в production, срок 7 дней. Роль и верификация перечитываются из БД на каждый запрос; обновляется <code>last_seen</code></dd>
+        <dt>Регистрация по email</dt><dd>в отдельном модуле <code>mail-auth.js</code> (<code>mountMailAuth</code>) — коды через Resend</dd>
+        <dt>Комнаты-чаты</dt><dd>в отдельном модуле <code>rooms.js</code> (<code>mountRooms</code>): <code>/rooms</code>, <code>/room/:id</code>, <code>/api/rooms/*</code></dd>
+        <dt>Безопасность</dt><dd>helmet (CSP, HSTS, noSniff, frameguard), CORS-белый список (localhost / 192.168.x.x), санитизация ввода (удаление <code>&lt;&gt;</code> и <code>javascript:</code>), проверка путей (<code>isPathInside</code>) против path traversal</dd>
+      </dl>
+    </div>
+  </section>
+
+  <section id="roles" class="anchor">
+    <h3><span class="num">01</span>Роли и доступ</h3>
+    <div class="info-card">
+      <h4>Иерархия ролей</h4>
+      <p style="font-size:.9rem; margin-bottom:10px;">
+        <span class="role-pill">user</span>
+        <span class="role-pill">junior_moderator</span>
+        <span class="role-pill">moderator</span>
+        <span class="role-pill">senior_moderator</span>
+        <span class="role-pill hl">admin</span>
+      </p>
+      <table class="params">
+        <tr><th>Гард</th><th>Разрешённые роли</th><th>Типовые действия</th></tr>
+        <tr><td><code>requireAdmin</code></td><td>admin</td><td>удаление видео и юзеров, роли, теги, загрузка новостей</td></tr>
+        <tr><td><code>requireVerifier</code></td><td>admin, senior_moderator</td><td>загрузка футажей, верификация, удаление своих коллекций</td></tr>
+        <tr><td><code>requireTagGranter</code></td><td>admin, senior_moderator, junior_moderator</td><td>выдача/снятие тегов юзерам</td></tr>
+        <tr><td><code>requireModerator</code></td><td>admin + все модераторы (STAFF_ROLES)</td><td>бан, заявки, статистика, жалобы, админ-панель</td></tr>
+      </table>
+      <div class="note"><b>Особые правила:</b> сотрудников (STAFF_ROLES) банит/разбанивает только админ; верификацию админу выдаёт только другой админ; удалить учётку админа нельзя.</div>
+    </div>
+  </section>
+
+  <section id="errors" class="anchor">
+    <h3><span class="num">02</span>Ошибки и лимиты</h3>
+    <div class="info-card">
+      <h4>Формат ошибок</h4>
+      <p style="font-size:.9rem; margin-bottom:10px;">Все ошибки — JSON: <code>{ "error": "текст" }</code>. Глобальный обработчик гарантирует JSON даже при сбоях Multer / CORS.</p>
+      <table class="params">
+        <tr><th>Код</th><th>Когда</th></tr>
+        <tr><td><code>400</code></td><td>невалидные данные, лимиты (коллекций — 6, заявок — 5/день, имя файла занято)</td></tr>
+        <tr><td><code>401</code></td><td>нет сессии («Нужно войти»), пользователь не найден</td></tr>
+        <tr><td><code>403</code></td><td>нет прав (роль), бан аккаунта, приватная коллекция, доступ к сессии при 2FA</td></tr>
+        <tr><td><code>404</code></td><td>файл/пользователь/коллекция не найдены</td></tr>
+        <tr><td><code>409</code></td><td>логин занят, тег уже выдан</td></tr>
+        <tr><td><code>416</code></td><td>некорректный Range при стриминге</td></tr>
+        <tr><td><code>429</code></td><td>rate limit</td></tr>
+      </table>
+      <h4 style="margin-top:16px;">Rate limits (express-rate-limit)</h4>
+      <ul>
+        <li><b>Общий</b> — на все <code>/api/*</code>: окно 3 минуты (стрим аудио <code>/stream</code> исключён, статика не считается).</li>
+        <li><b>authLimiter</b> — <code>/api/login</code>, <code>/api/register/*</code>: 30 попыток за 15 минут, успешные не считаются.</li>
+      </ul>
+      <h4 style="margin-top:16px;">Лимиты загрузок</h4>
+      <ul>
+        <li>Видео (админ): <code>mp4, mkv, webm, mov</code>, до 100 МБ.</li>
+        <li>Заявки на футажи: только видео, до 7 МБ, максимум 5 в день на пользователя.</li>
+        <li>Аватар: <code>png, jpg, jpeg, webp</code>, до 5 МБ (заблокированным менять нельзя).</li>
+        <li>Картинки новостей: <code>png, jpg, jpeg, webp</code>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="videos" class="anchor">
+    <h3><span class="num">03</span>Футажи и медиа</h3>
+    <p class="sec-note">Каталог одобренных футажей, стриминг с поддержкой Range-запросов и превью через ffmpeg.</p>
+
+    <div class="ep" data-method="get" data-path="GET /api/videos — список всех футажей">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/videos</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Список всех видео в папке <code>videos/</code> (новые первыми), с автором из одобренных заявок.</p>
+        <div class="cols"><div class="col"><h5>Ответ (элемент массива)</h5>
+<pre>{
+  "id": "myclip",
+  "name": "myclip.mp4",
+  "url": "https://host/videos/myclip.mp4",
+  "uploader": {
+    "username": "nick", "role": "user",
+    "is_verified": false,
+    "avatar_url": "/uploads/avatars/1_x.png",
+    "activity_visible": true,
+    "last_seen": "2026-10-01T12:00:00.000Z",
+    "tags": [{ "id": 1, "name": "OG", "color": "#7ec384", "icon": "👑" }]
+  }
+}</pre></div></div>
+        <div class="note"><b>uploader: null</b> — если видео добавлено админом напрямую, а не через заявку.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /videos/:filename — стриминг видео с Range">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/videos/:filename</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Отдаёт видео (mp4, mkv, webm, mov) и изображения с поддержкой <code>Range</code> (HTTP 206). Имя файла защищено от path traversal, тип проверяется по белому списку. Заголовки: <code>Accept-Ranges</code>, <code>Cache-Control: public, max-age=3600</code>. Некорректный Range → <code>416</code> с <code>Content-Range: bytes */size</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/thumb/:filename — превью видео jpg">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/thumb/:filename</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">JPEG-превью видео (кадр после 1 сек, ширина 480px). Генерация через ffmpeg-static — по очереди, по одной задаче. Если ffmpeg не установлен или кадр не извлечён — <code>404</code>. Результат кэшируется в <code>public/uploads/thumbs/</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /admin/upload — загрузка видео админом">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/admin/upload</code><span class="spacer"></span><span class="auth-badge req">admin, senior_moderator</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Прямая загрузка футажа в <code>videos/</code>. <b>multipart/form-data</b>, поле <code>videoFile</code>; типы: mp4, mkv, webm, mov; до 100 МБ. Имя берётся из поля <code>nameof</code> (или оригинала), санитизируется, до 100 символов.</p>
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "success": true, "filename": "myclip.mp4" }</pre></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="music" class="anchor">
+    <h3><span class="num">04</span>Музыка</h3>
+
+    <div class="ep" data-method="get" data-path="GET /api/tracks — список треков">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/tracks</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Треки из папки <code>sounds/</code> (mp3, wav, ogg, m4a, flac, aac), отсортированы по имени.</p>
+        <div class="cols"><div class="col"><h5>Ответ</h5>
+<pre>{
+  "success": true,
+  "count": 2,
+  "tracks": [
+    { "id": 0, "name": "track", "filename": "track.mp3",
+      "url": "/api/stream/track.mp3", "ext": ".mp3" }
+  ]
+}</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/stream/:filename — стриминг аудио">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/stream/:filename</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Стриминг аудио с поддержкой <code>Range</code> (206). Content-Type по расширению, защита от path traversal. Исключён из общего rate-лимитера.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="reactions" class="anchor">
+    <h3><span class="num">05</span>Лайки и скачивания</h3>
+    <p class="sec-note"><code>:videoName</code> — имя файла футажа (URL-encoded).</p>
+
+    <div class="ep" data-method="get" data-path="GET /api/likes/:videoName — количество лайков">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/likes/:videoName</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Число лайков видео и лайкнул ли текущий пользователь (по сессии, если вошёл).</p>
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "likes": 12, "liked": true }</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/likes/:videoName — переключить лайк">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/likes/:videoName</code><span class="spacer"></span><span class="auth-badge req">нужен вход</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Toggle: если лайк есть — снимает, нет — ставит.</p>
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "liked": true }   // или { "liked": false }</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/downloads/:videoName — зафиксировать скачивание">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/downloads/:videoName</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Инкрементирует счётчик скачиваний; вошедшему пользователю начисляет +1 балл (<code>user_points</code>).</p>
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "success": true }</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/downloads/:videoName — счётчик скачиваний">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/downloads/:videoName</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "downloads": 105 }</pre></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="profiles" class="anchor">
+    <h3><span class="num">06</span>Профили</h3>
+
+    <div class="ep" data-method="get" data-path="GET /api/profile — данные своего профиля">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/profile</code><span class="spacer"></span><span class="auth-badge req">нужен вход</span></div>
+      <div class="ep-body">
+        <div class="cols"><div class="col"><h5>Ответ</h5>
+<pre>{
+  "username": "nick", "role": "user", "is_verified": false,
+  "telegram_linked": false,
+  "avatar_url": "/uploads/avatars/1_x.png",
+  "activity_visible": true, "points": 42,
+  "liked_videos": ["clip.mp4"],
+  "collections": [{ "id": 1, "name": "Мои", "is_public": 1 }]
+}</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/user/:username — публичный профиль">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/user/:username</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Профиль любого пользователя. Если активность скрыта (<code>activity_visible = 0</code>), <code>last_seen</code> возвращается как <code>null</code>.</p>
+        <div class="cols"><div class="col"><h5>Ответ</h5>
+<pre>{
+  "username": "nick", "role": "user", "is_verified": true,
+  "avatar_url": null, "activity_visible": true,
+  "last_seen": "2026-10-01T12:00:00.000Z",
+  "points": 42,
+  "public_collections": [{ "id": 1, "name": "Мои",
+      "description": null, "is_public": 1 }],
+  "likes_count": 7,
+  "tags": [{ "id": 2, "name": "OG", "color": "#e74c3c", "icon": "🔥" }]
+}</pre></div></div>
+        <div class="note">Показываются <b>только публичные</b> коллекции. 404 — пользователь не найден.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="collections" class="anchor">
+    <h3><span class="num">07</span>Коллекции</h3>
+    <p class="sec-note">Лимит: <b>6 коллекций</b> на пользователя (<code>MAX_COLLECTIONS_PER_USER</code>). Название — до 60 символов, описание — до 300, санитизация входа.</p>
+
+    <div class="ep" data-method="post" data-path="POST /api/collections — создать коллекцию">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/collections</code><span class="spacer"></span><span class="auth-badge req">нужен вход</span></div>
+      <div class="ep-body">
+        <table class="params">
+          <tr><th>Параметр</th><th>Тип</th><th>Описание</th></tr>
+          <tr><td><code>name</code></td><td>string</td><td>название, обязательно, ≤ 60 симв.</td></tr>
+          <tr><td><code>description</code></td><td>string</td><td>≤ 300 симв., опционально</td></tr>
+          <tr><td><code>is_public</code></td><td>0 | 1</td><td>публичная (1) или приватная (0)</td></tr>
+        </table>
+        <div class="cols">
+          <div class="col"><h5>Запрос</h5><pre>{ "name": "Мои футажи", "description": "лучшее", "is_public": 1 }</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{ "success": true, "id": 12 }</pre></div>
+        </div>
+        <div class="warn">400 — нет названия или достигнут лимит: «Достигнут лимит коллекций (6). Удалите старую коллекцию…»</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/collections/my — мои коллекции">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/collections/my</code><span class="spacer"></span><span class="auth-badge req">нужен вход</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Все коллекции пользователя (публичные и приватные), новые первыми. В каждую вложен массив <code>items: [{ "video_name": "…" }]</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/collections/:id — просмотреть коллекцию">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/collections/:id</code><span class="spacer"></span><span class="auth-badge open">публичный / владелец</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Публичную коллекцию видит кто угодно; приватную — только владелец (иначе <code>403 «Приватная коллекция»</code>). В ответе — <code>items[]</code> и <code>author</code> (ник автора).</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/collections/:id/items — добавить футаж">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/collections/:id/items</code><span class="spacer"></span><span class="auth-badge req">владелец</span></div>
+      <div class="ep-body">
+        <table class="params">
+          <tr><th>Параметр</th><th>Тип</th><th>Описание</th></tr>
+          <tr><td><code>video_name</code></td><td>string</td><td>имя файла футажа; только basename, файл должен существовать в <code>videos/</code></td></tr>
+        </table>
+        <div class="cols">
+          <div class="col"><h5>Запрос</h5><pre>{ "video_name": "myclip.mp4" }</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{ "success": true }</pre></div>
+        </div>
+        <div class="warn">400 — «Уже в коллекции» (UNIQUE constraint) · 403 — не владелец · 404 — видео не существует.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/collections/:id/items — убрать футаж">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/collections/:id/items</code><span class="spacer"></span><span class="auth-badge req">владелец</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Тело: <code>{ "video_name": "myclip.mp4" }</code>. Ответ: <code>{ "success": true }</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/collections/:id — удалить коллекцию">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/collections/:id</code><span class="spacer"></span><span class="auth-badge req">владелец: senior_moderator / admin</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Удаляет коллекцию и её элементы. По политике сайта удалять свои коллекции могут только старшие модераторы и администраторы — обычный пользователь получит <code>403</code>. Модераторы могут удалять любые коллекции через <a href="#admin-misc" style="color:var(--green-dark)">админ-эндпоинт</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="reports" class="anchor">
+    <h3><span class="num">08</span>Жалобы</h3>
+
+    <div class="ep" data-method="post" data-path="POST /api/report/user — пожаловаться на пользователя">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/report/user</code><span class="spacer"></span><span class="auth-badge req">нужен вход</span></div>
+      <div class="ep-body">
+        <table class="params">
+          <tr><th>Параметр</th><th>Тип</th><th>Описание</th></tr>
+          <tr><td><code>reported_username</code></td><td>string</td><td>ник нарушителя, обязательно</td></tr>
+          <tr><td><code>reason</code></td><td>string</td><td>причина, обязательно</td></tr>
+        </table>
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "ok": true }</pre></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="news" class="anchor">
+    <h3><span class="num">09</span>Новости</h3>
+
+    <div class="ep" data-method="get" data-path="GET /api/news — список новостей">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/news</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Все новости, новые первыми. Поля: <code>id, title, content, image, date</code> (дата — строка в формате ru-RU «дд.мм.гггг, чч:мм»).</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/news — опубликовать новость">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/news</code><span class="spacer"></span><span class="auth-badge req">admin</span></div>
+      <div class="ep-body">
+        <p class="ep-desc"><b>multipart/form-data</b>: <code>title</code> (≤ 200), <code>content</code> (≤ 20000), <code>image</code> (png/jpg/jpeg/webp, опционально). После публикации ставит в очередь broadcast-уведомление для Telegram-бота.</p>
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "success": true }</pre></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="submissions" class="anchor">
+    <h3><span class="num">10</span>Заявки на футажи</h3>
+    <p class="sec-note">Пользователь присылает футаж на модерацию; после одобрения файл переезжает в <code>videos/</code> и попадает в каталог.</p>
+
+    <div class="ep" data-method="post" data-path="POST /api/submissions — отправить футаж на модерацию">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/submissions</code><span class="spacer"></span><span class="auth-badge req">нужен вход</span></div>
+      <div class="ep-body">
+        <p class="ep-desc"><b>multipart/form-data</b>: поле <code>video</code> (только видео, ≤ 7 МБ), текстовое поле <code>display_name</code> (название, ≤ 100). Файл сохраняется в <code>submissions/</code> с префиксом <code>sub_&lt;timestamp&gt;_&lt;user_id&gt;</code>.</p>
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "success": true }</pre></div></div>
+        <div class="warn">Ограничения: максимум <b>5 заявок в день</b> на пользователя; заблокированным отправка запрещена (403); файл при ошибке удаляется с диска.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/submissions/my — мои заявки">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/submissions/my</code><span class="spacer"></span><span class="auth-badge req">нужен вход</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Свои заявки: <code>id, display_name, status (pending | approved | rejected), created_at</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/admin/submissions — очередь на модерацию">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/admin/submissions</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Заявки со статусом <code>pending</code> (старые первыми), с ником отправителя.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/admin/submissions/:id/approve — одобрить">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/admin/submissions/:id/approve</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Переносит файл из <code>submissions/</code> в <code>videos/</code> под финальным именем (название можно переопределить в <code>display_name</code>, санитизация + только буквы/цифры/_/-/пробелы). Обновляет запись, ставит broadcast- и личное уведомления. Требуется <code>SITE_URL</code> в .env для ссылок.</p>
+        <div class="cols">
+          <div class="col"><h5>Запрос (тело опционально)</h5><pre>{ "display_name": "Клип 2026" }</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{ "success": true }</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/admin/submissions/:id/reject — отклонить">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/admin/submissions/:id/reject</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Удаляет файл с диска, ставит статус <code>rejected</code>, отправляет автору личное уведомление. Тело не нужно.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="tags" class="anchor">
+    <h3><span class="num">11</span>Теги</h3>
+    <p class="sec-note">Каталог тегов виден всем; создают/удаляют теги админы, выдают/снимают — модераторы и старшие модераторы.</p>
+
+    <div class="ep" data-method="get" data-path="GET /api/tags — каталог тегов">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/tags</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Все теги по алфавиту: <code>id, name, color (hex, по умолч. #7ec384), icon, created_at</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/admin/tags — создать тег">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/admin/tags</code><span class="spacer"></span><span class="auth-badge req">admin</span></div>
+      <div class="ep-body">
+        <table class="params">
+          <tr><th>Параметр</th><th>Тип</th><th>Описание</th></tr>
+          <tr><td><code>name</code></td><td>string</td><td>название, ≤ 30 симв., уникальное</td></tr>
+          <tr><td><code>color</code></td><td>string</td><td>hex <code>#rgb</code>/<code>#rrggbb</code>, иначе <code>#7ec384</code></td></tr>
+          <tr><td><code>icon</code></td><td>string</td><td>эмодзи/символ, ≤ 10 симв.</td></tr>
+        </table>
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "success": true, "id": 3 }   // 400 — название занято</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/admin/tags/:id — удалить тег">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/admin/tags/:id</code><span class="spacer"></span><span class="auth-badge req">admin</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Удаляет тег и все его выдачи пользователям.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/admin/users/:id/tags — теги пользователя">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/admin/users/:id/tags</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Список тегов, выданных пользователю.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/admin/users/:id/tags — выдать тег">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/admin/users/:id/tags</code><span class="spacer"></span><span class="auth-badge req">junior_moderator+</span></div>
+      <div class="ep-body">
+        <div class="cols">
+          <div class="col"><h5>Запрос</h5><pre>{ "tag_id": 3 }</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{ "success": true }  // 409 — тег уже есть</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/admin/users/:id/tags/:tagId — снять тег">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/admin/users/:id/tags/:tagId</code><span class="spacer"></span><span class="auth-badge req">junior_moderator+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Снимает тег с пользователя. Ответ: <code>{ "success": true }</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="auth" class="anchor">
+    <h3><span class="num">12</span>Вход и регистрация</h3>
+    <p class="sec-note">Регистрация и восстановление пароля по email (Resend) живут в модуле <code>mail-auth.js</code>. Ниже — эндпоинты из <code>server.js</code>. Все защищены <code>authLimiter</code>.</p>
+
+    <div class="ep" data-method="post" data-path="POST /api/login — вход">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/login</code><span class="spacer"></span><span class="auth-badge req">authLimiter</span></div>
+      <div class="ep-body">
+        <div class="cols">
+          <div class="col"><h5>Запрос</h5><pre>{ "username": "nick", "password": "secret" }</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{
+  "success": true,
+  "user": { "id": 1, "username": "nick",
+    "role": "user", "is_verified": false,
+    "telegram_linked": false }
+}</pre></div>
+        </div>
+        <div class="warn">400 — неверный логин/пароль · 403 — аккаунт заблокирован: <code>{ "error": "Аккаунт заблокирован", "reason": "...", "until": "..." }</code>. При входе сессия регенерируется (защита от session fixation).</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/logout — выход">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/logout</code><span class="spacer"></span><span class="auth-badge open">без прав</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Уничтожает сессию. Ответ: <code>{ "success": true }</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/me — текущая сессия">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/me</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "loggedIn": true, "user": { "id": 1, "username": "nick", "role": "user", "is_verified": false, "telegram_linked": false } }</pre></div></div>
+        <p class="ep-desc" style="margin-top:8px;">Гость: <code>{ "loggedIn": false }</code>. Роль и верификация в сессии актуализируются из БД на каждый запрос.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/register/start — регистрация (legacy Telegram-флоу)">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/register/start</code><span class="spacer"></span><span class="auth-badge req">authLimiter</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Устаревший флоу регистрации с подтверждением через Telegram. Проверяет логин (<code>/^[a-zA-Z0-9_\-]{3,15}$/</code>, не из RESERVED_USERNAMES: admin, moder, moderator, root, system, support), пароль ≥ 6 симв., Telegram ID (5–15 цифр) и <code>accept_terms === true</code>. Код (6 цифр, TTL 10 мин) уходит боту; подтверждение — <code>POST /api/register/confirm</code> с <code>{ "code": "123456" }</code>.</p>
+        <div class="note">Фронтенд сейчас использует регистрацию по email из <code>mail-auth.js</code>.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/register/confirm — подтвердить регистрацию кодом">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/register/confirm</code><span class="spacer"></span><span class="auth-badge req">authLimiter</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Проверяет код из Telegram, создаёт аккаунт (роль <code>user</code>, фиксируется <code>terms_accepted_at</code> и версия условий) и привязывает <code>telegram_users</code>. Ошибки: код истёк / неверный / логин или Telegram заняты.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="account" class="anchor">
+    <h3><span class="num">13</span>Профиль: настройки аккаунта</h3>
+    <p class="sec-note">Все эндпоинты требуют входа. Аватарам запрещено меняться у заблокированных аккаунтов.</p>
+
+    <div class="ep" data-method="post" data-path="POST /api/profile/avatar — сменить аватар">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/profile/avatar</code><span class="spacer"></span><span class="auth-badge req">вход</span></div>
+      <div class="ep-body">
+        <p class="ep-desc"><b>multipart/form-data</b>, поле <code>avatar</code>: png/jpg/jpeg/webp, до 5 МБ. Файл: <code>&lt;user_id&gt;_&lt;timestamp&gt;.ext</code> в <code>public/uploads/avatars/</code>. Ответ: <code>{ "avatar_url": "/uploads/avatars/1_1730092800.png" }</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/profile/avatar — удалить аватар">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/profile/avatar</code><span class="spacer"></span><span class="auth-badge req">вход</span></div>
+      <div class="ep-body">
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "ok": true }</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="patch" data-path="PATCH /api/profile/activity-visibility — видимость онлайна">
+      <div class="ep-head"><span class="m m-patch">PATCH</span><code>/api/profile/activity-visibility</code><span class="spacer"></span><span class="auth-badge req">вход</span></div>
+      <div class="ep-body">
+        <div class="cols">
+          <div class="col"><h5>Запрос</h5><pre>{ "activity_visible": false }</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{ "ok": true }</pre></div>
+        </div>
+        <p class="ep-desc" style="margin-top:8px;">Скрывает <code>last_seen</code> из публичного профиля.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="patch" data-path="PATCH /api/profile/nickname — смена логина">
+      <div class="ep-head"><span class="m m-patch">PATCH</span><code>/api/profile/nickname</code><span class="spacer"></span><span class="auth-badge req">вход</span></div>
+      <div class="ep-body">
+        <div class="cols">
+          <div class="col"><h5>Запрос</h5><pre>{ "nickname": "newnick" }</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{ "ok": true }</pre></div>
+        </div>
+        <div class="warn">400 — не проходит regex (латиница/цифры/_/-, 3–15) или логин зарезервирован · 409 — логин занят.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="patch" data-path="PATCH /api/profile/password — смена пароля">
+      <div class="ep-head"><span class="m m-patch">PATCH</span><code>/api/profile/password</code><span class="spacer"></span><span class="auth-badge req">вход</span></div>
+      <div class="ep-body">
+        <div class="cols">
+          <div class="col"><h5>Запрос</h5><pre>{ "current_password": "old", "new_password": "new123" }</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{ "ok": true }  // 403 — неверный текущий пароль</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/profile/account — удалить аккаунт">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/profile/account</code><span class="spacer"></span><span class="auth-badge req">вход</span></div>
+      <div class="ep-body">
+        <p class="ep-desc"><b>Необратимо.</b> Требует пароль и точное подтверждение логина.</p>
+        <div class="cols">
+          <div class="col"><h5>Запрос</h5><pre>{ "password": "secret", "confirm_username": "nick" }</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{ "ok": true }</pre></div>
+        </div>
+        <div class="note">Транзакционно удаляет: лайки, коллекции и их элементы, баллы, карточки, дропы, airdrop-клеймы, теги. Telegram отвязывается, заявки и жалобы сохраняются (user_id = 0 / NULL). Админ не может удалить сам себя. Загруженные футажи остаются на сайте.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="telegram" class="anchor">
+    <h3><span class="num">14</span>Telegram</h3>
+
+    <div class="ep" data-method="post" data-path="POST /api/telegram/link-code — код привязки">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/telegram/link-code</code><span class="spacer"></span><span class="auth-badge req">вход</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Генерирует 6-значный код привязки (TTL 10 минут) для бота <code>@MLLcards_bot</code>.</p>
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "success": true, "code": "482913" }</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/telegram/status — статус привязки">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/telegram/status</code><span class="spacer"></span><span class="auth-badge req">вход</span></div>
+      <div class="ep-body">
+        <div class="cols"><div class="col"><h5>Ответ</h5>
+<pre>{
+  "linked": true,
+  "account": {
+    "telegram_id": "123456789",
+    "telegram_username": "nick",
+    "first_seen": "2026-09-01 10:00",
+    "last_seen": "2026-10-01 12:00"
+  }
+}</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/telegram/unlink — отвязать Telegram">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/telegram/unlink</code><span class="spacer"></span><span class="auth-badge req">вход</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Стирает связь в <code>telegram_users</code> и все telegram-поля у пользователя. Ответ: <code>{ "success": true }</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="terms" class="anchor">
+    <h3><span class="num">15</span>Условия использования</h3>
+    <p class="sec-note">Актуальная версия: <code>2026-10</code> (<code>TERMS_VERSION</code>). Вошедшим фиксируется в <code>users.terms_version</code>, гостям — в сессии. Модальное окно — <code>terms-gate.js</code>.</p>
+
+    <div class="ep" data-method="get" data-path="GET /api/terms/status — статус принятия">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/terms/status</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "current": "2026-10", "accepted": false }</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/terms/accept — принять условия">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/terms/accept</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <div class="cols"><div class="col"><h5>Ответ</h5><pre>{ "ok": true }</pre></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="admin-videos" class="anchor">
+    <h3><span class="num">16</span>Админ: видео</h3>
+
+    <div class="ep" data-method="get" data-path="GET /api/admin/videos — список всех видео">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/admin/videos</code><span class="spacer"></span><span class="auth-badge req">admin</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Все файлы из <code>videos/</code> с размером, датой, лайками, скачиваниями и автором (из одобренной заявки).</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/admin/videos/:filename — удалить видео">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/admin/videos/:filename</code><span class="spacer"></span><span class="auth-badge req">admin</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Удаляет файл с диска и все связанные записи: <code>submissions.final_filename</code> (обнуляется), лайки, счётчики скачиваний, пункты коллекций. Имя проверяется на <code>../</code>, <code>/</code>, <code>\</code>; тип — по белому списку.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/admin/videos/:filename/rename — переименовать">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/admin/videos/:filename/rename</code><span class="spacer"></span><span class="auth-badge req">admin</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Переименовывает файл и каскадно обновляет его имя в заявках, лайках, счётчиках и коллекциях. Имя санитизируется (≤ 100 симв.), расширение сохраняется.</p>
+        <div class="cols">
+          <div class="col"><h5>Запрос</h5><pre>{ "new_name": "cool_clip" }</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{ "success": true, "new_filename": "cool_clip.mp4" }</pre></div>
+        </div>
+        <div class="warn">400 — имя пустое или файл уже существует · 404 — видео не найдено.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="admin-subs" class="anchor">
+    <h3><span class="num">17</span>Админ: заявки</h3>
+    <p class="sec-note">См. раздел «Заявки на футажи» — эндпоинты <code>GET /api/admin/submissions</code>, <code>approve</code> и <code>reject</code> описаны там (<a href="#submissions" style="color:var(--green-dark)">→ раздел 10</a>). Все требуют роль модератора или выше.</p>
+  </section>
+
+  <section id="admin-users" class="anchor">
+    <h3><span class="num">18</span>Админ: пользователи</h3>
+
+    <div class="ep" data-method="get" data-path="GET /api/admin/users — список пользователей">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/admin/users</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Все пользователи (новые первыми): <code>id, username, role, is_banned, ban_reason, banned_until, is_verified</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/admin/users/:id — удалить пользователя">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/admin/users/:id</code><span class="spacer"></span><span class="auth-badge req">admin</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Полное удаление: лайки, баллы, коллекции, заявки, теги, аккаунт. <b>403</b> — попытка удалить администратора.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/admin/users/:id/moderator|junior-moderator|senior-moderator — назначить роль">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/admin/users/:id/{moderator|junior-moderator|senior-moderator}</code><span class="spacer"></span><span class="auth-badge req">admin</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Назначает роль модератора (три уровня). Админу роль модератора назначить нельзя (400). Ответ: <code>{ "success": true }</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/admin/users/:id/moderator|junior-moderator|senior-moderator — снять роль">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/admin/users/:id/{moderator|junior-moderator|senior-moderator}</code><span class="spacer"></span><span class="auth-badge req">admin</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Снимает роль только если пользователь имеет именно её (иначе без изменений); становится <code>user</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/admin/users/:id/verify — выдать галочку">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/admin/users/:id/verify</code><span class="spacer"></span><span class="auth-badge req">admin, senior_moderator</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Ставит <code>is_verified = 1</code>, фиксирует кто и когда. Админу галочку может выдать только другой админ (иначе 403).</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/admin/users/:id/verify — снять галочку">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/admin/users/:id/verify</code><span class="spacer"></span><span class="auth-badge req">admin, senior_moderator</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Снимает верификацию (те же правила для админов).</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/admin/users/:id/ban — забанить">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/admin/users/:id/ban</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <table class="params">
+          <tr><th>Параметр</th><th>Тип</th><th>Описание</th></tr>
+          <tr><td><code>reason</code></td><td>string</td><td>причина, ≤ 300 симв., по умолч. «Нарушение правил»</td></tr>
+          <tr><td><code>banned_until</code></td><td>ISO-строка</td><td>срок бана; пусто — навсегда</td></tr>
+        </table>
+        <div class="warn">Нельзя забанить админа (403). Сотрудников банит только админ. У забаненного удаляется аватар. Просроченный бан снимается автоматически при следующей попытке входа.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/admin/users/:id/unban — разбанить">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/admin/users/:id/unban</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Снимает бан: <code>is_banned = 0</code>, причина и срок очищаются. Сотрудников разбанивает только админ.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="admin-misc" class="anchor">
+    <h3><span class="num">19</span>Админ: коллекции, статистика, жалобы</h3>
+
+    <div class="ep" data-method="get" data-path="GET /api/admin/collections — все коллекции">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/admin/collections</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Все коллекции сайта с владельцем и числом футажей (<code>item_count</code>): <code>id, name, description, is_public, user_id, username, item_count</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/admin/collections/:id — удалить любую коллекцию">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/admin/collections/:id</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Удаляет любую коллекцию вместе с пунктами — модераторский инструмент (в отличие от самостоятельного DELETE /api/collections/:id, доступного только старшим модераторам-владельцам).</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/admin/stats — статистика">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/admin/stats</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <div class="cols"><div class="col"><h5>Ответ</h5>
+<pre>{
+  "users": 120, "moderators": 3,
+  "junior_moderators": 1, "senior_moderators": 2,
+  "banned": 4, "collections": 45, "verified": 12
+}</pre></div></div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/admin/reports — список жалоб">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/admin/reports</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">Последние 200 жалоб: <code>id, reported_username, reason, status (pending | resolved | dismissed), created_at, reporter_username</code>.</p>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/admin/reports/:id/resolve — закрыть жалобу">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/admin/reports/:id/resolve</code><span class="spacer"></span><span class="auth-badge req">модератор+</span></div>
+      <div class="ep-body">
+        <div class="cols">
+          <div class="col"><h5>Запрос</h5><pre>{ "status": "resolved" }  // или "dismissed"</pre></div>
+          <div class="col"><h5>Ответ</h5><pre>{ "ok": true }  // 400 — иной статус</pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="admin-tags" class="anchor">
+    <h3><span class="num">20</span>Админ: теги</h3>
+    <p class="sec-note">Управление тегами описано в разделе «Теги» (<a href="#tags" style="color:var(--green-dark)">→ раздел 11</a>): создание/удаление тегов — admin; выдача/снятие пользователям — junior_moderator и выше.</p>
+  </section>
+
+  <section id="pages" class="anchor">
+    <h3><span class="num">21</span>HTML-страницы и статика</h3>
+    <div class="info-card">
+      <table class="params">
+        <tr><th>Путь</th><th>Файл</th><th>Доступ</th></tr>
+        <tr><td><code>/</code></td><td>index.html</td><td>публично</td></tr>
+        <tr><td><code>/music</code></td><td>music.html</td><td>публично</td></tr>
+        <tr><td><code>/news</code></td><td>news.html</td><td>публично</td></tr>
+        <tr><td><code>/auth</code></td><td>auth.html</td><td>публично</td></tr>
+        <tr><td><code>/admin</code></td><td>admin.html</td><td><b>только модераторы и админы</b> (requireModerator)</td></tr>
+        <tr><td><code>/profile</code></td><td>profile.html</td><td>публично</td></tr>
+        <tr><td><code>/collections</code> · <code>/collection/:id</code></td><td>collections.html · collection.html</td><td>публично</td></tr>
+        <tr><td><code>/user/:username</code></td><td>user.html</td><td>публично</td></tr>
+        <tr><td><code>/submit</code></td><td>submit.html</td><td>публично</td></tr>
+        <tr><td><code>/privacy</code> · <code>/terms</code></td><td>legal.html</td><td>публично</td></tr>
+        <tr><td><code>/old</code></td><td>olddesign.html</td><td>публично</td></tr>
+        <tr><td><code>/uploads/*</code></td><td>public/uploads/</td><td>статика (аватары, превью, картинки новостей)</td></tr>
+      </table>
+      <div class="note"><b>Важно:</b> папка <code>/submissions</code> намеренно НЕ отдаётся статически — там лежат не проверенные модерацией файлы.</div>
+    </div>
+  </section>
+
+  <section id="db" class="anchor">
+    <h3><span class="num">22</span>Схема базы данных (SQLite)</h3>
+    <div class="info-card">
+      <h4>Основные таблицы</h4>
+      <table class="params">
+        <tr><th>Таблица</th><th>Назначение</th><th>Ключевые поля</th></tr>
+        <tr><td><code>users</code></td><td>пользователи</td><td>username, password (bcrypt), role, is_banned, ban_reason, banned_until, telegram_id, is_verified, avatar_url, activity_visible, last_seen, terms_version, email*</td></tr>
+        <tr><td><code>news</code></td><td>новости</td><td>title, content, image, date</td></tr>
+        <tr><td><code>video_likes</code></td><td>лайки</td><td>UNIQUE(user_id, video_name)</td></tr>
+        <tr><td><code>video_downloads</code></td><td>счётчики скачиваний</td><td>UNIQUE(video_name), count</td></tr>
+        <tr><td><code>collections</code></td><td>коллекции</td><td>user_id, name, description, is_public</td></tr>
+        <tr><td><code>collection_items</code></td><td>футажи в коллекциях</td><td>UNIQUE(collection_id, video_name), added_at</td></tr>
+        <tr><td><code>submissions</code></td><td>заявки на футажи</td><td>user_id, filename, display_name, status, final_filename</td></tr>
+        <tr><td><code>user_points</code></td><td>баллы за скачивания</td><td>PK user_id, points</td></tr>
+        <tr><td><code>cards</code> · <code>user_cards</code> · <code>card_drops</code></td><td>коллекционные карточки (для бота)</td><td>rarity, drop_weight, amount, UNIQUE(user_id, card_id)</td></tr>
+        <tr><td><code>telegram_users</code></td><td>привязки Telegram</td><td>PK telegram_id, user_id, first_seen, last_seen</td></tr>
+        <tr><td><code>airdrops</code> · <code>airdrop_claims</code></td><td>аирдропы монет (бот)</td><td>coins, max_claims, PK(airdrop_id, user_id)</td></tr>
+        <tr><td><code>tags</code> · <code>user_tags</code></td><td>теги и выдачи</td><td>name UNIQUE, color, icon; PK(user_id, tag_id), assigned_by</td></tr>
+        <tr><td><code>reports</code></td><td>жалобы</td><td>reporter_id, reported_username, status</td></tr>
+        <tr><td><code>bot_notifications</code></td><td>очередь уведомлений для Telegram-бота</td><td>type, target_user_id, target_chat_id, processed</td></tr>
+      </table>
+      <p style="font-size:.8rem; color:var(--muted); margin-top:8px;">* колонки email и комнаты добавляются миграциями модулей mail-auth.js / rooms.js. БД: <code>database.db</code>, режим WAL, busy_timeout 5000 мс. Сессии: <code>sessions.db</code>.</p>
+    </div>
+  </section>
+
+  <footer class="doc-footer">
+    Документация сгенерирована по исходному коду <code>server.js</code> (Mell Footage, 2026-10). Эндпоинты модулей <code>rooms.js</code> и <code>mail-auth.js</code> описаны в их собственных файлах.
+  </footer>
+</main>
+</div>
+
+<script>
+  // подсчёт и фильтры
+  const eps = [...document.querySelectorAll('.ep')];
+  document.getElementById('ep-total').textContent = eps.length;
+  const chip = document.getElementById('count-chip');
+  let methodFilter = 'all';
+
+  function applyFilters() {
+    const q = document.getElementById('search').value.trim().toLowerCase();
+    let visible = 0;
+    eps.forEach(ep => {
+      const byMethod = methodFilter === 'all' || ep.dataset.method === methodFilter;
+      const byText = !q || (ep.dataset.path + ' ' + ep.textContent).toLowerCase().includes(q);
+      const show = byMethod && byText;
+      ep.classList.toggle('hidden', !show);
+      if (show) visible++;
+    });
+    chip.textContent = 'Показано: ' + visible + ' / ' + eps.length;
+    // скрываем пустые секции
+    document.querySelectorAll('section.anchor').forEach(s => {
+      const total = s.querySelectorAll('.ep').length;
+      if (!total) return;
+      const shown = s.querySelectorAll('.ep:not(.hidden)').length;
+      s.style.display = shown ? '' : 'none';
+    });
+  }
+
+  document.getElementById('search').addEventListener('input', applyFilters);
+  document.querySelectorAll('.f-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      methodFilter = btn.dataset.filter;
+      applyFilters();
+    });
+  });
+  applyFilters();
+</script>
+</body>
+</html>

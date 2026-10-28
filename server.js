@@ -161,7 +161,7 @@ app.options('*path', cors(corsOptions));
 // ============================================================
 const limiter = rateLimit({
     windowMs: 3 * 60 * 1000,
-    max: 9000000000,
+    max: 40,
     message: 'Слишком много запросов, попробуйте позже',
     standardHeaders: true,
     legacyHeaders: false,
@@ -409,6 +409,7 @@ app.get('/submit', pub('submit.html'));
 app.get('/privacy', pub('legal.html'));
 app.get('/terms', pub('legal.html'));
 app.get('/old', pub('olddesign.html'));
+app.get('/api-docs', pub('api-docs.html'));
 // ============================================================
 // ВИДЕО: стрим с поддержкой Range
 // ============================================================
