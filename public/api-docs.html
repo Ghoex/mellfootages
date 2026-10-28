@@ -252,7 +252,7 @@
     <h3><span class="num">00</span>Базовая информация</h3>
     <div class="info-card">
       <dl class="kv">
-        <dt>Базовый URL</dt><dd><code>http(s)://&lt;host&gt;</code> — порт из <code>PORT</code> (по умолчанию 80)</dd>
+        <dt>Базовый URL</dt><dd><code>https://burmolda.ru</code> — порт из <code>PORT</code> (по умолчанию 80)</dd>
         <dt>Формат данных</dt><dd>JSON (<code>application/json</code>), лимит тела — 10 МБ. Загрузки файлов — <code>multipart/form-data</code></dd>
         <dt>Аутентификация</dt><dd>Session-cookie (express-session, хранилище SQLite <code>sessions.db</code>): <code>httpOnly</code>, <code>sameSite=lax</code>, <code>secure</code> в production, срок 7 дней. Роль и верификация перечитываются из БД на каждый запрос; обновляется <code>last_seen</code></dd>
         <dt>Регистрация по email</dt><dd>в отдельном модуле <code>mail-auth.js</code> (<code>mountMailAuth</code>) — коды через Resend</dd>
