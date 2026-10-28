@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Комната</title>
+  <link rel="stylesheet" href="/rooms.css">
+</head>
+<body class="room-page">
+  <header class="top">
+    <a class="back" href="/rooms" aria-label="К списку комнат">←</a>
+    <div class="top-title">
+      <h1 id="room-title">Загрузка…</h1>
+      <p id="room-desc"></p>
+    </div>
+  </header>
+
+  <main class="chat">
+    <div id="messages" class="messages"></div>
+
+    <div id="lock" class="lock" hidden>
+      <form id="unlock-form" class="stack">
+        <p class="muted">Комната закрыта паролем</p>
+        <input id="unlock-pass" type="password" maxlength="64" required placeholder="Пароль">
+        <button class="btn" type="submit">Войти в комнату</button>
+        <p id="unlock-error" class="error"></p>
+      </form>
+    </div>
+
+    <p id="guest-note" class="note" hidden>Чтобы писать, <a href="/auth">войди в аккаунт</a>.</p>
+
+    <form id="composer" class="composer" hidden>
+      <input id="msg-input" maxlength="500" autocomplete="off" placeholder="Сообщение (@ник, #футаж)">
+      <button id="footage-btn" class="btn ghost" type="button" title="Вставить футаж">#</button>
+      <button class="btn" type="submit">Отправить</button>
+    </form>
+    <p id="composer-error" class="error"></p>
+  </main>
+
+  <dialog id="actions">
+    <div class="stack">
+      <p id="actions-title" class="dlg-title"></p>
+      <button id="act-profile" class="item" type="button">Профиль</button>
+      <button id="act-report" class="item" type="button" hidden>Пожаловаться</button>
+      <button id="act-mute" class="item" type="button" hidden>Замутить…</button>
+      <button id="act-delete" class="item danger" type="button" hidden>Удалить сообщение</button>
+      <button class="item muted" type="button" data-close="actions">Отмена</button>
+    </div>
+  </dialog>
+
+  <dialog id="mute-dialog">
+    <form id="mute-form" class="stack">
+      <p class="dlg-title">Срок мута</p>
+      <select id="mute-select"></select>
+      <p id="mute-error" class="error"></p>
+      <div class="row-btns">
+        <button class="btn ghost" type="button" data-close="mute-dialog">Отмена</button>
+        <button class="btn" type="submit">Замутить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="footage-dialog">
+    <div class="stack">
+      <p class="dlg-title">Показать футаж</p>
+      <input id="footage-search" maxlength="60" autocomplete="off" placeholder="Поиск футажа">
+      <ul id="footage-list" class="item-list"></ul>
+      <p id="footage-status" class="status"></p>
+      <div class="row-btns">
+        <button class="btn ghost" type="button" data-close="footage-dialog">Закрыть</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="report-dialog">
+    <form id="report-form" class="stack">
+      <p class="dlg-title">Жалоба</p>
+      <textarea id="report-reason" maxlength="200" required placeholder="Что не так? (3–200 символов)"></textarea>
+      <p id="report-error" class="error"></p>
+      <div class="row-btns">
+        <button class="btn ghost" type="button" data-close="report-dialog">Отмена</button>
+        <button class="btn" type="submit">Отправить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/rooms-client.js"></script>
+</body>
+</html>

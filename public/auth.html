@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="pageTitle">Вход / Регистрация</title>
+    <style>
+        * { box-sizing: border-box; }
+
+        html, body { margin: 0; min-height: 100%; }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Arial, sans-serif;
+            background: #ffffff;
+            color: #1d2330;
+            overflow-x: hidden;
+        }
+
+        .stage {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 56px 16px 40px;
+        }
+
+        /* ---------- Плавающие футажи ----------
+           Стоят по краям экрана, в стороне от карточки входа,
+           поэтому никогда не перекрываются формой. */
+        .float-card {
+            position: absolute;
+            width: clamp(150px, 16vw, 210px);
+            background: #fff;
+            border: 1px solid #e6eaf3;
+            border-radius: 16px;
+            box-shadow: 0 18px 40px rgba(30, 50, 110, .16);
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .float-card video {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            object-fit: cover;
+            background: #eef1f7;
+        }
+
+        .float-card .label {
+            padding: 8px 10px;
+            font-size: 12px;
+            color: #55607a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fc-1 { left: 4%; top: 16%; animation: drift1 9s ease-in-out infinite; }
+        .fc-2 { right: 4%; top: 26%; animation: drift2 11s ease-in-out infinite -3s; }
+        .fc-3 { left: 7%; bottom: 10%; animation: drift3 10s ease-in-out infinite -6s; }
+
+        @keyframes drift1 {
+            0%, 100% { transform: translate(0, 0) rotate(-3deg); }
+            50%      { transform: translate(14px, -22px) rotate(2deg); }
+        }
+        @keyframes drift2 {
+            0%, 100% { transform: translate(0, 0) rotate(2deg); }
+            50%      { transform: translate(-16px, 18px) rotate(-3deg); }
+        }
+        @keyframes drift3 {
+            0%, 100% { transform: translate(0, 0) rotate(-1deg); }
+            50%      { transform: translate(12px, -16px) rotate(3deg); }
+        }
+
+        @media (max-width: 900px) {
+            .float-card { display: none; }
+        }
+
+        /* ---------- Карточка входа ---------- */
+        .auth-card {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 400px;
+            margin-top: 34px;
+            padding: 58px 32px 28px;
+            background: #fff;
+            border: 1px solid #eef1f7;
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(20, 40, 90, .14);
+        }
+
+        .avatar-badge {
+            position: absolute;
+            top: -36px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: #2f5bd6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(47, 91, 214, .35);
+        }
+
+        .avatar-badge svg {
+            width: 38px;
+            height: 38px;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 1.6;
+        }
+
+        .welcome {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin: 0 0 22px;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f2f4f9;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 22px;
+        }
+
+        .tabs button {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 9px;
+            border-radius: 9px;
+            font: inherit;
+            font-size: 14px;
+            color: #6b7388;
+            cursor: pointer;
+        }
+
+        .tabs button.active {
+            background: #fff;
+            color: #1d2330;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        }
+
+        .view { display: none; }
+        .view.active { display: block; }
+
+        .field-label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .field {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #dfe3ec;
+            border-radius: 10px;
+            background: #f3f5f9;
+            font: inherit;
+            font-size: 14px;
+            color: #1d2330;
+            margin-bottom: 16px;
+            outline: none;
+        }
+
+        .field:focus {
+            border-color: #2f5bd6;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(47, 91, 214, .12);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 10px;
+            background: #2f5bd6;
+            color: #fff;
+            font: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+        .btn-primary:hover { background: #2449b8; }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #2f5bd6;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .step-back { margin-bottom: 12px; }
+
+        .hint {
+            background: #f3f6fd;
+            border: 1px solid #dbe4f7;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 13px;
+            line-height: 1.45;
+            color: #3a4560;
+            margin: 0 0 14px;
+        }
+
+        .hint a { color: #2f5bd6; font-weight: 600; }
+
+        .terms-check {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            font-size: 13px;
+            line-height: 1.45;
+            color: #3a4560;
+            margin-bottom: 16px;
+        }
+
+        .terms-check input { margin-top: 3px; }
+        .terms-check a { color: #2f5bd6; }
+
+        .switch-row {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: #8a92a6;
+        }
+
+        #auth-msg {
+            min-height: 20px;
+            margin: 14px 0 0;
+            color: #d64545;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .lang-select {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 5;
+            padding: 6px 10px;
+            border: 1px solid #dfe3ec;
+            border-radius: 8px;
+            background: #fff;
+            color: #1d2330;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        @media (max-width: 520px) {
+            .auth-card { padding: 58px 20px 22px; }
+        }
+    </style>
+</head>
+<body>
+
+    <select id="language-select" class="lang-select" aria-label="Language">
+        <option value="ru">RU</option>
+        <option value="uk">UA</option>
+        <option value="en">EN</option>
+    </select>
+
+    <div class="stage">
+
+        <!-- Плавающие случайные футажи (подгружаются из /api/videos) -->
+        <div class="float-card fc-1" aria-hidden="true">
+            <video muted loop playsinline autoplay preload="metadata"></video>
+            <div class="label"></div>
+        </div>
+        <div class="float-card fc-2" aria-hidden="true">
+            <video muted loop playsinline autoplay preload="metadata"></video>
+            <div class="label"></div>
+        </div>
+        <div class="float-card fc-3" aria-hidden="true">
+            <video muted loop playsinline autoplay preload="metadata"></video>
+            <div class="label"></div>
+        </div>
+
+        <div class="auth-card">
+
+            <div class="avatar-badge">
+                <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="4"></circle>
+                    <path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"></path>
+                </svg>
+            </div>
+
+            <h1 class="welcome" data-i18n="welcome">Добро пожаловать</h1>
+
+            <div class="tabs">
+                <button type="button" data-tab="login" class="active" data-i18n="tabLogin">Вход</button>
+                <button type="button" data-tab="register" data-i18n="tabRegister">Регистрация</button>
+            </div>
+
+            <!-- ===================== ВХОД ===================== -->
+            <form id="login-form" class="view active">
+                <label class="field-label" for="login-name" data-i18n="labelLogin">Логин *</label>
+                <input type="text" id="login-name" class="field" data-i18n-ph="phLogin" placeholder="Логин" required autocomplete="username">
+
+                <label class="field-label" for="login-pass" data-i18n="labelPassword">Пароль *</label>
+                <input type="password" id="login-pass" class="field" data-i18n-ph="phPassword" placeholder="Пароль" required autocomplete="current-password">
+
+                <div style="text-align: right; margin: -6px 0 14px;"><button type="button" class="btn-link" id="forgot-link" data-i18n="forgotPassword">Забыли пароль?</button></div>
+
+                <button type="submit" class="btn-primary" data-i18n="btnLogin">Войти</button>
+
+                <div class="switch-row">
+                    <span data-i18n="noAccount">Нет аккаунта?</span>
+                    <button type="button" class="btn-link" data-goto="register" data-i18n="goRegister">Регистрация</button>
+                </div>
+            </form>
+
+            <!-- ===================== РЕГИСТРАЦИЯ ПО EMAIL ===================== -->
+            <form id="register-form" class="view">
+                <p class="hint" data-i18n="regHintEmail">Мы отправим 6-значный код на твою почту. Аккаунт создастся после подтверждения.</p>
+
+                <label class="field-label" for="reg-name" data-i18n="labelLogin">Логин *</label>
+                <input type="text" id="reg-name" class="field" data-i18n-ph="phCreateLogin" placeholder="Придумайте логин" required autocomplete="username">
+
+                <label class="field-label" for="reg-email" data-i18n="labelEmail">Email *</label>
+                <input type="email" id="reg-email" class="field" data-i18n-ph="phEmail" placeholder="you@example.com" required autocomplete="email">
+
+                <label class="field-label" for="reg-pass" data-i18n="labelPassword">Пароль *</label>
+                <input type="password" id="reg-pass" class="field" data-i18n-ph="phCreatePassword" placeholder="Придумайте пароль" required autocomplete="new-password">
+
+                <label class="terms-check">
+                    <input type="checkbox" id="reg-terms">
+                    <span data-i18n="regTermsLabel"></span>
+                </label>
+
+                <button type="submit" class="btn-primary" data-i18n="btnNext">Далее</button>
+
+                <div class="switch-row">
+                    <span data-i18n="hasAccount">Уже есть аккаунт?</span>
+                    <button type="button" class="btn-link" data-goto="login" data-i18n="goLogin">Войти</button>
+                </div>
+            </form>
+
+            <form id="register-confirm-form" class="view">
+                <h2 class="welcome" style="font-size: 18px; margin-bottom: 14px;" data-i18n="regStep2TitleEmail">Код из письма</h2>
+                <p class="hint" data-i18n="regStep2HintEmail">Мы отправили 6-значный код на твою почту. Введи его ниже, чтобы завершить регистрацию.</p>
+                <button type="button" class="btn-link step-back" onclick="backToRegisterStep1()" data-i18n="btnBack">← Назад</button>
+                <input type="text" id="reg-code" class="field" data-i18n-ph="phEmailCode" placeholder="Код из письма" required inputmode="numeric" maxlength="6">
+                <button type="submit" class="btn-primary" data-i18n="btnRegister">Зарегистрироваться</button>
+            </form>
+
+            <!-- ===================== ВОССТАНОВЛЕНИЕ ПАРОЛЯ ===================== -->
+            <form id="reset-start-form" class="view">
+                <h2 class="welcome" style="font-size: 18px; margin-bottom: 14px;" data-i18n="resetTitle">Восстановление пароля</h2>
+                <p class="hint" data-i18n="resetHint">Введи email, на который зарегистрирован аккаунт. Пришлём код.</p>
+                <button type="button" class="btn-link step-back" onclick="showTab('login')" data-i18n="btnBack">← Назад</button>
+                <label class="field-label" for="reset-email" data-i18n="labelEmail">Email *</label>
+                <input type="email" id="reset-email" class="field" data-i18n-ph="phEmail" placeholder="you@example.com" required autocomplete="email">
+                <button type="submit" class="btn-primary" data-i18n="btnSendCode">Отправить код</button>
+            </form>
+
+            <form id="reset-confirm-form" class="view">
+                <h2 class="welcome" style="font-size: 18px; margin-bottom: 14px;" data-i18n="resetTitle">Восстановление пароля</h2>
+                <p class="hint" data-i18n="resetConfirmHint">Введи код из письма и придумай новый пароль.</p>
+                <button type="button" class="btn-link step-back" onclick="showResetStart()" data-i18n="btnBack">← Назад</button>
+                <input type="text" id="reset-code" class="field" data-i18n-ph="phEmailCode" placeholder="Код из письма" required inputmode="numeric" maxlength="6">
+                <label class="field-label" for="reset-pass" data-i18n="labelNewPassword">Новый пароль *</label>
+                <input type="password" id="reset-pass" class="field" data-i18n-ph="phNewPassword" placeholder="Придумайте новый пароль" required autocomplete="new-password">
+                <button type="submit" class="btn-primary" data-i18n="btnSavePassword">Сохранить пароль</button>
+            </form>
+
+            <p id="auth-msg"></p>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            ru: {
+                pageTitle: "Вход / Регистрация",
+                welcome: "Добро пожаловать",
+                tabLogin: "Вход",
+                tabRegister: "Регистрация",
+                labelLogin: "Логин *",
+                labelPassword: "Пароль *",
+                labelTelegramId: "Telegram ID *",
+                phLogin: "Логин",
+                phPassword: "Пароль",
+                phCreateLogin: "Придумайте логин",
+                phCreatePassword: "Придумайте пароль",
+                phTelegramId: "Telegram ID (из бота)",
+                phCode: "Код из бота",
+                btnLogin: "Войти",
+                btnRegister: "Зарегистрироваться",
+                btnNext: "Далее",
+                btnConfirm: "Подтвердить",
+                btnBack: "← Назад",
+                noAccount: "Нет аккаунта?",
+                hasAccount: "Уже есть аккаунт?",
+                goRegister: "Регистрация",
+                goLogin: "Войти",
+                regStep1Hint: "1) Открой нашего Telegram-бота @Mllcards_bot и нажми «Старт» — он пришлёт твой Telegram ID.<br>2) Вставь этот ID ниже вместе с логином и паролем.",
+                regStep2Title: "Код из Telegram",
+                regStep2Hint: "Мы отправили код подтверждения в бота. Введи его ниже, чтобы завершить регистрацию.",
+                regTermsLabel: "Я принимаю <a href='/terms' target='_blank'>Условия использования</a> и <a href='/privacy' target='_blank'>Политику конфиденциальности</a>",
+                errTermsRequired: "Чтобы зарегистрироваться, примите условия использования.",
+                regSuccess: "Успешно! Теперь войдите в аккаунт.",
+                errFillAll: 'Заполните все поля!',
+                errUsername: 'Логин: только латинские буквы, цифры, _ и -. От 3 до 15 символов.',
+                errPassword: 'Пароль минимум 6 символов',
+                errExists: 'Пользователь с таким логином уже существует!',
+                errWrong: 'Неверный логин или пароль!',
+                errServer: 'Ошибка сервера',
+                errTelegramInvalid: 'Некорректный Telegram ID. Получи его в боте по команде /start.',
+                errTelegramTaken: 'Этот Telegram уже привязан к другому аккаунту!',
+                errCodeWrong: 'Неверный код подтверждения.',
+                errCodeExpired: 'Код истёк. Попробуйте ещё раз.',
+                errEnterCode: 'Введите код из Telegram.',
+                errNeedCodeFirst: 'Сначала запросите код заново.',
+                errBanned: 'Аккаунт заблокирован.',
+                labelEmail: "Email *",
+                labelNewPassword: "Новый пароль *",
+                phEmail: "you@example.com",
+                phEmailCode: "Код из письма",
+                phNewPassword: "Придумайте новый пароль",
+                regHintEmail: "Мы отправим 6-значный код на твою почту. Аккаунт создастся после подтверждения.",
+                regStep2TitleEmail: "Код из письма",
+                regStep2HintEmail: "Мы отправили 6-значный код на твою почту. Введи его ниже, чтобы завершить регистрацию.",
+                forgotPassword: "Забыли пароль?",
+                resetTitle: "Восстановление пароля",
+                resetHint: "Введи email, на который зарегистрирован аккаунт. Пришлём код.",
+                resetConfirmHint: "Введи код из письма и придумай новый пароль.",
+                btnSendCode: "Отправить код",
+                btnSavePassword: "Сохранить пароль",
+                resetDone: "Пароль изменён! Теперь войди с новым паролем.",
+                errReserved: "Этот логин зарезервирован.",
+                errEmail: "Некорректный email.",
+                errCooldown: "Код уже отправлен. Подожди минуту.",
+                errSend: "Не удалось отправить письмо. Попробуй позже.",
+                errLocked: "Слишком много попыток. Начни заново.",
+                errTaken: "Логин или email уже заняты. Начни заново."
+            },
+            uk: {
+                pageTitle: "Вхід / Реєстрація",
+                welcome: "Ласкаво просимо",
+                tabLogin: "Вхід",
+                tabRegister: "Реєстрація",
+                labelLogin: "Логін *",
+                labelPassword: "Пароль *",
+                labelTelegramId: "Telegram ID *",
+                phLogin: "Логін",
+                phPassword: "Пароль",
+                phCreateLogin: "Придумайте логін",
+                phCreatePassword: "Придумайте пароль",
+                phTelegramId: "Telegram ID (з бота)",
+                phCode: "Код з бота",
+                btnLogin: "Увійти",
+                btnRegister: "Зареєструватися",
+                btnNext: "Далі",
+                btnConfirm: "Підтвердити",
+                btnBack: "← Назад",
+                noAccount: "Немає акаунта?",
+                hasAccount: "Вже є акаунт?",
+                goRegister: "Реєстрація",
+                goLogin: "Увійти",
+                regStep1Hint: "1) Відкрий нашого Telegram-бота @Mllcards_bot і натисни «Старт» — він надішле твій Telegram ID.<br>2) Встав цей ID нижче разом з логіном і паролем.",
+                regStep2Title: "Код із Telegram",
+                regStep2Hint: "Ми надіслали код підтвердження в бота. Введи його нижче, щоб завершити реєстрацію.",
+                regTermsLabel: "Я приймаю <a href='/terms' target='_blank'>Умови використання</a> та <a href='/privacy' target='_blank'>Політику конфіденційності</a>",
+                errTermsRequired: "Щоб зареєструватися, прийміть умови використання.",
+                regSuccess: "Успішно! Тепер увійдіть до акаунту.",
+                errFillAll: 'Заповніть всі поля!',
+                errUsername: 'Логін: тільки латинські букви, цифри, _ та -. Від 3 до 15 символів.',
+                errPassword: 'Пароль мінімум 6 символів',
+                errExists: 'Користувач з таким логіном вже існує!',
+                errWrong: 'Невірний логін або пароль!',
+                errServer: 'Помилка сервера',
+                errTelegramInvalid: 'Некоректний Telegram ID. Отримай його в боті командою /start.',
+                errTelegramTaken: 'Цей Telegram вже прив\'язаний до іншого акаунту!',
+                errCodeWrong: 'Невірний код підтвердження.',
+                errCodeExpired: 'Код прострочено. Спробуй ще раз.',
+                errEnterCode: 'Введи код із Telegram.',
+                errNeedCodeFirst: 'Спочатку запроси код ще раз.',
+                errBanned: 'Акаунт заблоковано.',
+                labelEmail: "Email *",
+                labelNewPassword: "Новий пароль *",
+                phEmail: "you@example.com",
+                phEmailCode: "Код з листа",
+                phNewPassword: "Придумайте новий пароль",
+                regHintEmail: "Ми надішлемо 6-значний код на твою пошту. Акаунт створиться після підтвердження.",
+                regStep2TitleEmail: "Код з листа",
+                regStep2HintEmail: "Ми надіслали 6-значний код на твою пошту. Введи його нижче, щоб завершити реєстрацію.",
+                forgotPassword: "Забули пароль?",
+                resetTitle: "Відновлення пароля",
+                resetHint: "Введи email, на який зареєстровано акаунт. Надішлемо код.",
+                resetConfirmHint: "Введи код з листа і придумай новий пароль.",
+                btnSendCode: "Надіслати код",
+                btnSavePassword: "Зберегти пароль",
+                resetDone: "Пароль змінено! Тепер увійди з новим паролем.",
+                errReserved: "Цей логін зарезервований.",
+                errEmail: "Некоректний email.",
+                errCooldown: "Код уже надіслано. Зачекай хвилину.",
+                errSend: "Не вдалося надіслати лист. Спробуй пізніше.",
+                errLocked: "Забагато спроб. Почни спочатку.",
+                errTaken: "Логін або email вже зайняті. Почни спочатку."
+            },
+            en: {
+                pageTitle: "Login / Register",
+                welcome: "Welcome Back",
+                tabLogin: "Login",
+                tabRegister: "Register",
+                labelLogin: "Username *",
+                labelPassword: "Password *",
+                labelTelegramId: "Telegram ID *",
+                phLogin: "Enter your username",
+                phPassword: "Enter your password",
+                phCreateLogin: "Choose a username",
+                phCreatePassword: "Choose a password",
+                phTelegramId: "Telegram ID (from the bot)",
+                phCode: "Code from the bot",
+                btnLogin: "Login",
+                btnRegister: "Sign Up",
+                btnNext: "Next",
+                btnConfirm: "Confirm",
+                btnBack: "← Back",
+                noAccount: "Don't have an account?",
+                hasAccount: "Already have an account?",
+                goRegister: "Sign up",
+                goLogin: "Log in",
+                regStep1Hint: "1) Open our Telegram bot @Mllcards_bot and tap \"Start\" — it will send you your Telegram ID.<br>2) Paste that ID below together with your username and password.",
+                regStep2Title: "Code from Telegram",
+                regStep2Hint: "We sent a confirmation code to the bot. Enter it below to finish registering.",
+                regTermsLabel: "I accept the <a href='/terms' target='_blank'>Terms of Use</a> and <a href='/privacy' target='_blank'>Privacy Policy</a>",
+                errTermsRequired: "To sign up, please accept the Terms of Use.",
+                regSuccess: "Success! Now please log in.",
+                errFillAll: 'Please fill in all fields!',
+                errUsername: 'Username: only latin letters, numbers, _ and -. 3 to 15 characters.',
+                errPassword: 'Password must be at least 6 characters',
+                errExists: 'This username is already taken!',
+                errWrong: 'Invalid username or password!',
+                errServer: 'Server error',
+                errTelegramInvalid: 'Invalid Telegram ID. Get it from the bot via /start.',
+                errTelegramTaken: 'This Telegram account is already linked to another account!',
+                errCodeWrong: 'Invalid confirmation code.',
+                errCodeExpired: 'The code has expired. Please try again.',
+                errEnterCode: 'Enter the code from Telegram.',
+                errNeedCodeFirst: 'Please request a new code first.',
+                errBanned: 'Account is banned.',
+                labelEmail: "Email *",
+                labelNewPassword: "New password *",
+                phEmail: "you@example.com",
+                phEmailCode: "Code from the email",
+                phNewPassword: "Choose a new password",
+                regHintEmail: "We'll send a 6-digit code to your email. The account is created after you confirm it.",
+                regStep2TitleEmail: "Code from the email",
+                regStep2HintEmail: "We sent a 6-digit code to your email. Enter it below to finish registering.",
+                forgotPassword: "Forgot password?",
+                resetTitle: "Password recovery",
+                resetHint: "Enter the email the account is registered with. We'll send a code.",
+                resetConfirmHint: "Enter the code from the email and choose a new password.",
+                btnSendCode: "Send code",
+                btnSavePassword: "Save password",
+                resetDone: "Password changed! Now log in with the new password.",
+                errReserved: "This username is reserved.",
+                errEmail: "Invalid email.",
+                errCooldown: "A code was already sent. Wait a minute.",
+                errSend: "Could not send the email. Try again later.",
+                errLocked: "Too many attempts. Start over.",
+                errTaken: "Username or email is already taken. Start over."
+            }
+        };
+
+        let currentLang = localStorage.getItem('app_lang') || 'ru';
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('app_lang', lang);
+            document.documentElement.lang = lang;
+            document.getElementById('language-select').value = lang;
+
+            const t = translations[lang];
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key] !== undefined) el.innerHTML = t[key];
+            });
+
+            document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                const key = el.getAttribute('data-i18n-ph');
+                if (t[key]) el.placeholder = t[key];
+            });
+        }
+
+        function translateError(serverError) {
+            const t = translations[currentLang];
+            if (!serverError) return t.errServer;
+
+            if (serverError.includes('принять условия')) return t.errTermsRequired;
+            if (serverError.includes('Telegram уже привязан') || serverError.includes('привязан к другому'))
+                return t.errTelegramTaken;
+            if (serverError.includes('Некорректный Telegram ID'))
+                return t.errTelegramInvalid;
+            if (serverError.includes('Неверный код'))
+                return t.errCodeWrong;
+            if (serverError.includes('Код истёк'))
+                return t.errCodeExpired;
+            if (serverError.includes('Введите код'))
+                return t.errEnterCode;
+            if (serverError.includes('запросите код') || serverError.includes('введите логин и пароль'))
+                return t.errNeedCodeFirst;
+            if (serverError.includes('заблокирован'))
+                return t.errBanned;
+
+            if (serverError.includes('все поля') || serverError.includes('fields'))
+                return t.errFillAll;
+            if (serverError.includes('Логин') || serverError.includes('latin') || serverError.includes('символ'))
+                return t.errUsername;
+            if (serverError.includes('Пароль') || serverError.includes('password') || serverError.includes('6'))
+                return t.errPassword;
+            if (serverError.includes('существует') || serverError.includes('exists') || serverError.includes('taken'))
+                return t.errExists;
+            if (serverError.includes('Неверный') || serverError.includes('Invalid') || serverError.includes('пароль'))
+                return t.errWrong;
+            return serverError;
+        }
+
+        function clearMsg() { document.getElementById('auth-msg').innerText = ''; }
+
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === id));
+            clearMsg();
+        }
+
+        function showTab(tab) {
+            document.querySelectorAll('.tabs button').forEach(b => {
+                b.classList.toggle('active', b.dataset.tab === tab);
+            });
+            showView(tab === 'login' ? 'login-form' : 'register-form');
+        }
+
+        function showResetStart() { showView('reset-start-form'); }
+
+        // Ошибки новых эндпоинтов переводятся по коду, а не по тексту
+        const ERR_KEYS = {
+            fields: 'errFillAll', terms: 'errTermsRequired', username: 'errUsername', reserved: 'errReserved',
+            email: 'errEmail', password: 'errPassword', username_taken: 'errExists', cooldown: 'errCooldown',
+            send_failed: 'errSend', need_start: 'errNeedCodeFirst', expired: 'errCodeExpired', locked: 'errLocked',
+            wrong_code: 'errCodeWrong', taken: 'errTaken', server: 'errServer',
+        };
+        function errorText(data) {
+            const key = ERR_KEYS[data && data.code];
+            return key ? translations[currentLang][key] : translateError(data && data.error);
+        }
+
+        function backToRegisterStep1() {
+            document.getElementById('register-confirm-form').classList.remove('active');
+            document.getElementById('register-form').classList.add('active');
+            clearMsg();
+        }
+
+        document.querySelectorAll('.tabs button').forEach(btn => {
+            btn.addEventListener('click', () => showTab(btn.dataset.tab));
+        });
+
+        document.querySelectorAll('[data-goto]').forEach(btn => {
+            btn.addEventListener('click', () => showTab(btn.dataset.goto));
+        });
+
+        // ===================== ВХОД: шаг 1 (логин/пароль) =====================
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMsg();
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: document.getElementById('login-name').value,
+                    password: document.getElementById('login-pass').value
+                })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                window.location.href = '/';
+            } else {
+                document.getElementById('auth-msg').innerText = translateError(data.error);
+            }
+        });
+
+        // ================= РЕГИСТРАЦИЯ: шаг 1 (логин, email, пароль) =================
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMsg();
+            if (!document.getElementById('reg-terms').checked) {
+                document.getElementById('auth-msg').innerText = translations[currentLang].errTermsRequired;
+                return;
+            }
+            const res = await fetch('/api/register/email/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: document.getElementById('reg-name').value,
+                    email: document.getElementById('reg-email').value,
+                    password: document.getElementById('reg-pass').value,
+                    accept_terms: true
+                })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok) {
+                regEmail = document.getElementById('reg-email').value.trim().toLowerCase();
+                showView('register-confirm-form');
+                document.getElementById('reg-code').value = '';
+                document.getElementById('reg-code').focus();
+            } else {
+                document.getElementById('auth-msg').innerText = errorText(data);
+            }
+        });
+
+        // Email на шаге 2 нужен серверу, чтобы найти заявку (без cookie)
+        let regEmail = '';
+
+        // ================= РЕГИСТРАЦИЯ: шаг 2 (код из письма) =================
+        document.getElementById('register-confirm-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMsg();
+            const res = await fetch('/api/register/email/confirm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: regEmail, code: document.getElementById('reg-code').value.trim() })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok) {
+                alert(translations[currentLang].regSuccess);
+                document.getElementById('login-name').value = document.getElementById('reg-name').value;
+                showTab('login');
+            } else {
+                document.getElementById('auth-msg').innerText = errorText(data);
+            }
+        });
+
+        // ================= ВОССТАНОВЛЕНИЕ ПАРОЛЯ =================
+        let resetEmail = '';
+
+        document.getElementById('forgot-link').addEventListener('click', () => {
+            document.querySelectorAll('.tabs button').forEach(b => b.classList.remove('active'));
+            showView('reset-start-form');
+        });
+
+        document.getElementById('reset-start-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMsg();
+            resetEmail = document.getElementById('reset-email').value.trim();
+            const res = await fetch('/api/password/reset/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: resetEmail })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok) {
+                showView('reset-confirm-form');
+                document.getElementById('reset-code').value = '';
+                document.getElementById('reset-pass').value = '';
+                document.getElementById('reset-code').focus();
+            } else {
+                document.getElementById('auth-msg').innerText = errorText(data);
+            }
+        });
+
+        document.getElementById('reset-confirm-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMsg();
+            const res = await fetch('/api/password/reset/confirm', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: resetEmail,
+                    code: document.getElementById('reset-code').value.trim(),
+                    password: document.getElementById('reset-pass').value
+                })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok) {
+                alert(translations[currentLang].resetDone);
+                showTab('login');
+            } else {
+                document.getElementById('auth-msg').innerText = errorText(data);
+            }
+        });
+
+        document.getElementById('language-select').addEventListener('change', (e) => {
+            setLanguage(e.target.value);
+        });
+
+        // ===================== ПЛАВАЮЩИЕ ФУТАЖИ =====================
+        // Берём список из /api/videos и ставим 3 случайных в боковые карточки
+        async function loadFloatingFootages() {
+            try {
+                const res = await fetch('/api/videos', { credentials: 'same-origin' });
+                if (!res.ok) return;
+                const videos = await res.json();
+                if (!Array.isArray(videos) || !videos.length) return;
+
+                const picks = [...videos].sort(() => Math.random() - 0.5).slice(0, 3);
+
+                document.querySelectorAll('.float-card').forEach((card, i) => {
+                    const v = picks[i];
+                    if (!v) { card.style.display = 'none'; return; }
+                    card.querySelector('video').src = v.url;
+                    card.querySelector('.label').textContent = v.name.replace(/\.[^/.]+$/, '');
+                });
+            } catch { }
+        }
+
+        setLanguage(currentLang);
+        showTab('login');
+        loadFloatingFootages();
+    </script>
+</body>
+</html>

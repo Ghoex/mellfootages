@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Комнаты</title>
+  <link rel="stylesheet" href="/rooms.css">
+</head>
+<body>
+  <header class="top">
+    <a class="back" href="/" aria-label="Назад">←</a>
+    <h1>Комнаты</h1>
+    <button id="create-btn" class="btn" type="button" hidden>Создать</button>
+  </header>
+
+  <main class="wrap">
+    <ul id="room-list" class="room-list"></ul>
+    <p id="status" class="status"></p>
+
+    <section id="mentions-section" class="reports" hidden>
+      <div class="sec-head">
+        <h2>Упоминания</h2>
+        <button id="mentions-read" class="btn ghost small-btn" type="button" hidden>Прочитано</button>
+      </div>
+      <ul id="mentions-list" class="report-list"></ul>
+    </section>
+
+    <section id="reports-section" class="reports" hidden>
+      <h2>Жалобы из комнат</h2>
+      <ul id="report-list" class="report-list"></ul>
+    </section>
+  </main>
+
+  <dialog id="create-dialog">
+    <form id="create-form" class="stack">
+      <p class="dlg-title">Новая комната</p>
+      <input id="create-name" maxlength="40" required placeholder="Название (2–40)">
+      <input id="create-desc" maxlength="200" placeholder="Описание (необязательно)">
+      <input id="create-pass" type="password" maxlength="64" autocomplete="new-password" placeholder="Пароль (необязательно, от 4 символов)">
+      <p id="create-error" class="error"></p>
+      <div class="row-btns">
+        <button class="btn ghost" type="button" data-close="create-dialog">Отмена</button>
+        <button class="btn" type="submit">Создать</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="/rooms-client.js"></script>
+</body>
+</html>

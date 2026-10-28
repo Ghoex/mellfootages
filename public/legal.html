@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mell Footage</title>
+    <style>
+        :root {
+            --primary: #7ec384;
+            --bg: #0f1419;
+            --surface: #1a1f2e;
+            --text: #e8ecf1;
+            --muted: #8a94a3;
+            --border: #2e3645;
+        }
+        @media (prefers-color-scheme: light) {
+            :root:not([data-theme="dark"]) {
+                --bg: #f5f9f3;
+                --surface: #ffffff;
+                --text: #1e1e1e;
+                --muted: #6b756b;
+                --border: #c1d4b8;
+            }
+        }
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.65;
+        }
+        .topnav {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+        .logo {
+            font-family: Georgia, serif;
+            font-style: italic;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .spacer { flex: 1; }
+        .nav-link, .lang-btn {
+            color: var(--text);
+            text-decoration: none;
+            padding: 8px 13px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: transparent;
+            font: inherit;
+            font-size: .9rem;
+            cursor: pointer;
+        }
+        .lang-switch { display: flex; gap: 6px; }
+        .lang-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+            font-weight: 700;
+        }
+        .page {
+            width: min(820px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 30px 0 60px;
+        }
+        .doc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 28px 30px;
+        }
+        .doc h1 { font-size: 1.8rem; margin: 0 0 8px; }
+        .doc h2 { font-size: 1.25rem; margin: 28px 0 8px; color: var(--primary); }
+        .doc h3 { font-size: 1.05rem; margin: 20px 0 6px; }
+        .doc p, .doc li { font-size: .95rem; }
+        .doc ul { padding-left: 22px; }
+        .doc a { color: var(--primary); }
+        .doc hr { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+        .doc code { background: rgba(126, 195, 132, .12); padding: 1px 6px; border-radius: 6px; }
+        .doc table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .9rem; }
+        .doc th, .doc td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+        .muted { color: var(--muted); }
+        @media (max-width: 600px) {
+            .doc { padding: 20px 18px; }
+            .doc h1 { font-size: 1.5rem; }
+            .lang-btn { padding: 6px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="topnav">
+        <a href="/" class="logo">Mell Footage</a>
+        <div class="spacer"></div>
+        <div class="lang-switch" id="langSwitch">
+            <button class="lang-btn" data-lang="en">EN</button>
+            <button class="lang-btn" data-lang="ru">RU</button>
+            <button class="lang-btn" data-lang="uk">UK</button>
+        </div>
+        <a href="/" class="nav-link" id="backLink">← Back</a>
+    </nav>
+
+    <main class="page">
+        <article class="doc" id="content">
+            <p class="muted">Loading...</p>
+        </article>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.9/purify.min.js"></script>
+
+    <script>
+        // Какой документ показать: /terms → условия, /privacy → политика конфиденциальности
+        const isTerms = location.pathname.includes('terms');
+        const baseName = isTerms ? 'terms_of_use' : 'privacy_policy';
+
+        const UI = {
+            en: { back: '← Back', title: isTerms ? 'Terms of Use' : 'Privacy Policy', notFound: 'Document not found.' },
+            ru: { back: '← Назад', title: isTerms ? 'Условия использования' : 'Политика конфиденциальности', notFound: 'Документ не найден.' },
+            uk: { back: '← Назад', title: isTerms ? 'Умови використання' : 'Політика конфіденційності', notFound: 'Документ не знайдено.' }
+        };
+
+        const SUPPORTED = ['en', 'ru', 'uk'];
+
+        // Приоритет: ?lang= в адресе → выбор на сайте (app_lang) → английский
+        function detectLang() {
+            const fromUrl = new URLSearchParams(location.search).get('lang');
+            if (SUPPORTED.includes(fromUrl)) return fromUrl;
+            try {
+                const saved = localStorage.getItem('app_lang');
+                if (SUPPORTED.includes(saved)) return saved;
+            } catch { }
+            return 'en';
+        }
+
+        let lang = detectLang();
+
+        function setLang(newLang) {
+            lang = newLang;
+            try { localStorage.setItem('app_lang', lang); } catch { }
+            const url = new URL(location.href);
+            url.searchParams.set('lang', lang);
+            history.replaceState(null, '', url);
+            render();
+        }
+
+        function renderControls() {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.lang === lang);
+            });
+            document.getElementById('backLink').textContent = UI[lang].back;
+        }
+
+        async function fetchMarkdown(name) {
+            const res = await fetch(`/${name}.md`, { cache: 'no-cache' });
+            if (!res.ok) throw new Error(res.status);
+            return res.text();
+        }
+
+        async function render() {
+            renderControls();
+            const content = document.getElementById('content');
+            const suffix = lang === 'en' ? '' : '_' + lang;
+
+            try {
+                let md;
+                try {
+                    md = await fetchMarkdown(baseName + suffix);
+                } catch {
+                    // Если перевода нет — показываем английскую версию
+                    md = await fetchMarkdown(baseName);
+                }
+                content.innerHTML = DOMPurify.sanitize(marked.parse(md));
+                document.documentElement.lang = lang;
+                document.title = UI[lang].title + ' — Mell Footage';
+            } catch (e) {
+                content.innerHTML = `<p class="muted">${UI[lang].notFound}</p>`;
+            }
+        }
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+            btn.addEventListener('click', () => setLang(btn.dataset.lang));
+        });
+
+        render();
+    </script>
+</body>
+</html>

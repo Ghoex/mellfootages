@@ -1,0 +1,174 @@
+/* --- ОСНОВНЫЕ СТИЛИ СТРАНИЦЫ --- */
+body {
+    background-color: #1a201b; /* Тёмно-зеленый/угольный фон */
+    color: #e2ebd4;            /* Светлый приятный текст */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* --- НАВИГАЦИЯ (ШАПКА) --- */
+nav {
+    background-color: #141815;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+nav a {
+    color: #a3b899;
+    text-decoration: none;
+    font-weight: 600;
+    margin-right: 20px;
+    transition: color 0.2s ease;
+}
+
+nav a:hover, nav a.active {
+    color: #ffffff;
+}
+
+#user-status {
+    font-size: 0.95rem;
+}
+
+#user-status button {
+    background-color: #3b473b;
+    color: #fff;
+    border: none;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: background 0.2s;
+}
+
+#user-status button:hover {
+    background-color: #4e5e4e;
+}
+
+/* --- ФОРМЫ ВХОДА И РЕГИСТРАЦИИ (auth.html) --- */
+.auth-box {
+    max-width: 400px;
+    margin: 60px auto;
+    background-color: #242c25;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+.tab-buttons {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px;
+    background: #1b211c;
+    border: 1px solid #364237;
+    color: #a3b899;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #3c4c3e;
+    color: #fff;
+    border-color: #536956;
+}
+
+/* Поля ввода (Input / Textarea) */
+input[type="text"],
+input[type="password"],
+textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    background-color: #171d18;
+    border: 1px solid #364237;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+input:focus, textarea:focus {
+    border-color: #658368;
+}
+
+/* Кнопки действий */
+button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #445846; /* Твоя зелёная кнопка */
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #556e58;
+}
+
+/* --- ВКОЛАДКА НОВОСТЕЙ (news.html) --- */
+.news-container {
+    max-width: 750px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* Панель Админа для добавления новостей */
+#admin-panel {
+    background-color: #2b352c;
+    border: 2px dashed #4e6350;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 35px;
+}
+
+#admin-panel h2 {
+    margin-top: 0;
+    color: #a8d5ad;
+    font-size: 1.2rem;
+}
+
+/* Карточка новости */
+.news-card {
+    background-color: #242c25;
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #2f3a30;
+}
+
+.news-card h3 {
+    margin: 0 0 6px 0;
+    color: #ffffff;
+    font-size: 1.3rem;
+}
+
+.news-card small {
+    display: block;
+    color: #82947d;
+    font-size: 0.85rem;
+    margin-bottom: 14px;
+}
+
+.news-card p {
+    line-height: 1.6;
+    margin: 0;
+    color: #d1dbc8;
+    white-space: pre-line; /* Сохраняет абзацы при переносе строк */
+}

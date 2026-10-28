@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mell Footage — Collections</title>
+<style>
+:root {
+    --bg-body:#3f4d3d;
+    --bg-sidebar:#a3b899;
+    --bg-card:#c2d4bc;
+    --bg-card-hover:#d3e5cd;
+    --text-primary:#fff;
+    --text-sidebar:#2d3b2c;
+    --text-dark:#1e2920;
+    --btn-download:#6b7f67;
+    --btn-download-hover:#556652;
+    --border-color:#8ba081;
+}
+body.dark-theme {
+    --bg-body:#18191a;
+    --bg-sidebar:#242526;
+    --bg-card:#3a3b3c;
+    --bg-card-hover:#4e4f50;
+    --text-primary:#e4e6eb;
+    --text-sidebar:#b0b3b8;
+    --text-dark:#fff;
+    --btn-download:#4e4f50;
+    --btn-download-hover:#5a5b5c;
+    --border-color:#555;
+}
+*{box-sizing:border-box;margin:0;padding:0;transition:background-color .2s,color .2s}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg-body);color:var(--text-primary);min-height:100vh}
+.layout{display:flex;min-height:100vh}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+    width:280px;background:var(--bg-sidebar);padding:25px 20px;
+    display:flex;flex-direction:column;gap:20px;flex-shrink:0;
+    transition:transform .3s,margin-left .3s;
+    position:relative;
+}
+.sidebar.collapsed{margin-left:-280px}
+
+/* Кнопка закрытия сайдбара */
+.sidebar-close{
+    position:absolute;top:15px;right:12px;
+    background:var(--bg-card);border:0;border-radius:50%;
+    width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--text-dark);font-size:1rem;line-height:1;
+}
+.sidebar-close:hover{background:var(--bg-card-hover)}
+
+.logo{font-family:Georgia,serif;font-style:italic;font-size:1.4rem;color:var(--text-primary);text-decoration:none;}
+h5{font-family:Georgia,serif;font-style:italic;color:var(--text-sidebar);font-size:.85rem;line-height:1.3}
+.sidebar-section{background:var(--bg-card);border-radius:8px;padding:15px;color:var(--text-dark)}
+.sidebar-section h3{font-size:1.1rem;margin-bottom:8px;font-weight:600}
+.sort-options{display:flex;flex-direction:column;gap:6px}
+.sort-btn{background:none;border:0;text-align:left;font-size:1rem;color:var(--text-sidebar);cursor:pointer;padding:4px 0}
+.sort-btn:hover,.sort-btn.active{font-weight:bold;color:var(--text-dark)}
+.news-btn,.sounds-btn{border:0;padding:12px;border-radius:8px;font-size:1rem;cursor:pointer;text-align:center}
+.news-btn{background:var(--bg-card)} .sounds-btn{background:#f00}
+.news-btn a,.sounds-btn a{color:#fff;text-decoration:none;font-weight:500;display:block}
+.news-btn a{color:var(--text-dark)}
+.telegram-btn,.donate-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:#2aabee;color:#fff;text-decoration:none;padding:12px;border-radius:8px;font-weight:bold;font-size:1rem;box-shadow:0 4px 6px rgba(0,0,0,.15)}
+.donate-btn{background:#2aabee}
+.telegram-btn:hover,.donate-btn:hover{background:#229ed9;transform:translateY(-1px)}
+.telegram-btn svg{width:20px;height:20px;fill:#fff}
+
+.main-content{flex:1;padding:25px 30px;display:flex;flex-direction:column;gap:25px;width:100%;min-width:0}
+.top-bar{display:flex;align-items:center;gap:12px}
+.icon-btn{background:var(--bg-card);border:0;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dark);flex-shrink:0}
+.icon-btn:hover{background:var(--bg-card-hover)}
+.icon-btn svg{width:22px;height:22px;stroke:currentColor}
+.search-bar{background:var(--bg-card);border-radius:22px;padding:0 20px;height:44px;display:flex;align-items:center;flex:1}
+.search-bar input{background:transparent;border:0;outline:0;width:100%;font-size:1.05rem;color:var(--text-dark);text-align:center}
+.search-bar input::placeholder{color:var(--text-sidebar)}
+.lang-dropdown-wrapper{position:relative}
+.lang-menu{display:none;position:absolute;right:0;top:50px;background:var(--bg-card);border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.25);overflow:hidden;z-index:100;flex-direction:column;min-width:90px}
+.lang-menu.open{display:flex}
+.lang-option{background:none;border:0;padding:10px 15px;color:var(--text-dark);font-weight:bold;cursor:pointer}
+.lang-option:hover,.lang-option.active{background:var(--bg-sidebar);color:#fff}
+
+.page-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.page-head h1{font-family:Georgia,serif;font-style:italic;font-size:2rem;color:var(--text-primary)}
+.page-head p{color:var(--text-sidebar);margin-top:5px}
+.create-btn{background:var(--bg-sidebar);color:var(--text-dark);border:0;padding:11px 18px;border-radius:8px;font-weight:bold;cursor:pointer;white-space:nowrap}
+.create-btn:hover{background:var(--bg-card-hover)}
+
+#collections-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.collection-card{background:var(--bg-card);border-radius:8px;overflow:hidden;box-shadow:0 4px 10px rgba(0,0,0,.3);padding:15px;color:var(--text-dark)}
+.collection-card h2{font-size:1.15rem;margin-bottom:7px;word-break:break-word}
+.collection-description{color:var(--text-sidebar);min-height:42px;line-height:1.4}
+.collection-meta{font-size:.85rem;color:var(--text-sidebar);margin:12px 0}
+.collection-actions{display:flex;gap:7px}
+.collection-actions button,.collection-actions a{flex:1;border:0;border-radius:6px;padding:9px;text-align:center;text-decoration:none;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center}
+.open-btn{background:var(--btn-download);color:#fff}
+.open-btn:hover{background:var(--btn-download-hover)}
+.delete-btn{background:#b85c5c;color:#fff}
+.empty,.status-message{grid-column:1/-1;text-align:center;padding:45px 20px;color:var(--text-sidebar)}
+.empty button{margin-top:15px}
+
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modal-box{width:min(520px,100%);background:var(--bg-card);color:var(--text-dark);border-radius:10px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.modal-box h2{font-family:Georgia,serif;font-style:italic;margin-bottom:15px}
+.modal-box label{display:block;margin:12px 0 6px;color:var(--text-sidebar)}
+.modal-box input,.modal-box textarea,.modal-box select{width:100%;padding:10px;border:1px solid var(--border-color);border-radius:7px;background:var(--bg-body);color:var(--text-primary);outline:0}
+.modal-box textarea{resize:vertical;min-height:80px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.modal-actions button{border:0;border-radius:7px;padding:9px 15px;cursor:pointer}
+.cancel-btn{background:var(--bg-sidebar);color:var(--text-dark)}
+.save-btn{background:var(--btn-download);color:#fff}
+
+@media(max-width:750px){
+    .sidebar{position:fixed;z-index:150;height:100vh;left:0;top:0;overflow-y:auto}
+    .sidebar.collapsed{margin-left:-280px}
+    .main-content{padding:18px 15px}
+    .page-head{align-items:flex-start;flex-direction:column}
+    .page-head h1{font-size:1.7rem}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar" id="sidebar">
+    <!-- Кнопка закрытия -->
+    <button class="sidebar-close" onclick="toggleSidebar()" title="Close menu">✕</button>
+
+    <a href="/" class="logo">Mell Footage</a>
+    <h5 data-i18n="disclaimer">most footage<br> taken from<br> TT: footage_me1</h5>
+
+    <div class="sidebar-section">
+        <h3 data-i18n="sortingTitle">sorting</h3>
+        <div class="sort-options">
+            <button class="sort-btn active" onclick="sortCollections('new')" data-i18n="newSort">recently added</button>
+            <button class="sort-btn" onclick="sortCollections('asc')" data-i18n="sortAsc">A-Z</button>
+            <button class="sort-btn" onclick="sortCollections('desc')" data-i18n="sortDesc">Z-A</button>
+        </div>
+    </div>
+    <a href="https://t.me/ghoex_channel" target="_blank" class="telegram-btn">
+        <svg viewBox="0 0 16 16"><path d="M1.108 7.617C5.4 5.768 8.262 4.55 9.694 3.961c4.088-1.682 4.938-1.974 5.492-1.984.68-.011.86.551.804 1.137-.221 2.302-1.18 7.887-1.668 10.465-.43 2.277-1.958 1.292-3.338.397-1.296-.84-2.028-1.362-3.286-2.182-1.453-.947-.511-1.467.317-2.318.217-.223 3.984-3.61 4.057-3.918.06-.256-.167-.333-.373-.286-.13.029-2.2 1.382-6.21 4.058-.588.399-1.12.593-1.597.583-.66-.014-2.26-.583-3.88-1.492-.097-.277.399-.53 1.096-.804z"/></svg>
+        Telegram
+    </a>
+ 
+</aside>
+
+<main class="main-content">
+    <div class="top-bar">
+        <button class="icon-btn" onclick="toggleSidebar()" title="Menu">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+        </button>
+        <div class="search-bar">
+            <input id="search-input" type="text" placeholder="Search collections..." oninput="renderCollections()">
+        </div>
+        <button class="icon-btn" onclick="toggleTheme()" title="Toggle Theme">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
+        <div class="lang-dropdown-wrapper">
+            <button class="icon-btn" onclick="toggleLangMenu()" title="Switch Language">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+            </button>
+            <div class="lang-menu" id="lang-menu">
+                <button class="lang-option" onclick="selectLanguage('en')">EN</button>
+                <button class="lang-option" onclick="selectLanguage('ru')">RU</button>
+                <button class="lang-option" onclick="selectLanguage('uk')">UA</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-head">
+        <div>
+            <h1 data-i18n="collectionsTitle">My collections</h1>
+            <p data-i18n="collectionsSubtitle">Your saved video collections.</p>
+        </div>
+        <button class="create-btn" onclick="openCreateModal()" data-i18n="createCollection">+ Create collection</button>
+    </div>
+
+    <section id="collections-container">
+        <p class="status-message" data-i18n="loading">Loading collections...</p>
+    </section>
+</main>
+</div>
+
+<div class="modal" id="createModal">
+    <div class="modal-box">
+        <h2 data-i18n="newCollection">New collection</h2>
+        <label data-i18n="nameLabel">Name</label>
+        <input id="collection-name" maxlength="100" placeholder="My favorites">
+        <label data-i18n="descriptionLabel">Description</label>
+        <textarea id="collection-description" maxlength="500" placeholder="Optional"></textarea>
+        <label data-i18n="accessLabel">Access</label>
+        <select id="collection-public">
+            <option value="1" data-i18n="public">Public</option>
+            <option value="0" data-i18n="private">Private</option>
+        </select>
+        <div class="modal-actions">
+            <button class="cancel-btn" onclick="closeCreateModal()" data-i18n="cancel">Cancel</button>
+            <button class="save-btn" onclick="createCollection()" data-i18n="create">Create</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const translations = {
+    en:{
+        disclaimer:"most footage<br> taken from<br> TT: footage_me1",sortingTitle:"sorting",
+        newSort:"recently added",sortAsc:"A-Z",sortDesc:"Z-A",news:"News",music:"Music",
+        collectionsTitle:"My collections",collectionsSubtitle:"Your saved video collections.",
+        createCollection:"+ Create collection",newCollection:"New collection",nameLabel:"Name",
+        descriptionLabel:"Description",accessLabel:"Access",public:"Public",private:"Private",
+        cancel:"Cancel",create:"Create",loading:"Loading collections...",empty:"You don't have any collections yet.",
+        videos:"videos",open:"Open",delete:"Delete",confirmDelete:"Delete this collection?",
+        loadError:"Failed to load collections.",search:"Search collections...",privateCollection:"Private",
+        publicCollection:"Public"
+    },
+    ru:{
+        disclaimer:"большинство футажей<br> взято у<br> TT: footage_me1",sortingTitle:"сортировка",
+        newSort:"добавлено недавно",sortAsc:"А-Я",sortDesc:"Я-А",news:"Новости",music:"Музыка",
+        collectionsTitle:"Мои коллекции",collectionsSubtitle:"Твои сохранённые подборки видео.",
+        createCollection:"+ Создать коллекцию",newCollection:"Новая коллекция",nameLabel:"Название",
+        descriptionLabel:"Описание",accessLabel:"Доступ",public:"Публичная",private:"Приватная",
+        cancel:"Отмена",create:"Создать",loading:"Загрузка коллекций...",empty:"У тебя пока нет коллекций.",
+        videos:"видео",open:"Открыть",delete:"Удалить",confirmDelete:"Удалить эту коллекцию?",
+        loadError:"Не удалось загрузить коллекции.",search:"Поиск по коллекциям...",privateCollection:"Приватная",
+        publicCollection:"Публичная"
+    },
+    uk:{
+        disclaimer:"більшість футажів<br> взято у<br> TT: footage_me1",sortingTitle:"сортування",
+        newSort:"додано нещодавно",sortAsc:"А-Я",sortDesc:"Я-А",news:"Новини",music:"Музика",
+        collectionsTitle:"Мої колекції",collectionsSubtitle:"Твої збережені добірки відео.",
+        createCollection:"+ Створити колекцію",newCollection:"Нова колекція",nameLabel:"Назва",
+        descriptionLabel:"Опис",accessLabel:"Доступ",public:"Публічна",private:"Приватна",
+        cancel:"Скасувати",create:"Створити",loading:"Завантаження колекцій...",empty:"У тебе ще немає колекцій.",
+        videos:"відео",open:"Відкрити",delete:"Видалити",confirmDelete:"Видалити цю колекцію?",
+        loadError:"Не вдалося завантажити колекції.",search:"Пошук колекцій...",privateCollection:"Приватна",
+        publicCollection:"Публічна"
+    }
+};
+
+let currentLang = localStorage.getItem('app_lang') || 'en';
+let collections = [];
+let collectionSort = 'new';
+
+if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+
+function t(key){ return translations[currentLang]?.[key] || translations.en[key] || key; }
+
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('collapsed'); }
+
+function toggleTheme(){
+    const dark = document.body.classList.toggle('dark-theme');
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+}
+
+function toggleLangMenu(){ document.getElementById('lang-menu').classList.toggle('open'); }
+
+function selectLanguage(lang){
+    currentLang = lang;
+    localStorage.setItem('app_lang', lang);
+    document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (translations[lang]?.[key]) el.innerHTML = translations[lang][key];
+    });
+    document.getElementById('search-input').placeholder = t('search');
+    document.querySelectorAll('.lang-option').forEach(b =>
+        b.classList.toggle('active', b.textContent.trim().toLowerCase() === (lang === 'uk' ? 'ua' : lang))
+    );
+    document.getElementById('lang-menu').classList.remove('open');
+    renderCollections();
+}
+
+function sortCollections(type){
+    collectionSort = type;
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+    if (event?.target) event.target.classList.add('active');
+    renderCollections();
+}
+
+async function loadCollections(){
+    const container = document.getElementById('collections-container');
+    try {
+        const res = await fetch('/api/collections/my', { credentials: 'same-origin' });
+        if (res.status === 401) {
+            container.innerHTML = `<div class="empty"><h2>${currentLang === 'ru' ? 'Нужно войти' : currentLang === 'uk' ? 'Потрібно увійти' : 'Login required'}</h2></div>`;
+            return;
+        }
+        if (!res.ok) throw new Error();
+        collections = await res.json();
+        renderCollections();
+    } catch(e) {
+        container.innerHTML = `<div class="empty">${t('loadError')}</div>`;
+    }
+}
+
+function renderCollections(){
+    const container = document.getElementById('collections-container');
+    const q = document.getElementById('search-input').value.toLowerCase().trim();
+    let list = collections.filter(c => (c.name + ' ' + (c.description || '')).toLowerCase().includes(q));
+
+    if (collectionSort === 'asc') list.sort((a,b) => a.name.localeCompare(b.name));
+    else if (collectionSort === 'desc') list.sort((a,b) => b.name.localeCompare(a.name));
+    else list.sort((a,b) => b.id - a.id);
+
+    if (!list.length) {
+        container.innerHTML = `<div class="empty"><h2>${t('empty')}</h2><button class="create-btn" onclick="openCreateModal()">${t('createCollection')}</button></div>`;
+        return;
+    }
+
+    container.innerHTML = list.map(c => `
+        <article class="collection-card">
+            <h2>${escapeHtml(c.name)}</h2>
+            <div class="collection-description">${escapeHtml(c.description || '')}</div>
+            <div class="collection-meta">
+                ${c.is_public ? '🌐 ' + t('publicCollection') : '🔒 ' + t('privateCollection')}
+                · ${(c.items || []).length} ${t('videos')}
+            </div>
+            <div class="collection-actions">
+                <a class="open-btn" href="/collection/${c.id}">${t('open')}</a>
+                <button class="delete-btn" onclick="deleteCollection(${c.id})">${t('delete')}</button>
+            </div>
+        </article>
+    `).join('');
+}
+
+function openCreateModal(){ document.getElementById('createModal').classList.add('open'); }
+function closeCreateModal(){ document.getElementById('createModal').classList.remove('open'); }
+
+async function createCollection(){
+    const name = document.getElementById('collection-name').value.trim();
+    const description = document.getElementById('collection-description').value.trim();
+    const is_public = Number(document.getElementById('collection-public').value);
+
+    if (!name) {
+        alert(currentLang === 'ru' ? 'Введите название' : currentLang === 'uk' ? 'Введіть назву' : 'Enter a name');
+        return;
+    }
+
+    const res = await fetch('/api/collections', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ name, description, is_public })
+    });
+
+    const data = await res.json();
+    if (!res.ok) { alert(data.error || 'Ошибка'); return; }
+
+    document.getElementById('collection-name').value = '';
+    document.getElementById('collection-description').value = '';
+    closeCreateModal();
+    await loadCollections();
+}
+
+async function deleteCollection(id){
+    if (!confirm(t('confirmDelete'))) return;
+
+    const res = await fetch(`/api/collections/${id}`, {
+        method: 'DELETE',
+        credentials: 'same-origin'
+    });
+
+    if (!res.ok) { alert('Ошибка'); return; }
+    await loadCollections();
+}
+
+function escapeHtml(s){
+    return String(s)
+        .replaceAll('&','&amp;').replaceAll('<','&lt;')
+        .replaceAll('>','&gt;').replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+}
+
+document.addEventListener('click', e => {
+    const wrapper = document.querySelector('.lang-dropdown-wrapper');
+    if (wrapper && !wrapper.contains(e.target)) {
+        document.getElementById('lang-menu').classList.remove('open');
+    }
+});
+
+document.getElementById('createModal').addEventListener('click', e => {
+    if (e.target.id === 'createModal') closeCreateModal();
+});
+
+// На мобилке сайдбар закрыт по умолчанию
+if (window.innerWidth <= 750) {
+    document.getElementById('sidebar').classList.add('collapsed');
+}
+
+selectLanguage(currentLang);
+loadCollections();
+</script>
+</body>
+</html>

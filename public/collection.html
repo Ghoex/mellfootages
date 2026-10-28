@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Collection — Mell Footage</title>
+<style>
+:root {
+    --bg-body:#3f4d3d;
+    --bg-sidebar:#a3b899;
+    --bg-card:#c2d4bc;
+    --bg-card-hover:#d3e5cd;
+    --text-primary:#fff;
+    --text-sidebar:#2d3b2c;
+    --text-dark:#1e2920;
+    --btn-download:#6b7f67;
+    --btn-download-hover:#556652;
+    --border-color:#8ba081;
+}
+body.dark-theme {
+    --bg-body:#18191a;
+    --bg-sidebar:#242526;
+    --bg-card:#3a3b3c;
+    --bg-card-hover:#4e4f50;
+    --text-primary:#e4e6eb;
+    --text-sidebar:#b0b3b8;
+    --text-dark:#fff;
+    --btn-download:#4e4f50;
+    --btn-download-hover:#5a5b5c;
+    --border-color:#555;
+}
+*{box-sizing:border-box;margin:0;padding:0;transition:background-color .2s,color .2s}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg-body);color:var(--text-primary);min-height:100vh}
+
+.top-bar{display:flex;align-items:center;gap:12px;padding:18px 25px;background:var(--bg-sidebar)}
+.logo{font-family:Georgia,serif;font-style:italic;font-size:1.3rem;color:var(--text-dark);text-decoration:none;flex:1}
+.icon-btn{background:var(--bg-card);border:0;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-dark);flex-shrink:0}
+.icon-btn:hover{background:var(--bg-card-hover)}
+.icon-btn svg{width:20px;height:20px;stroke:currentColor}
+
+.container{max-width:1200px;margin:0 auto;padding:30px 20px}
+
+.collection-head{margin-bottom:28px}
+.collection-head h1{font-family:Georgia,serif;font-style:italic;font-size:2rem;margin-bottom:8px}
+.collection-meta{color:var(--text-sidebar);font-size:.95rem;margin-bottom:6px}
+.collection-desc{color:var(--text-sidebar);line-height:1.5}
+
+.head-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}
+.back-btn{background:var(--bg-card);color:var(--text-dark);border:0;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:.95rem;text-decoration:none;display:inline-block}
+.back-btn:hover{background:var(--bg-card-hover)}
+.download-all-btn{background:var(--btn-download);color:#fff;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;font-size:.95rem;font-weight:600}
+.download-all-btn:hover{background:var(--btn-download-hover)}
+.download-all-btn:disabled{opacity:.6;cursor:wait}
+
+.download-progress{margin-top:12px;padding:10px 14px;border-radius:8px;background:var(--bg-card);color:var(--text-dark);font-size:.9rem;display:none}
+.download-progress.visible{display:block}
+
+.video-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+.video-card{background:var(--bg-card);border-radius:10px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.video-wrapper{width:100%;aspect-ratio:9/16;background:#000;display:flex;align-items:center;justify-content:center}
+.video-wrapper video,.video-wrapper img{width:100%;height:100%;object-fit:cover}
+.video-info{padding:10px;color:var(--text-dark)}
+.video-title{display:block;font-size:.85rem;word-break:break-word;margin-bottom:8px;color:var(--text-sidebar)}
+.download-btn{width:100%;border:0;border-radius:6px;padding:8px;background:var(--btn-download);color:#fff;cursor:pointer;font-size:.9rem}
+.download-btn:hover{background:var(--btn-download-hover)}
+.download-btn:disabled{opacity:.6;cursor:wait}
+
+.status{text-align:center;padding:60px 20px;color:var(--text-sidebar);font-size:1.1rem}
+.error{color:#e07070}
+
+@media(max-width:600px){
+    .top-bar{padding:14px 15px}
+    .container{padding:20px 14px}
+    .collection-head h1{font-size:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+    <a href="/" class="logo">Mell Footage</a>
+    <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+    </button>
+</div>
+
+<div class="container">
+    <div id="content">
+        <p class="status">Loading...</p>
+    </div>
+</div>
+
+<script>
+if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+
+function toggleTheme(){
+    const dark = document.body.classList.toggle('dark-theme');
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+}
+
+// Берём id из URL: /collection/2 → 2
+const collectionId = location.pathname.split('/').filter(Boolean).pop();
+
+async function loadCollection(){
+    const content = document.getElementById('content');
+
+    if (!collectionId || isNaN(collectionId)) {
+        content.innerHTML = '<p class="status error">Неверный ID коллекции.</p>';
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/collections/${collectionId}`, { credentials: 'same-origin' });
+
+        if (res.status === 403) {
+            content.innerHTML = '<p class="status error">🔒 Это приватная коллекция.</p>';
+            return;
+        }
+        if (res.status === 404) {
+            content.innerHTML = '<p class="status error">Коллекция не найдена.</p>';
+            return;
+        }
+        if (!res.ok) throw new Error();
+
+        const col = await res.json();
+        document.title = `${col.name} — Mell Footage`;
+        renderCollection(col);
+
+    } catch(e) {
+        content.innerHTML = '<p class="status error">Не удалось загрузить коллекцию.</p>';
+    }
+}
+
+function renderCollection(col){
+    const items = col.items || [];
+    const content = document.getElementById('content');
+
+    content.innerHTML = `
+        <div class="collection-head">
+            <h1>${escapeHtml(col.name)}</h1>
+            <div class="collection-meta">
+                👤 ${escapeHtml(col.author || 'unknown')}
+                · ${items.length} видео
+                · ${col.is_public ? '🌐 Публичная' : '🔒 Приватная'}
+            </div>
+            ${col.description ? `<div class="collection-desc">${escapeHtml(col.description)}</div>` : ''}
+            <div class="head-actions">
+                <a href="/collections" class="back-btn">← К коллекциям</a>
+                ${items.length ? `<button class="download-all-btn" onclick="downloadAll()">⬇ Скачать всё</button>` : ''}
+            </div>
+            <div class="download-progress" id="progress"></div>
+        </div>
+
+        <div class="video-grid" id="video-grid">
+            ${items.length
+                ? items.map(item => videoCard(item.video_name)).join('')
+                : '<p class="status">В этой коллекции пока нет видео.</p>'
+            }
+        </div>
+    `;
+}
+
+function videoCard(filename){
+    const encoded = encodeURIComponent(filename);
+    const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
+    const media = isImage
+        ? `<img src="/videos/${encoded}" alt="${escapeHtml(filename)}" loading="lazy">`
+        : `<video controls preload="metadata" src="/videos/${encoded}"></video>`;
+
+    return `
+        <div class="video-card">
+            <div class="video-wrapper">${media}</div>
+            <div class="video-info">
+                <span class="video-title">${escapeHtml(filename)}</span>
+                <button class="download-btn" onclick="downloadVideo('${escapeJs(filename)}', this)">
+                    ⬇ Скачать
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+async function downloadVideo(filename, button){
+    const encoded = encodeURIComponent(filename);
+    if (button) { button.disabled = true; button.textContent = 'Скачивание...'; }
+
+    fetch(`/api/downloads/${encoded}`, { method: 'POST', credentials: 'same-origin' }).catch(()=>{});
+
+    const link = document.createElement('a');
+    link.href = `/videos/${encoded}`;
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    if (button) {
+        setTimeout(() => {
+            button.disabled = false;
+            button.textContent = '⬇ Скачать';
+        }, 800);
+    }
+}
+
+async function downloadAll(){
+    const btn = document.querySelector('.download-all-btn');
+    const progress = document.getElementById('progress');
+    const cards = document.querySelectorAll('.video-card');
+
+    if (!cards.length) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Скачивание...';
+    progress.classList.add('visible');
+
+    const filenames = [...cards].map(c => {
+        const title = c.querySelector('.video-title').textContent;
+        return title;
+    });
+
+    for (let i = 0; i < filenames.length; i++) {
+        progress.textContent = `${i + 1} / ${filenames.length}`;
+        await downloadVideo(filenames[i]);
+        await new Promise(r => setTimeout(r, 500));
+    }
+
+    progress.textContent = `✅ Готово! ${filenames.length} файлов`;
+    btn.disabled = false;
+    btn.textContent = '⬇ Скачать всё';
+
+    setTimeout(() => progress.classList.remove('visible'), 4000);
+}
+
+function escapeHtml(s){
+    return String(s)
+        .replaceAll('&','&amp;').replaceAll('<','&lt;')
+        .replaceAll('>','&gt;').replaceAll('"','&quot;')
+        .replaceAll("'","&#039;");
+}
+
+function escapeJs(s){
+    return String(s).replaceAll('\\','\\\\').replaceAll("'","\\'").replaceAll('\n','\\n');
+}
+
+loadCollection();
+</script>
+</body>
+</html>

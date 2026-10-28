@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="pageTitle">Mell Footage</title>
+    <style>
+        :root {
+            --bg-body: #3f4d3d;
+            --bg-sidebar: #a3b899;
+            --bg-card: #c2d4bc;
+            --bg-card-hover: #d3e5cd;
+            --text-primary: #ffffff;
+            --text-sidebar: #2d3b2c;
+            --text-dark: #1e2920;
+            --btn-download: #6b7f67;
+            --btn-download-hover: #556652;
+            --border-color: #8ba081;
+        }
+
+        body.dark-theme {
+            --bg-body: #18191a;
+            --bg-sidebar: #242526;
+            --bg-card: #3a3b3c;
+            --bg-card-hover: #4e4f50;
+            --text-primary: #e4e6eb;
+            --text-sidebar: #b0b3b8;
+            --text-dark: #ffffff;
+            --btn-download: #4e4f50;
+            --btn-download-hover: #5a5b5c;
+            --border-color: #555555;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+.card-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-sidebar);
+}
+
+.like-btn {
+    background: none;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 3px 10px;
+    cursor: pointer;
+    color: var(--text-dark);
+    font-size: 0.85rem;
+}
+
+.like-btn:hover { background-color: var(--bg-card-hover); }
+.like-btn.liked { color: #e53935; border-color: #e53935; }
+
+.card-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.collection-btn {
+    background-color: var(--bg-sidebar);
+    color: var(--text-dark);
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    flex: 1;
+}
+
+.collection-btn:hover { background-color: var(--bg-card-hover); }
+        .layout {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-sidebar);
+            padding: 25px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex-shrink: 0;
+            transition: transform 0.3s ease, margin-left 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            margin-left: -280px;
+        }
+
+        .logo {
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            font-size: 1.8rem;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+            line-height: 1.2;
+        }
+
+        h5 {
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            color: var(--text-sidebar);
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+#profietext {
+    color: #ffff;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-style: italic;
+            color: var(--text-sidebar);
+            font-size: 0.85rem;
+            line-height: 1.3;
+        }
+        .sidebar-section {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            padding: 15px;
+            color: var(--text-dark);
+        }
+
+        .sidebar-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .sort-options {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sort-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            font-size: 1rem;
+            color: var(--text-sidebar);
+            cursor: pointer;
+            padding: 4px 0;
+            transition: color 0.2s;
+        }
+
+        .sort-btn:hover, .sort-btn.active {
+            font-weight: bold;
+            color: var(--text-dark);
+        }
+
+        .news-btn {
+            background-color: var(--bg-card);
+            color: var(--text-dark);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .news-btn a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+        }
+
+        .news-btn:hover {
+            background-color: var(--bg-card-hover);
+        }
+
+        .sounds-btn {
+            background-color: #ff0000;
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .sounds-btn a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 500;
+            display: block;
+        }
+
+        .sounds-btn:hover {
+            background-color: #990303;
+        }
+
+        .telegram-btn, .donate-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: #2aabee;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        .telegram-btn:hover, .donate-btn:hover {
+            background-color: #229ed9;
+            transform: translateY(-1px);
+        }
+
+        .telegram-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: #ffffff;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 25px 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 100%;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            background-color: var(--bg-card);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-dark);
+            flex-shrink: 0;
+        }
+
+        .icon-btn:hover {
+            background-color: var(--bg-card-hover);
+        }
+
+        .icon-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: currentColor;
+        }
+
+        .search-bar {
+            background-color: var(--bg-card);
+            border-radius: 22px;
+            padding: 0 20px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .search-bar input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 1.05rem;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-sidebar);
+        }
+
+        .lang-dropdown-wrapper {
+            position: relative;
+        }
+
+        .lang-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 50px;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            overflow: hidden;
+            z-index: 100;
+            flex-direction: column;
+            min-width: 90px;
+        }
+
+        .lang-menu.open {
+            display: flex;
+        }
+
+        .lang-option {
+            background: none;
+            border: none;
+            padding: 10px 15px;
+            color: var(--text-dark);
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .lang-option:hover, .lang-option.active {
+            background-color: var(--bg-sidebar);
+            color: #ffffff;
+        }
+
+        #video-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .video-card {
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .video-wrapper {
+            width: 100%;
+            aspect-ratio: 9 / 16;
+            background-color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-wrapper video,
+        .video-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-info {
+            background-color: var(--bg-card);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .video-title {
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .download-btn {
+            background-color: var(--btn-download);
+            color: #ffffff;
+            text-decoration: none;
+            text-align: center;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .download-btn:hover {
+            background-color: var(--btn-download-hover);
+        }
+
+        .status-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--bg-card);
+            font-size: 1.1rem;
+            padding: 40px 0;
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .tag-btn {
+            background-color: var(--bg-sidebar);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+
+        .tag-btn:hover, .tag-btn.active {
+            background-color: #ffffff;
+            color: #000;
+        }
+
+        .tag-reset {
+            background-color: #e57373;
+            color: #fff;
+            border: none;
+        }
+
+        .tag-reset:hover {
+            background-color: #ef5350;
+            color: #fff;
+        }
+
+        .load-more-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .load-more-btn {
+            background-color: var(--bg-sidebar);
+            color: var(--text-dark);
+            border: none;
+            padding: 14px 40px;
+            border-radius: 25px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .load-more-btn:hover {
+            background-color: var(--bg-card);
+            transform: translateY(-2px);
+        }
+
+        /* ===== Add to Collection modal ===== */
+        .collection-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.65);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .collection-modal.open {
+            display: flex;
+        }
+
+        .collection-modal-box {
+            width: min(460px, 100%);
+            max-height: 80vh;
+            overflow-y: auto;
+            background: var(--bg-card);
+            color: var(--text-dark);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+        }
+
+        .collection-modal-title {
+            font-family: Georgia, serif;
+            font-style: italic;
+            font-size: 1.35rem;
+            margin-bottom: 14px;
+        }
+
+        .collection-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .collection-option,
+        .collection-create-btn,
+        .collection-cancel-btn {
+            width: 100%;
+            border: none;
+            border-radius: 7px;
+            padding: 11px 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .collection-option {
+            background: var(--bg-sidebar);
+            color: var(--text-dark);
+            text-align: left;
+        }
+
+        .collection-option:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .collection-create-btn {
+            margin-top: 12px;
+            background: var(--btn-download);
+            color: #fff;
+        }
+
+        .collection-create-btn:hover {
+            background: var(--btn-download-hover);
+        }
+
+        .collection-cancel-btn {
+            margin-top: 8px;
+            background: transparent;
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+        }
+
+        .collection-cancel-btn:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .collection-empty,
+        .collection-error,
+        .collection-loading {
+            text-align: center;
+            padding: 15px 5px;
+            color: var(--text-sidebar);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="layout">
+
+        <aside class="sidebar" id="sidebar">
+            <div class="logo" data-i18n="logo">
+                Mell<br>Footage
+            </div>
+
+            <h5 data-i18n="disclaimer">
+                most footage <br> taken from <br> TT: footage_me1
+            </h5>
+<h2 ><a id="profietext" href="/profile">Profile</a></h2>
+            <div class="sidebar-section">
+                <h3 data-i18n="sortingTitle">sorting</h3>
+                <div class="sort-options">
+                    <button class="sort-btn" onclick="setSort('asc')" data-i18n="sortAsc">A-Z</button>
+                    <button class="sort-btn" onclick="setSort('desc')" data-i18n="sortDesc">Z-A</button>
+                    <button class="sort-btn" onclick="setSort('old')" data-i18n="older_sort">added a long time ago</button>
+                    <button class="sort-btn active" onclick="setSort('new')" data-i18n="new_sort">recently added</button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 data-i18n="categoriesTitle">categories</h3>
+                <div class="tags-container">
+                    <button class="tag-btn" onclick="applyTag('панк', this)" data-i18n="tagPunk"># punk</button>
+                    <button class="tag-btn" onclick="applyTag('смех', this)" data-i18n="tagLaugh"># laugh</button>
+                    <button class="tag-btn" onclick="applyTag('темный', this)" data-i18n="tagDarkDrun"># dark drun</button>
+                    <button class="tag-btn" onclick="applyTag('ааа', this)" data-i18n="tagScream"># scream</button>
+                    <button class="tag-btn" onclick="applyTag('персонаж', this)" data-i18n="tagCharacter"># characters</button>
+                    <button class="tag-btn" onclick="applyTag('хоумлендер', this)" data-i18n="tagHomelander"># homelander</button>
+                    <button class="tag-btn" onclick="applyTag('кот', this)" data-i18n="tagkotost"># kotost</button>
+                    <button class="tag-btn tag-reset" onclick="applyTag('', this)" data-i18n="tagReset">✕ reset</button>
+                </div>
+            </div>
+
+            <button class="news-btn"><a href="news" data-i18n="news">News</a></button>
+            <button class="sounds-btn"><a href="music.html" data-i18n="music">Music</a></button>
+            <a href="https://t.me/ghoex_channel" target="_blank" class="telegram-btn">
+                <svg viewBox="0 0 16 16">
+                    <path d="M1.108 7.617C5.4 5.768 8.262 4.55 9.694 3.961c4.088-1.682 4.938-1.974 5.492-1.984.68-.011.86.551.804 1.137-.221 2.302-1.18 7.887-1.668 10.465-.43 2.277-1.958 1.292-3.338.397-1.296-.84-2.028-1.362-3.286-2.182-1.453-.947-.511-1.467.317-2.318.217-.223 3.984-3.61 4.057-3.918.06-.256-.167-.333-.373-.286-.13.029-2.2 1.382-6.21 4.058-.588.399-1.12.593-1.597.583-.66-.014-2.26-.583-3.88-1.492-.097-.277.399-.53 1.096-.804z"></path>
+                </svg>
+                Telegram
+            </a>
+            <a href="https://donatello.to/ghoex" data-i18n="donate_button" target="_blank" class="donate-btn">
+                support the project (donatello)
+            </a>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+
+                <button class="icon-btn" onclick="toggleSidebar()" title="Menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Search by title..." oninput="onSearchInput()">
+                </div>
+
+                <button class="icon-btn" onclick="toggleTheme()" title="Toggle Theme">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+
+                <div class="lang-dropdown-wrapper">
+                    <button class="icon-btn" onclick="toggleLangMenu()" title="Switch Language">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="2" y1="12" x2="22" y2="12"></line>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        </svg>
+                    </button>
+                    <div class="lang-menu" id="lang-menu">
+                        <button class="lang-option" onclick="selectLanguage('en')">EN</button>
+                        <button class="lang-option" onclick="selectLanguage('ru')">RU</button>
+                        <button class="lang-option" onclick="selectLanguage('uk')">UA</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="video-container">
+                <p class="status-message" data-i18n="loading">Loading media...</p>
+            </div>
+
+            <div class="load-more-container">
+                <button id="load-more-btn" class="load-more-btn" onclick="loadMore()" style="display: none;" data-i18n="loadMore">Load More</button>
+            </div>
+        </main>
+
+    </div>
+
+
+    <!-- Add video to collection modal -->
+    <div class="collection-modal" id="addCollectionModal" aria-hidden="true">
+        <div class="collection-modal-box" role="dialog" aria-modal="true" aria-labelledby="collectionModalTitle">
+            <div class="collection-modal-title" id="collectionModalTitle">
+                Добавить в коллекцию
+            </div>
+
+            <div class="collection-list" id="collection-list">
+                <div class="collection-loading">Загрузка коллекций...</div>
+            </div>
+
+            <button
+                type="button"
+                class="collection-create-btn"
+                onclick="createCollectionFromVideo()"
+            >
+                + Создать новую коллекцию
+            </button>
+
+            <button
+                type="button"
+                class="collection-cancel-btn"
+                onclick="closeAddToCollection()"
+            >
+                Отмена
+            </button>
+        </div>
+    </div>
+
+<script>
+    const translations = {
+        en: {
+            pageTitle: "Mell Footage",
+            logo: "Mell<br>Footage",
+            disclaimer: "most footage <br> taken from <br> TT: footage_me1",
+            sortingTitle: "sorting",
+            sortAsc: "A-Z",
+            sortDesc: "Z-A",
+            categoriesTitle: "categories",
+            tagPunk: "# punk",
+            tagLaugh: "# laugh",
+            tagDarkDrun: "# dark drun",
+            tagScream: "# scream",
+            tagCharacter: "# characters",
+            tagHomelander: "# homelander",
+            tagReset: "✕ reset",
+            news: "News",
+            music: "Music",
+            searchPlaceholder: "Search by title...",
+            loading: "Loading media...",
+            loadError: "Failed to load media files.",
+            notFound: "Nothing found",
+            download: "Download",
+            loadMore: "Load More",
+            tagkotost: "# kotost",
+            donate_button: "support the project (donatello)",
+            collection: "In collection",
+            older_sort: "added a long time ago",
+            new_sort: "recently added"
+        },
+        ru: {
+            pageTitle: "Футажи Mell",
+            logo: "Футажи<br>Mell",
+            disclaimer: "большинство футажей <br> взято у <br> TT: footage_me1",
+            sortingTitle: "сортировка",
+            sortAsc: "А-Я",
+            sortDesc: "Я-А",
+            categoriesTitle: "категории",
+            tagPunk: "# панк",
+            tagLaugh: "# смех",
+            tagDarkDrun: "# темный друн",
+            tagScream: "# кричит",
+            tagCharacter: "# персонажи",
+            tagHomelander: "# хоумлендер",
+            tagReset: "✕ сбросить",
+            news: "Новости",
+            music: "Музыка",
+            searchPlaceholder: "Поиск по названию...",
+            loading: "Загрузка медиа...",
+            loadError: "Не удалось загрузить список файлов.",
+            notFound: "Ничего не найдено",
+            download: "Скачать",
+            loadMore: "Показать ещё",
+            tagkotost: "# Котость",
+            donate_button: "поддержать проект (donatello)",
+            collection: "В коллекцию",
+            older_sort: "добавлено давно",
+            new_sort: "добавлено недавно"
+        },
+        uk: {
+            pageTitle: "Футажі Mell",
+            logo: "Футажі<br>Mell",
+            disclaimer: "більшість футажів <br> взято у <br> TT: footage_me1",
+            sortingTitle: "сортування",
+            sortAsc: "А-Я",
+            sortDesc: "Я-А",
+            categoriesTitle: "категорії",
+            tagPunk: "# панк",
+            tagLaugh: "# сміх",
+            tagDarkDrun: "# темний друн",
+            tagScream: "# кричить",
+            tagCharacter: "# персонажі",
+            tagHomelander: "# хоумлендер",
+            tagReset: "✕ скинути",
+            news: "Новини",
+            music: "Музика",
+            searchPlaceholder: "Пошук за назвою...",
+            loading: "Завантаження медіа...",
+            loadError: "Не вдалося завантажити список файлів.",
+            notFound: "Нічого не знайдено",
+            download: "Завантажити",
+            loadMore: "Показати ще",
+            tagkotost: "# Кітость",
+            donate_button: "підтримати проект (donatello)",
+            collection: "До колекції",
+            older_sort: "додано давно",
+            new_sort: "додано недавно"
+        }
+    };
+
+    let currentLang = 'en';
+    let rawVideos = [];
+    let filteredVideos = [];
+    let currentSort = 'new';
+
+    const ITEMS_PER_PAGE = 12;
+    let currentPage = 1;
+
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark-theme');
+    }
+
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar) sidebar.classList.toggle('collapsed');
+    }
+
+    function toggleTheme() {
+        const isDark = document.body.classList.toggle('dark-theme');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    }
+
+    function toggleLangMenu() {
+        const langMenu = document.getElementById('lang-menu');
+        if (langMenu) langMenu.classList.toggle('open');
+    }
+
+    /* =========================================================
+       COLLECTIONS
+       ========================================================= */
+
+    let selectedVideoForCollection = null;
+
+    const collectionTranslations = {
+        en: {
+            title: "Add to collection",
+            loading: "Loading collections...",
+            empty: "You don't have any collections yet.",
+            create: "+ Create new collection",
+            cancel: "Cancel",
+            prompt: "Collection name:",
+            added: "Video added to collection!",
+            createdError: "Failed to create collection.",
+            addError: "Failed to add video to collection.",
+            login: "Please log in first.",
+            connection: "Connection error.",
+            already: "This video is already in this collection."
+        },
+        ru: {
+            title: "Добавить в коллекцию",
+            loading: "Загрузка коллекций...",
+            empty: "У вас пока нет коллекций.",
+            create: "+ Создать новую коллекцию",
+            cancel: "Отмена",
+            prompt: "Название коллекции:",
+            added: "Видео добавлено в коллекцию!",
+            createdError: "Не удалось создать коллекцию.",
+            addError: "Не удалось добавить видео в коллекцию.",
+            login: "Сначала войдите в аккаунт.",
+            connection: "Ошибка соединения.",
+            already: "Это видео уже есть в этой коллекции."
+        },
+        uk: {
+            title: "Додати до колекції",
+            loading: "Завантаження колекцій...",
+            empty: "У вас ще немає колекцій.",
+            create: "+ Створити нову колекцію",
+            cancel: "Скасувати",
+            prompt: "Назва колекції:",
+            added: "Відео додано до колекції!",
+            createdError: "Не вдалося створити колекцію.",
+            addError: "Не вдалося додати відео до колекції.",
+            login: "Спочатку увійдіть в акаунт.",
+            connection: "Помилка з'єднання.",
+            already: "Це відео вже є в цій колекції."
+        }
+    };
+
+    function collectionT(key) {
+        return (collectionTranslations[currentLang] || collectionTranslations.en)[key];
+    }
+
+    function escapeCollectionHtml(value) {
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+    async function openAddToCollection(filename) {
+        selectedVideoForCollection = filename;
+
+        const modal = document.getElementById("addCollectionModal");
+        const list = document.getElementById("collection-list");
+
+        if (!modal || !list) {
+            console.error("Collection modal elements are missing.");
+            return;
+        }
+
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+
+        list.innerHTML = `
+            <div class="collection-loading">
+                ${collectionT("loading")}
+            </div>
+        `;
+
+        try {
+            const response = await fetch("/api/collections/my", {
+                credentials: "same-origin"
+            });
+
+            if (response.status === 401) {
+                list.innerHTML = `
+                    <div class="collection-error">
+                        ${collectionT("login")}
+                    </div>
+                `;
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const collections = await response.json();
+
+            if (!Array.isArray(collections) || collections.length === 0) {
+                list.innerHTML = `
+                    <div class="collection-empty">
+                        ${collectionT("empty")}
+                    </div>
+                `;
+                return;
+            }
+
+            list.innerHTML = collections.map(collection => {
+                const itemCount = Array.isArray(collection.items)
+                    ? collection.items.length
+                    : 0;
+
+                return `
+                    <button
+                        type="button"
+                        class="collection-option"
+                        onclick="addVideoToCollection(${Number(collection.id)})"
+                    >
+                        ${escapeCollectionHtml(collection.name)}
+                        <span style="opacity:.65"> · ${itemCount}</span>
+                    </button>
+                `;
+            }).join("");
+
+        } catch (error) {
+            console.error("Ошибка загрузки коллекций:", error);
+
+            list.innerHTML = `
+                <div class="collection-error">
+                    ${collectionT("connection")}
+                </div>
+            `;
+        }
+    }
+
+    function closeAddToCollection() {
+        const modal = document.getElementById("addCollectionModal");
+
+        if (modal) {
+            modal.classList.remove("open");
+            modal.setAttribute("aria-hidden", "true");
+        }
+
+        selectedVideoForCollection = null;
+    }
+
+    async function addVideoToCollection(collectionId) {
+        if (!selectedVideoForCollection) return;
+
+        const videoName = selectedVideoForCollection;
+
+        try {
+            const response = await fetch(
+                `/api/collections/${encodeURIComponent(collectionId)}/items`,
+                {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        video_name: videoName
+                    })
+                }
+            );
+
+            const data = await response.json().catch(() => ({}));
+
+            if (response.status === 401) {
+                alert(collectionT("login"));
+                return;
+            }
+
+            if (response.status === 409) {
+                alert(data.error || collectionT("already"));
+                return;
+            }
+
+            if (!response.ok) {
+                console.error("Collection add error:", data);
+                alert(data.error || collectionT("addError"));
+                return;
+            }
+
+            alert(collectionT("added"));
+            closeAddToCollection();
+
+        } catch (error) {
+            console.error("Ошибка добавления видео в коллекцию:", error);
+            alert(collectionT("connection"));
+        }
+    }
+
+    async function createCollectionFromVideo() {
+        const name = prompt(collectionT("prompt"));
+
+        if (!name || !name.trim()) return;
+
+        try {
+            const response = await fetch("/api/collections", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name.trim(),
+                    description: "",
+                    is_public: 1
+                })
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (response.status === 401) {
+                alert(collectionT("login"));
+                return;
+            }
+
+            if (!response.ok) {
+                console.error("Collection creation error:", data);
+                alert(data.error || collectionT("createdError"));
+                return;
+            }
+
+            if (!data.id) {
+                console.error("Server did not return collection id:", data);
+                alert(collectionT("createdError"));
+                return;
+            }
+
+            // Сразу добавляем выбранное видео в только что созданную коллекцию.
+            await addVideoToCollection(data.id);
+
+        } catch (error) {
+            console.error("Ошибка создания коллекции:", error);
+            alert(collectionT("connection"));
+        }
+    }
+
+    // Закрытие модального окна по клику на затемнение.
+    document.addEventListener("click", (event) => {
+        const modal = document.getElementById("addCollectionModal");
+
+        if (modal && event.target === modal) {
+            closeAddToCollection();
+        }
+    });
+
+    // Закрытие по Escape.
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            const modal = document.getElementById("addCollectionModal");
+
+            if (modal && modal.classList.contains("open")) {
+                closeAddToCollection();
+            }
+        }
+    });
+
+
+async function loadCardStats(filename, card) {
+    try {
+        const [likesRes, dlRes] = await Promise.all([
+            fetch(`/api/likes/${encodeURIComponent(filename)}`),
+            fetch(`/api/downloads/${encodeURIComponent(filename)}`)
+        ]);
+        const likesData = await likesRes.json();
+        const dlData = await dlRes.json();
+
+        const likeBtn = card.querySelector('.like-btn');
+        if (likeBtn) {
+            likeBtn.querySelector('.like-count').textContent = likesData.likes;
+            if (likesData.liked) likeBtn.classList.add('liked');
+        }
+
+        const dlSpan = card.querySelector('.dl-count');
+        if (dlSpan) dlSpan.textContent = `⬇ ${dlData.downloads}`;
+    } catch {}
+}
+
+async function toggleLike(encodedName, btn, event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    // Защита от двойного клика
+    if (btn.dataset.loading === '1') return;
+
+    btn.dataset.loading = '1';
+    btn.disabled = true;
+
+    const countSpan = btn.querySelector('.like-count');
+    const oldCount = parseInt(countSpan?.textContent) || 0;
+    const wasLiked = btn.classList.contains('liked');
+
+    try {
+        const res = await fetch(`/api/likes/${encodedName}`, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (res.status === 401) {
+            alert(
+                currentLang === 'ru'
+                    ? 'Войдите, чтобы ставить лайки'
+                    : currentLang === 'uk'
+                        ? 'Увійдіть, щоб ставити вподобайки'
+                        : 'Log in to like videos'
+            );
+            return;
+        }
+
+        if (!res.ok) {
+            throw new Error(`Like request failed: ${res.status}`);
+        }
+
+        const data = await res.json();
+
+        // Меняем только эту кнопку.
+        // НИКАКОГО filterAndRenderVideos() здесь нет.
+        if (data.liked) {
+            btn.classList.add('liked');
+
+            if (countSpan) {
+                countSpan.textContent = oldCount + (wasLiked ? 0 : 1);
+            }
+        } else {
+            btn.classList.remove('liked');
+
+            if (countSpan) {
+                countSpan.textContent = Math.max(
+                    0,
+                    oldCount - (wasLiked ? 1 : 0)
+                );
+            }
+        }
+
+    } catch (err) {
+        console.error('Ошибка лайка:', err);
+
+        // Возвращаем старое состояние, если запрос сломался
+        if (wasLiked) {
+            btn.classList.add('liked');
+        } else {
+            btn.classList.remove('liked');
+        }
+
+        if (countSpan) {
+            countSpan.textContent = oldCount;
+        }
+
+    } finally {
+        btn.dataset.loading = '0';
+        btn.disabled = false;
+    }
+}
+
+async function trackDownload(encodedName) {
+    await fetch(`/api/downloads/${encodedName}`, { method: 'POST' });
+}
+    function selectLanguage(lang) {
+        const targetLang = (lang === 'ua') ? 'uk' : lang;
+
+        currentLang = targetLang;
+
+        localStorage.setItem('app_lang', targetLang);
+        document.documentElement.lang = targetLang;
+
+        document.querySelectorAll('.lang-option').forEach(btn => {
+            const btnLang = btn.textContent.trim().toLowerCase();
+            btn.classList.toggle('active', btnLang === lang || (btnLang === 'ua' && targetLang === 'uk'));
+        });
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (translations[targetLang] && translations[targetLang][key]) {
+                if (key === 'logo' || key === 'disclaimer') {
+                    el.innerHTML = translations[targetLang][key];
+                } else {
+                    el.textContent = translations[targetLang][key];
+                }
+            }
+        });
+
+        const searchInput = document.getElementById('search-input');
+        if (searchInput && translations[targetLang]?.searchPlaceholder) {
+            searchInput.placeholder = translations[targetLang].searchPlaceholder;
+        }
+
+        const langMenu = document.getElementById('lang-menu');
+        if (langMenu) langMenu.classList.remove('open');
+
+        if (rawVideos.length > 0 || document.getElementById('video-container')) {
+            filterAndRenderVideos(false);
+        }
+
+        if (typeof player !== 'undefined' && player) {
+            player.currentLang = targetLang;
+            player.applyLanguage();
+        }
+    }
+
+    async function loadVideos() {
+        const container = document.getElementById('video-container');
+        if (!container) return;
+
+        try {
+            const response = await fetch('/api/videos');
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            // Сервер отдаёт объекты {id, name, url, uploader}; здесь работаем с именами файлов
+            rawVideos = data.map(v => (typeof v === 'string' ? v : v.name));
+            filterAndRenderVideos(true);
+        } catch (err) {
+            console.error('Ошибка загрузки:', err);
+            const errorMsg = translations[currentLang]?.loadError || 'Error loading media files.';
+            container.innerHTML = `<p class="status-message">${errorMsg}</p>`;
+        }
+    }
+
+    function setSort(sortType) {
+        currentSort = sortType;
+
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        const activeBtn = document.querySelector(`.sort-btn[onclick="setSort('${sortType}')"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+        }
+        filterAndRenderVideos(true);
+    }
+
+    function applyTag(keyword, btnEl = null) {
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) searchInput.value = keyword;
+
+        document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+        if (btnEl && !btnEl.classList.contains('tag-reset')) {
+            btnEl.classList.add('active');
+        }
+
+        filterAndRenderVideos(true);
+    }
+
+    function onSearchInput() {
+        document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+        filterAndRenderVideos(true);
+    }
+
+    function filterAndRenderVideos(resetPage = false) {
+        const searchInput = document.getElementById('search-input');
+        const searchQuery = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+        if (resetPage) {
+            currentPage = 1;
+        }
+
+        filteredVideos = rawVideos.filter(name => name.toLowerCase().includes(searchQuery));
+
+        if (currentSort === 'new') {
+            filteredVideos.sort((a, b) => rawVideos.indexOf(a) - rawVideos.indexOf(b));
+        } else if (currentSort === 'old') {
+            filteredVideos.sort((a, b) => rawVideos.indexOf(b) - rawVideos.indexOf(a));
+        } else if (currentSort === 'asc') {
+            filteredVideos.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+        } else if (currentSort === 'desc') {
+            filteredVideos.sort((a, b) => b.localeCompare(a, undefined, { numeric: true, sensitivity: 'base' }));
+        }
+
+        renderGrid();
+    }
+
+    function renderGrid() {
+        const container = document.getElementById('video-container');
+        const loadMoreBtn = document.getElementById('load-more-btn');
+        if (!container) return;
+
+        if (currentPage === 1) {
+            container.innerHTML = '';
+        }
+
+        const t = translations[currentLang] || translations.en;
+
+        if (filteredVideos.length === 0) {
+            container.innerHTML = `<p class="status-message">${t.notFound}</p>`;
+            if (loadMoreBtn) loadMoreBtn.style.display = 'none';
+            return;
+        }
+
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIndex = currentPage * ITEMS_PER_PAGE;
+        const pageItems = filteredVideos.slice(startIndex, endIndex);
+
+      pageItems.forEach(filename => {
+    const card = document.createElement('div');
+    card.className = 'video-card';
+
+    const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(filename);
+    const mediaElement = isImage
+        ? `<img src="/videos/${encodeURIComponent(filename)}" alt="${filename}" loading="lazy">`
+        : `<video controls preload="metadata" src="/videos/${encodeURIComponent(filename)}"></video>`;
+
+    const encodedName = encodeURIComponent(filename);
+
+    card.innerHTML = `
+        <div class="video-wrapper">
+            ${mediaElement}
+        </div>
+        <div class="card-info">
+            <span class="video-title">${filename}</span>
+            <div class="card-meta">
+               <button
+    type="button"
+    class="like-btn"
+    data-name="${filename}"
+    onclick="toggleLike('${encodedName}', this, event)"
+>
+    ♥ <span class="like-count">...</span>
+</button>
+                <span class="dl-count" data-name="${filename}">⬇ ...</span>
+            </div>
+            <div class="card-actions">
+                <a href="/videos/${encodedName}" download="${filename}"
+                   class="download-btn" onclick="trackDownload('${encodedName}')">
+                    ${t.download}
+                </a>
+                <button class="collection-btn" onclick="openAddToCollection('${filename}')">+ ${t.collection || 'В коллекцию'}</button>
+            </div>
+        </div>
+    `;
+
+    container.appendChild(card);
+
+    // Загрузить лайки и скачивания для этой карточки
+    loadCardStats(filename, card);
+});
+
+        if (loadMoreBtn) {
+            loadMoreBtn.style.display = (endIndex >= filteredVideos.length) ? 'none' : 'block';
+        }
+    }
+
+    function loadMore() {
+        currentPage++;
+        renderGrid();
+    }
+
+    document.addEventListener('click', (e) => {
+        const dropdown = document.querySelector('.lang-dropdown-wrapper');
+        if (dropdown && !dropdown.contains(e.target)) {
+            const langMenu = document.getElementById('lang-menu');
+            if (langMenu) langMenu.classList.remove('open');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedLang = localStorage.getItem('app_lang') || 'en';
+        selectLanguage(savedLang);
+
+        if (document.getElementById('video-container')) {
+            loadVideos();
+        }
+    });
+</script>
+</body>
+</html>

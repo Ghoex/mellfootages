@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile — Mell Footage</title>
+    <style>
+        :root {
+            --primary: #7ec384;
+            --primary-dark: #5fa368;
+            --bg: #e8f5e9;
+            --bg2: #f5f9f3;
+            --surface: rgba(255, 255, 255, .88);
+            --surface-strong: #fff;
+            --text: #1e1e1e;
+            --muted: #778077;
+            --border: #c1d4b8;
+            --shadow: 0 10px 35px rgba(51, 84, 55, .12);
+            --verified: #2196f3;
+            --tag-bg: rgba(126, 195, 132, .16);
+            --tag-text: #4d8653;
+            --radius: 18px;
+            --small-radius: 12px;
+        }
+
+        body.dark-theme {
+            --bg: #0a0e27;
+            --bg2: #15182a;
+            --surface: rgba(31, 34, 45, .9);
+            --surface-strong: #24262f;
+            --text: #f2f4f2;
+            --muted: #a5ada6;
+            --border: #3f4741;
+            --shadow: 0 12px 35px rgba(0, 0, 0, .34);
+            --tag-bg: rgba(126, 195, 132, .14);
+            --tag-text: #a9ddb0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0
+        }
+
+        html,
+        body {
+            min-height: 100%;
+            width: 100%
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 10% 0%, rgba(126, 195, 132, .22), transparent 34%),
+                radial-gradient(circle at 100% 10%, rgba(95, 163, 104, .14), transparent 28%),
+                linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+            transition: background .25s, color .25s;
+        }
+
+        body.dark-theme {
+            background:
+                radial-gradient(circle at 10% 0%, rgba(126, 195, 132, .10), transparent 34%),
+                radial-gradient(circle at 100% 10%, rgba(69, 90, 73, .12), transparent 28%),
+                linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+        }
+
+        button,
+        a {
+            font: inherit
+        }
+
+        a {
+            color: inherit
+        }
+
+        .topnav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: color-mix(in srgb, var(--surface-strong) 84%, transparent);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 5px 18px rgba(0, 0, 0, .06);
+        }
+
+        .logo {
+            font-family: Georgia, serif;
+            font-style: italic;
+            color: var(--primary);
+            font-size: 1.35rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .spacer {
+            flex: 1
+        }
+
+        .nav-link,
+        .theme-btn,
+        #settings-btn {
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            transition: .2s ease;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            padding: 8px 13px;
+            border-radius: 10px;
+            font-size: .9rem;
+        }
+
+        .theme-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .theme-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            fill: none
+        }
+
+        #settings-btn {
+            padding: 8px 13px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .nav-link:hover,
+        .theme-btn:hover,
+        #settings-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .page {
+            width: min(1040px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 30px 0 60px;
+        }
+
+        .profile-hero {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            padding: 26px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .profile-hero::after {
+            content: "";
+            position: absolute;
+            right: -70px;
+            top: -80px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(126, 195, 132, .24), transparent 70%);
+            pointer-events: none;
+        }
+
+        .avatar { overflow: hidden; }
+        .avatar.ring-online {
+            border-color: #4caf50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, .35), 0 8px 24px rgba(76, 175, 80, .32);
+        }
+        .avatar.ring-offline {
+            border-color: #8a8f98;
+            box-shadow: 0 0 0 3px rgba(138, 143, 152, .25);
+        }
+        .avatar.ring-hidden {
+            border-color: #e53935;
+            box-shadow: 0 0 0 3px rgba(229, 57, 53, .35);
+        }
+        .avatar {
+            width: 94px;
+            height: 94px;
+            flex: 0 0 94px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            font-size: 2.2rem;
+            font-weight: 800;
+            box-shadow: 0 8px 24px rgba(95, 163, 104, .32);
+            border: 4px solid rgba(255, 255, 255, .75);
+        }
+
+        .profile-info {
+            min-width: 0;
+            flex: 1
+        }
+
+        .username-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 7px;
+        }
+
+        .username {
+            font-size: 1.75rem;
+            line-height: 1.15;
+            font-weight: 800;
+            word-break: break-word;
+        }
+
+        .verified-badge {
+            width: 21px;
+            height: 21px;
+            flex: 0 0 21px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--verified);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 900;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, .32);
+            vertical-align: middle;
+        }
+
+        .user-tag-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            border: 1px solid color-mix(in srgb, var(--primary) 60%, transparent);
+            font-size: .75rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .user-handle {
+            color: var(--muted);
+            font-size: .9rem;
+            margin-bottom: 12px
+        }
+
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 999px;
+            background: rgba(126, 195, 132, .13);
+            border: 1px solid var(--border);
+            color: var(--primary-dark);
+            font-size: .76rem;
+            font-weight: 750;
+            margin-bottom: 14px;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .stat-item {
+            min-width: 88px;
+            padding: 10px 13px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--surface-strong) 74%, transparent);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.08rem;
+            font-weight: 800
+        }
+
+        .stat-label {
+            font-size: .72rem;
+            color: var(--muted);
+            margin-top: 2px
+        }
+
+        .section {
+            margin-top: 28px
+        }
+
+        .section-header {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .section-header h3 {
+            font-size: 1.15rem;
+            font-weight: 800
+        }
+
+        .section-header span {
+            font-size: .82rem;
+            color: var(--muted)
+        }
+
+        .collection-list {
+            display: grid;
+            gap: 12px
+        }
+
+        .collection-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 15px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, .05);
+            transition: transform .2s, box-shadow .2s, border-color .2s;
+        }
+
+        .collection-item:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 24px rgba(126, 195, 132, .16);
+        }
+
+        .col-icon {
+            width: 46px;
+            height: 46px;
+            flex: 0 0 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 13px;
+            background: rgba(126, 195, 132, .13);
+            border: 1px solid var(--border);
+            font-size: 1.35rem;
+        }
+
+        .col-info {
+            flex: 1;
+            min-width: 0
+        }
+
+        .col-name {
+            font-size: .98rem;
+            font-weight: 750;
+            word-break: break-word;
+            margin-bottom: 3px;
+        }
+
+        .col-meta {
+            color: var(--muted);
+            font-size: .78rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .col-actions {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap
+        }
+
+        .btn-sm {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 7px 11px;
+            font-size: .8rem;
+            font-weight: 650;
+            cursor: pointer;
+            text-decoration: none;
+            transition: .2s;
+        }
+
+        .btn-view {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary)
+        }
+
+        .btn-view:hover {
+            background: var(--primary-dark)
+        }
+
+        .btn-copy {
+            background: var(--surface-strong);
+            color: var(--text)
+        }
+
+        .btn-copy:hover {
+            border-color: var(--primary)
+        }
+
+        .empty-msg,
+        .not-found {
+            padding: 34px 20px;
+            text-align: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--muted);
+        }
+
+        .not-found h2 {
+            color: var(--text);
+            margin-bottom: 8px
+        }
+
+        .toast {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 500;
+            display: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: #2e7d32;
+            color: #fff;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, .22);
+        }
+
+        .toast.show {
+            display: block;
+            animation: toastIn .22s ease
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        /* ---- Report button ---- */
+        .btn-report {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border: 1px solid rgba(229, 57, 53, .4);
+            border-radius: 10px;
+            background: rgba(229, 57, 53, .07);
+            color: #e53935;
+            font-size: .85rem;
+            font-weight: 650;
+            cursor: pointer;
+            transition: .2s;
+        }
+        .btn-report:hover {
+            background: rgba(229, 57, 53, .15);
+            border-color: #e53935;
+        }
+
+        /* ---- Report modal ---- */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0; z-index: 400;
+            background: rgba(0,0,0,.45);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            width: min(420px, 100%);
+            background: var(--surface-strong);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 26px 24px 22px;
+            box-shadow: 0 24px 60px rgba(0,0,0,.28);
+            animation: modalIn .22s ease;
+        }
+        @keyframes modalIn {
+            from { opacity:0; transform:translateY(14px) }
+            to   { opacity:1; transform:translateY(0) }
+        }
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #e53935;
+        }
+        .modal-subtitle {
+            font-size: .84rem;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+        .report-reasons {
+            display: grid;
+            gap: 7px;
+            margin-bottom: 18px;
+        }
+        .reason-option {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 13px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: .18s;
+            font-size: .88rem;
+            background: var(--surface);
+        }
+        .reason-option:hover,
+        .reason-option.selected {
+            border-color: #e53935;
+            background: rgba(229,57,53,.07);
+        }
+        .reason-option input[type="radio"] {
+            accent-color: #e53935;
+            width: 16px; height: 16px; flex: 0 0 16px;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        .btn-cancel-report {
+            padding: 9px 18px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            color: var(--text);
+            font-size: .88rem;
+            font-weight: 650;
+            cursor: pointer;
+            transition: .18s;
+        }
+        .btn-cancel-report:hover { border-color: var(--primary); }
+        .btn-submit-report {
+            padding: 9px 18px;
+            border: 1px solid #e53935;
+            border-radius: 10px;
+            background: #e53935;
+            color: #fff;
+            font-size: .88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: .18s;
+        }
+        .btn-submit-report:hover { background: #c62828; }
+        .btn-submit-report:disabled { opacity: .45; cursor: not-allowed; }
+
+        @media(max-width:700px) {
+            .topnav {
+                padding: 10px 12px
+            }
+
+            .logo {
+                font-size: 1.15rem
+            }
+
+            #settings-btn {
+                display: none
+            }
+
+            .page {
+                width: min(100% - 18px, 1040px);
+                padding-top: 18px
+            }
+
+            .profile-hero {
+                align-items: flex-start;
+                padding: 19px;
+                gap: 15px
+            }
+
+            .avatar {
+                width: 72px;
+                height: 72px;
+                flex-basis: 72px;
+                font-size: 1.7rem
+            }
+
+            .username {
+                font-size: 1.35rem
+            }
+
+            .collection-item {
+                align-items: flex-start;
+                flex-wrap: wrap
+            }
+
+            .col-actions {
+                width: 100%;
+                padding-left: 60px
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="topnav">
+        <a href="/" class="logo">Mell Footage</a>
+        <div class="spacer"></div>
+        <a href="/" class="nav-link" id="backLink">← Back</a>
+
+        <button class="theme-btn" onclick="toggleTheme()" aria-label="Theme">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+
+    </nav>
+
+    <div class="page" id="page-content">
+        <p id="loadingText" style="color:var(--text-sidebar); text-align:center; padding:40px;">Loading...</p>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- Report Modal -->
+    <div class="modal-overlay" id="report-modal" onclick="closeReportIfBackdrop(event)">
+        <div class="modal-box">
+            <div class="modal-title" id="report-modal-title">🚩 Report profile</div>
+            <div class="modal-subtitle" id="report-modal-subtitle">Select a reason for reporting this user</div>
+            <div class="report-reasons" id="report-reasons-list"></div>
+            <div class="modal-actions">
+                <button class="btn-cancel-report" onclick="closeReport()" id="btn-cancel-report-lbl">Cancel</button>
+                <button class="btn-submit-report" id="btn-submit-report" onclick="submitReport()" disabled>Send report</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* =========================================================
+           TRANSLATIONS
+           ========================================================= */
+        const translations = {
+            ru: {
+                back: '← Назад',
+                loading: 'Загрузка...',
+                userNotFoundTitle: '👤 Пользователь не найден',
+                userNotFoundText: 'Пользователя не существует.',
+                userNotSpecified: 'Пользователь не указан',
+                points: 'очков',
+                collections: 'коллекций',
+                likes: 'лайков',
+                publicCollections: '📁 Публичные коллекции',
+                noPublicCollections: 'У этого пользователя нет публичных коллекций.',
+                open: 'Открыть',
+                copyLink: 'Копировать ссылку',
+                linkCopied: 'Ссылка скопирована!',
+                pieces: 'шт.',
+                error: 'Ошибка загрузки профиля',
+                reportBtn: '🚩 Пожаловаться',
+                reportTitle: '🚩 Пожаловаться на профиль',
+                reportSubtitle: 'Выберите причину жалобы',
+                reportCancel: 'Отмена',
+                reportSubmit: 'Отправить жалобу',
+                reportSent: 'Жалоба отправлена. Спасибо!',
+                reportError: 'Ошибка при отправке жалобы',
+                reportReasons: ['Спам или реклама', 'Оскорбительное поведение', 'Выдаёт себя за другого', 'Нарушение правил', 'Подозрительная активность']
+            },
+            uk: {
+                back: '← Назад',
+                loading: 'Завантаження...',
+                userNotFoundTitle: '👤 Користувача не знайдено',
+                userNotFoundText: 'Користувача не існує.',
+                userNotSpecified: 'Користувач не вказаний',
+                points: 'балів',
+                collections: 'колекцій',
+                likes: 'лайків',
+                publicCollections: '📁 Публічні колекції',
+                noPublicCollections: 'У цього користувача немає публічних колекцій.',
+                open: 'Відкрити',
+                copyLink: 'Копіювати посилання',
+                linkCopied: 'Посилання скопійовано!',
+                pieces: 'шт.',
+                error: 'Помилка завантаження профілю',
+                reportBtn: '🚩 Поскаржитись',
+                reportTitle: '🚩 Поскаржитись на профіль',
+                reportSubtitle: 'Виберіть причину скарги',
+                reportCancel: 'Скасувати',
+                reportSubmit: 'Надіслати скаргу',
+                reportSent: 'Скаргу надіслано. Дякуємо!',
+                reportError: 'Помилка при надсиланні скарги',
+                reportReasons: ['Спам або реклама', 'Образлива поведінка', 'Видає себе за іншого', 'Порушення правил', 'Підозріла активність']
+            },
+            en: {
+                back: '← Back',
+                loading: 'Loading...',
+                userNotFoundTitle: '👤 User not found',
+                userNotFoundText: 'This user does not exist.',
+                userNotSpecified: 'User not specified',
+                points: 'points',
+                collections: 'collections',
+                likes: 'likes',
+                publicCollections: '📁 Public Collections',
+                noPublicCollections: 'This user has no public collections.',
+                open: 'Open',
+                copyLink: 'Copy link',
+                linkCopied: 'Link copied!',
+                pieces: 'pcs.',
+                error: 'Profile load error',
+                reportBtn: '🚩 Report',
+                reportTitle: '🚩 Report profile',
+                reportSubtitle: 'Select a reason for reporting this user',
+                reportCancel: 'Cancel',
+                reportSubmit: 'Send report',
+                reportSent: 'Report sent. Thank you!',
+                reportError: 'Failed to send report',
+                reportReasons: ['Spam or advertising', 'Offensive behavior', 'Impersonation', 'Rule violation', 'Suspicious activity']
+            }
+        };
+
+        let currentLang = localStorage.getItem('app_lang') || 'en';
+        if (!translations[currentLang]) currentLang = 'en';
+        // Keep the profile visually consistent with the user's saved site accent.
+        (function applySavedAccent() {
+            const accent = localStorage.getItem('accent_color');
+            if (accent && /^#[0-9a-fA-F]{6}$/.test(accent)) {
+                document.documentElement.style.setProperty('--primary', accent);
+            }
+        })();
+
+
+        function t(key) {
+            return translations[currentLang]?.[key] ?? translations.en?.[key] ?? key;
+        }
+
+        /* =========================================================
+           THEME & TOAST
+           ========================================================= */
+        if (localStorage.getItem('theme') === 'dark' || localStorage.getItem('darkTheme') === 'true') {
+            document.body.classList.add('dark-theme');
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        function showToast(msg, color = '#2e7d32') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.backgroundColor = color;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function escapeHtml(s) {
+            return String(s ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        /* =========================================================
+           LOAD & RENDER USER
+           ========================================================= */
+        const username = location.pathname.split('/').filter(Boolean).pop();
+
+        async function loadUser() {
+            const page = document.getElementById('page-content');
+
+            if (!username) {
+                page.innerHTML = `<div class="not-found"><h2>${t('userNotSpecified')}</h2></div>`;
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/user/${encodeURIComponent(username)}`);
+
+                if (res.status === 404) {
+                    page.innerHTML = `
+                <div class="not-found">
+                    <h2>${t('userNotFoundTitle')}</h2>
+                    <p>${t('userNotFoundText')}</p>
+                </div>`;
+                    return;
+                }
+
+                if (!res.ok) throw new Error();
+
+                const user = await res.json();
+                document.title = `${user.username} — Mell Footage`;
+                renderUser(user);
+
+            } catch (e) {
+                page.innerHTML = `<div class="not-found"><h2>${t('error')}</h2></div>`;
+            }
+        }
+
+        // Цвет обводки аватара: зелёная — в сети, серая — не в сети,
+        // красная — пользователь скрыл активность
+        function avatarRingClass(user) {
+            if (!user.activity_visible) return 'ring-hidden';
+            const online = user.last_seen && (Date.now() - new Date(user.last_seen).getTime()) < 5 * 60 * 1000;
+            return online ? 'ring-online' : 'ring-offline';
+        }
+
+        function renderUser(user) {
+            const page = document.getElementById('page-content');
+            const uName = String(user.username || '');
+            const isVerified = Boolean(
+                user.is_verified ||
+                user.verified ||
+                user.isVerified ||
+                user.badge_verified
+            );
+
+            const userTags = Array.isArray(user.tags) ? user.tags : [];
+
+            const collections = Array.isArray(user.public_collections)
+                ? user.public_collections
+                : [];
+
+            page.innerHTML = `
+
+        <div class="profile-hero">
+            <div class="avatar ${avatarRingClass(user)}">${user.avatar_url
+                ? `<img src="${escapeHtml(user.avatar_url)}" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
+                : escapeHtml(uName.charAt(0).toUpperCase())}</div>
+            <div class="profile-info">
+
+                <div class="username-row">
+                    <h1 class="username">${escapeHtml(uName)}</h1>
+                    ${isVerified ? '<span class="verified-badge" title="Verified" aria-label="Verified">✓</span>' : ''}
+                    ${userTags.map(tag => `
+                        <span class="user-tag-badge" style="color:${escapeHtml(tag.color || '#7ec384')}; background:${escapeHtml(tag.color || '#7ec384')}22;">
+                            ${tag.icon ? escapeHtml(tag.icon) + ' ' : ''}${escapeHtml(tag.name)}
+                        </span>
+
+                    `).join('')}
+                </div>
+
+                <div class="user-handle">@${escapeHtml(uName)}</div>
+                <span class="role-badge">${escapeHtml(user.role || 'user')}</span>
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <span class="stat-value">${user.points ?? 0}</span>
+                        <span class="stat-label">${t('points')}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${collections.length}</span>
+                        <span class="stat-label">${t('collections')}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">${user.likes_count ?? 0}</span>
+                        <span class="stat-label">${t('likes')}</span>
+                    </div>
+                </div>
+                <div style="margin-top:14px;">
+                    <button class="btn-report" onclick="openReport('${escapeHtml(uName)}')">${t('reportBtn')}</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h3>${t('publicCollections')}</h3>
+                <span>${collections.length} ${t('pieces')}</span>
+            </div>
+            <div class="collection-list">
+                ${collections.length
+                    ? collections.map(c => `
+                        <div class="collection-item">
+                            <div class="col-icon">🌐</div>
+                            <div class="col-info">
+                                <div class="col-name">${escapeHtml(c.name)}</div>
+                                <div class="col-meta">${escapeHtml(c.description || '')}</div>
+                            </div>
+                            <div class="col-actions">
+                                <a href="/collection/${c.id}" class="btn-sm btn-view">${t('open')}</a>
+                                <button class="btn-sm btn-copy" onclick="copyLink(${c.id})">${t('copyLink')}</button>
+                            </div>
+                        </div>
+                    `).join('')
+                    : `<div class="empty-msg">${t('noPublicCollections')}</div>`
+                }
+            </div>
+        </div>
+    `;
+
+        }
+
+        /* =========================================================
+           REPORT PROFILE
+           ========================================================= */
+        let _reportTarget = '';
+
+        function openReport(username) {
+            _reportTarget = username;
+            // Update modal text
+            document.getElementById('report-modal-title').textContent = t('reportTitle');
+            document.getElementById('report-modal-subtitle').textContent = t('reportSubtitle');
+            document.getElementById('btn-cancel-report-lbl').textContent = t('reportCancel');
+            const submitBtn = document.getElementById('btn-submit-report');
+            submitBtn.textContent = t('reportSubmit');
+            submitBtn.disabled = true;
+
+            // Build reason list
+            const reasons = t('reportReasons');
+            const list = document.getElementById('report-reasons-list');
+            list.innerHTML = reasons.map((r, i) => `
+                <label class="reason-option" onclick="selectReason(this)">
+                    <input type="radio" name="report-reason" value="${escapeHtml(r)}">
+                    ${escapeHtml(r)}
+                </label>
+            `).join('');
+
+            document.getElementById('report-modal').classList.add('open');
+        }
+
+        function selectReason(el) {
+            document.querySelectorAll('.reason-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('btn-submit-report').disabled = false;
+        }
+
+        function closeReport() {
+            document.getElementById('report-modal').classList.remove('open');
+            _reportTarget = '';
+        }
+
+        function closeReportIfBackdrop(e) {
+            if (e.target === document.getElementById('report-modal')) closeReport();
+        }
+
+        async function submitReport() {
+            const selected = document.querySelector('input[name="report-reason"]:checked');
+            if (!selected) return;
+
+            const btn = document.getElementById('btn-submit-report');
+            btn.disabled = true;
+            btn.textContent = '...';
+
+            try {
+                const res = await fetch('/api/report/user', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reported_username: _reportTarget, reason: selected.value })
+                });
+
+                if (res.ok) {
+                    closeReport();
+                    showToast(t('reportSent'));
+                } else {
+                    throw new Error();
+                }
+            } catch {
+                showToast(t('reportError'), '#e53935');
+                btn.disabled = false;
+                btn.textContent = t('reportSubmit');
+            }
+        }
+
+        function copyLink(id) {
+            const url = `${location.origin}/collection/${id}`;
+            navigator.clipboard.writeText(url)
+                .then(() => showToast(t('linkCopied')))
+                .catch(() => showToast(url, '#555'));
+        }
+
+        /* =========================================================
+           INITIALIZE
+           ========================================================= */
+        document.addEventListener('DOMContentLoaded', () => {
+            document.documentElement.lang = currentLang;
+            const backLink = document.getElementById('backLink');
+            if (backLink) backLink.textContent = t('back');
+            const loadingText = document.getElementById('loadingText');
+            if (loadingText) loadingText.textContent = t('loading');
+
+            loadUser();
+        });
+    </script>
+</body>
+
+</html>

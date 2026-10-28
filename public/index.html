@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="pageTitle"> Footages </title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <button class="logo" onclick="navigateTo('footages')" data-i18n="logo">Footages</button>
+
+        <div class="search-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="search" id="search-input" data-i18n-ph="searchPlaceholder" placeholder="Search footage..."
+                oninput="onSearchInput()">
+        </div>
+
+        <button class="icon-btn" onclick="toggleTheme()" title="Theme">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+
+        <div class="lang-dropdown">
+            <button class="icon-btn" onclick="toggleLangMenu()" title="Language">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path
+                        d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                    </path>
+                </svg>
+            </button>
+            <div class="lang-menu" id="lang-menu">
+                <button class="lang-option" onclick="switchLanguage('en')">English</button>
+                <button class="lang-option" onclick="switchLanguage('uk')">Українська</button>
+                <button class="lang-option" onclick="switchLanguage('ru')">русский</button>
+            </div>
+        </div>
+
+        <button class="icon-btn" onclick="navigateTo('settings')" title="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z">
+                </path>
+            </svg>
+        </button>
+
+        <div id="auth-area"></div>
+    </div>
+
+    <main class="main-content">
+    <div id="tg-warning-banner" style="
+      display:flex; align-items:flex-start; gap:12px;
+      padding:14px 16px; margin:0 0 16px;
+      background:#fff8e6; border:1.5px solid #f0b429; border-radius:12px;
+      position:relative; font-family:inherit;
+    ">
+      <div style="flex-shrink:0;width:34px;height:34px;background:#f0b429;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;">⚠️</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:600;font-size:14px;color:#7d5a00;margin:0 0 4px;" id="tg-banner-title" data-i18n="tgBannerTitle"></div>
+        <div style="font-size:13px;color:#9a7200;line-height:1.5;margin:0 0 10px;" id="tg-banner-text" data-i18n="tgBannerText"></div>
+        <a href="https://t.me/MLLcards_bot" target="_blank" style="
+          display:inline-flex;align-items:center;gap:5px;
+          font-size:13px;font-weight:600;color:#1d77bc;text-decoration:none;
+          background:#e3f0fb;padding:5px 14px;border-radius:20px;
+        " id="tg-banner-btn" data-i18n="tgBannerBtn"></a>
+      </div>
+      <button onclick="closeTgBanner()" style="
+        background:none;border:none;cursor:pointer;font-size:18px;color:#c9921a;padding:0;flex-shrink:0;
+      " aria-label="Close">✕</button>
+    </div>
+        <div id="footages-page" class="page-section active">
+
+            <div class="filter-bar">
+                <div class="category-chips" id="category-chips">
+                    <button class="chip active" onclick="selectCategory('all', this)"
+                        data-i18n="categoryAll">All</button>
+                </div>
+
+                <!-- Быстрый переключатель плотности сетки -->
+                <div class="density-switch-group" title="Grid Density">
+                    <button class="density-btn" id="qdensity-compact-btn" onclick="setGridDensity('compact')"
+                        title="Compact">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                    </button>
+                    <button class="density-btn" id="qdensity-standard-btn" onclick="setGridDensity('standard')"
+                        title="Standard">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="8" height="18"></rect>
+                            <rect x="13" y="3" width="8" height="18"></rect>
+                        </svg>
+                    </button>
+                    <button class="density-btn" id="qdensity-large-btn" onclick="setGridDensity('large')" title="Large">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                        </svg>
+                    </button>
+                </div>
+
+
+
+            </div>
+
+            <div id="video-container">
+                <!-- Скелетон загрузчики загружаются JS скриптом по умолчанию -->
+            </div>
+            <div class="load-more-wrap">
+                <button id="load-more-btn" class="btn" onclick="loadMore()" style="display: none;"
+                    data-i18n="loadMore">Load more videos</button>
+            </div>
+        </div>
+
+        <div id="profile-page" class="page-section">
+            <h1 class="page-title" data-i18n="navProfile">Profile</h1>
+            <div id="profile-content">
+                <p class="status-message" data-i18n="loading">Loading...</p>
+            </div>
+        </div>
+
+        <div id="news-page" class="page-section">
+            <h1 class="page-title" data-i18n="navNews">News</h1>
+            <div id="admin-news-section" style="display:none; margin-bottom:24px;">
+                <div class="card">
+                    <h2 data-i18n="adminPublish">Publish News (Admin)</h2>
+                    <form id="news-form" onsubmit="publishNews(event)">
+                        <div class="form-group">
+                            <label data-i18n="fieldTitle">Title</label>
+                            <input type="text" id="news-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="fieldContent">Content</label>
+                            <textarea id="news-content" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label data-i18n="fieldImage">Image</label>
+                            <input type="file" id="news-image" accept="image/*">
+                        </div>
+                        <button type="submit" class="btn" data-i18n="publishBtn">Publish</button>
+                    </form>
+                </div>
+            </div>
+            <div id="news-container">
+                <p class="status-message" data-i18n="loading">Loading...</p>
+            </div>
+        </div>
+
+        <div id="upload-page" class="page-section">
+            <h1 class="page-title" data-i18n="navUpload">Upload</h1>
+            <div class="card" style="max-width:600px; margin:0 auto;">
+                <form id="upload-form" onsubmit="uploadFoo(event)">
+                    <div class="form-group">
+                        <label data-i18n="fieldFile">Select file</label>
+                        <input type="file" id="upload-file" accept="video/*,image/*" required>
+                    </div>
+                    <div class="form-group">
+                        <label data-i18n="fieldDesc">Description (optional)</label>
+                        <textarea id="upload-desc" data-i18n-ph="descPlaceholder"
+                            placeholder="Describe your footage..."></textarea>
+                    </div>
+                    <button type="submit" class="btn" id="upload-submit-btn" data-i18n="uploadBtn">Upload</button>
+                </form>
+            </div>
+        </div>
+        <div id="collections-page" class="page-section">
+            <h1 class="page-title" data-i18n="navCollections">My Collections</h1>
+            <div id="collections-content">
+                <p class="status-message" data-i18n="loading">Loading...</p>
+            </div>
+        </div>
+
+        <div id="settings-page" class="page-section">
+            <h1 class="page-title" data-i18n="navSettings">Settings</h1>
+
+            <!-- 1. DESIGN & THEME SETTINGS -->
+            <div class="card settings-card" style="max-width:600px; margin:0 auto 16px;">
+                <h2 data-i18n="settingsAppearance">Design & Appearance</h2>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingAccentColor">Accent color palette</span>
+                        <small data-i18n="settingAccentColorHint">Choose a preset or pick custom color</small>
+                    </div>
+                    <div class="setting-control"
+                        style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+                        <div class="color-palette">
+                            <div class="color-swatch" style="background:#7ec384;" onclick="setPresetAccent('#7ec384')">
+                            </div>
+                            <div class="color-swatch" style="background:#3498db;" onclick="setPresetAccent('#3498db')">
+                            </div>
+                            <div class="color-swatch" style="background:#9b59b6;" onclick="setPresetAccent('#9b59b6')">
+                            </div>
+                            <div class="color-swatch" style="background:#e67e22;" onclick="setPresetAccent('#e67e22')">
+                            </div>
+                            <div class="color-swatch" style="background:#00f2fe;" onclick="setPresetAccent('#00f2fe')">
+                            </div>
+                            <div class="color-swatch" style="background:#e74c3c;" onclick="setPresetAccent('#e74c3c')">
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <input type="color" id="accent-color-input" value="#7ec384"
+                                oninput="onAccentColorChange(this.value)">
+                            <button class="btn btn-small btn-outline" onclick="resetAccentColor()"
+                                data-i18n="settingReset">Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingBgStyle">Background Style</span>
+                        <small data-i18n="settingBgStyleHint">Gradient, Flat or Deep OLED</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="bg-gradient-btn"
+                            onclick="setBgStyle('gradient')">Gradient</button>
+                        <button class="btn btn-small btn-outline" id="bg-flat-btn"
+                            onclick="setBgStyle('flat')">Flat</button>
+                        <button class="btn btn-small btn-outline" id="bg-oled-btn" onclick="setBgStyle('oled')">OLED
+                            Black</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingRadius">Corner Roundness</span>
+                        <small data-i18n="settingRadiusHint">Adjust border radius for cards & buttons</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="radius-sharp-btn"
+                            onclick="setCornerRadius('sharp')">Sharp (0px)</button>
+                        <button class="btn btn-small btn-outline" id="radius-medium-btn"
+                            onclick="setCornerRadius('medium')">Medium (12px)</button>
+                        <button class="btn btn-small btn-outline" id="radius-round-btn"
+                            onclick="setCornerRadius('round')">Round (20px)</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingFont">Font Family</span>
+                        <small data-i18n="settingFontHint">Interface typography style</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="font-system-btn"
+                            onclick="setFontFamily('system')">System</button>
+                        <button class="btn btn-small btn-outline" id="font-modern-btn"
+                            onclick="setFontFamily('modern')">Modern</button>
+                        <button class="btn btn-small btn-outline" id="font-serif-btn"
+                            onclick="setFontFamily('serif')">Serif</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingBlur">Glass blur effect</span>
+                        <small data-i18n="settingBlurHint">Adds a blurred glass look to the top and bottom bars</small>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="blur-toggle" onchange="onBlurToggle(this.checked)">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingSafeMode">Safe mode</span>
+                        <small data-i18n="settingSafeModeHint">Hides profanity in video titles</small>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="safe-mode-toggle" onchange="onSafeModeToggle(this.checked)">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 2. ANIMATIONS -->
+            <div class="card settings-card" style="max-width:600px; margin:0 auto 16px;">
+                <h2 data-i18n="settingsAnimations">Animations & Motion</h2>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingAnimMode">Animation Mode</span>
+                        <small data-i18n="settingAnimModeHint">Enable, disable, or make motions dynamic</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="anim-none-btn"
+                            onclick="setAnimationMode('none')">Off</button>
+                        <button class="btn btn-small btn-outline" id="anim-normal-btn"
+                            onclick="setAnimationMode('normal')">Smooth</button>
+                        <button class="btn btn-small btn-outline" id="anim-expressive-btn"
+                            onclick="setAnimationMode('expressive')">Bouncy</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingAnimSpeed">Animation Speed</span>
+                        <small data-i18n="settingAnimSpeedHint">Control transition speeds</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="speed-fast-btn"
+                            onclick="setAnimationSpeed('fast')">0.5x Fast</button>
+                        <button class="btn btn-small btn-outline" id="speed-normal-btn"
+                            onclick="setAnimationSpeed('normal')">1x Normal</button>
+                        <button class="btn btn-small btn-outline" id="speed-slow-btn"
+                            onclick="setAnimationSpeed('slow')">1.5x Slow</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingHoverEffect">Card Hover Effect</span>
+                        <small data-i18n="settingHoverEffectHint">Visual reaction on video hover</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="hover-lift-btn"
+                            onclick="setHoverEffect('lift')">Lift</button>
+                        <button class="btn btn-small btn-outline" id="hover-scale-btn"
+                            onclick="setHoverEffect('scale')">Scale</button>
+                        <button class="btn btn-small btn-outline" id="hover-glow-btn"
+                            onclick="setHoverEffect('glow')">Glow</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. INTERFACE -->
+            <div class="card settings-card" style="max-width:600px; margin:0 auto 16px;">
+                <h2 data-i18n="settingsInterface">Interface Layout</h2>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingViewMode">Catalog View Mode</span>
+                        <small data-i18n="settingViewModeHint">Grid layout vs List layout</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:6px;">
+                        <button class="btn btn-small btn-outline" id="view-grid-btn"
+                            onclick="setViewMode('grid')">Grid</button>
+                        <button class="btn btn-small btn-outline" id="view-list-btn"
+                            onclick="setViewMode('list')">List</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingGridDensity">Grid density</span>
+                        <small data-i18n="settingGridDensityHint">Choose default card display size</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="density-compact-btn"
+                            onclick="setGridDensity('compact')" data-i18n="densityCompact">Compact</button>
+                        <button class="btn btn-small btn-outline" id="density-standard-btn"
+                            onclick="setGridDensity('standard')" data-i18n="densityStandard">Standard</button>
+                        <button class="btn btn-small btn-outline" id="density-large-btn"
+                            onclick="setGridDensity('large')" data-i18n="densityLarge">Large</button>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingCardElements">Card Elements</span>
+                        <small data-i18n="settingCardElementsHint">Show or hide card details</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:12px; flex-wrap:wrap;">
+                        <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem;">
+                            <input type="checkbox" id="show-authors-check" checked
+                                onchange="toggleCardElement('authors', this.checked)"> Author
+                        </label>
+                        <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem;">
+                            <input type="checkbox" id="show-actions-check" checked
+                                onchange="toggleCardElement('actions', this.checked)"> Action Buttons
+                        </label>
+                        <label style="display:flex; align-items:center; gap:4px; font-size:0.85rem;">
+                            <input type="checkbox" id="show-titles-check" checked
+                                onchange="toggleCardElement('titles', this.checked)"> Titles
+                        </label>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingToastPos">Toast Position</span>
+                        <small data-i18n="settingToastPosHint">Where notifications pop up</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="toast-br-btn"
+                            onclick="setToastPosition('bottom-right')">Bottom Right</button>
+                        <button class="btn btn-small btn-outline" id="toast-bc-btn"
+                            onclick="setToastPosition('bottom-center')">Bottom Center</button>
+                        <button class="btn btn-small btn-outline" id="toast-tr-btn"
+                            onclick="setToastPosition('top-right')">Top Right</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. BETA -->
+            <div class="card settings-card" style="max-width:600px; margin:0 auto 16px;">
+                <h2 data-i18n="settingsBeta">Beta functions</h2>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingDockMode">Dock-style navigation</span>
+                        <small data-i18n="settingDockModeHint">Floating bottom menu, like on macOS</small>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="dock-mode-toggle" onchange="onDockModeToggle(this.checked)">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row" id="dock-shape-row" style="display:none;">
+                    <div class="setting-label">
+                        <span data-i18n="settingDockShape">Button shape</span>
+                        <small data-i18n="settingDockShapeHint">Round or square icons for the dock</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:8px;">
+                        <button class="btn btn-small btn-outline" id="dock-shape-round-btn"
+                            onclick="onDockShapeChange('round')" data-i18n="settingDockRound">Round</button>
+                        <button class="btn btn-small btn-outline" id="dock-shape-square-btn"
+                            onclick="onDockShapeChange('square')" data-i18n="settingDockSquare">Square</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. PERFORMANCE -->
+            <div class="card settings-card" style="max-width:600px; margin:0 auto 16px;">
+                <h2 data-i18n="settingsPerformance">Performance & Video Loading</h2>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingDataSaver">Data saver mode</span>
+                        <small data-i18n="settingDataSaverHint">Don't preload video preview frames — only load on tap. Saves traffic and reduces lag on weak devices</small>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="data-saver-toggle" onchange="onDataSaverToggle(this.checked)">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingAutoPause">Pause videos off-screen</span>
+                        <small data-i18n="settingAutoPauseHint">Automatically pause and unload videos that scroll out of view</small>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="auto-pause-toggle" onchange="onAutoPauseToggle(this.checked)">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingSinglePlayback">Play one video at a time</span>
+                        <small data-i18n="settingSinglePlaybackHint">Starting a new video pauses any other video that's playing</small>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="single-playback-toggle" onchange="onSinglePlaybackToggle(this.checked)">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingPreviewDistance">Preview preload distance</span>
+                        <small data-i18n="settingPreviewDistanceHint">How early off-screen video previews start loading</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="preview-near-btn"
+                            onclick="setPreviewDistance('near')" data-i18n="previewNear">Close (less traffic)</button>
+                        <button class="btn btn-small btn-outline" id="preview-normal-btn"
+                            onclick="setPreviewDistance('normal')" data-i18n="previewNormal">Normal</button>
+                        <button class="btn btn-small btn-outline" id="preview-far-btn"
+                            onclick="setPreviewDistance('far')" data-i18n="previewFar">Far (smoother scroll)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5b. NOTIFICATIONS -->
+            <div class="card settings-card" style="max-width:600px; margin:0 auto 16px;">
+                <h2>Уведомления</h2>
+
+                <div class="setting-row" id="mention-notify-row" style="display:none;">
+                    <div class="setting-label">
+                        <span>Упоминания в комнатах</span>
+                        <small>Сообщать, когда тебя отмечают @ником в комнате. Если ты на сайте, придёт звук и всплывашка</small>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="mention-notify-toggle">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 6. DEV -->
+            <div class="card settings-card" style="max-width:600px; margin:0 auto;">
+                <h2 data-i18n="settingsDev">Dev functions</h2>
+
+                <div class="setting-row">
+                    <div class="setting-label">
+                        <span data-i18n="settingPhoneMode">Phone mode</span>
+                        <small data-i18n="settingPhoneModeHint">Frames the app like a phone screen, for testing</small>
+                    </div>
+                    <button class="btn btn-small" id="phone-mode-btn" onclick="onPhoneModeToggle()"
+                        data-i18n="settingPhoneModeToggle">Toggle</button>
+                </div>
+
+                <input type="text" name="name" id="Codes" placeholder="enter the code">
+            </div>
+        </div>
+
+    </main>
+
+    <!-- BOTTOM NAVIGATION -->
+    <div class="bottom-nav">
+        <a href="#" class="nav-item active" data-page="footages" onclick="navigateTo('footages'); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span class="nav-item-label" data-i18n="navHome">Home</span>
+        </a>
+
+        <a href="#" class="nav-item" data-page="upload" onclick="navigateTo('upload'); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span class="nav-item-label" data-i18n="navUpload">Upload</span>
+        </a>
+
+        <a href="#" class="nav-item" data-page="news" onclick="navigateTo('news'); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span class="nav-item-label" data-i18n="navNews">News</span>
+        </a>
+
+        <a href="#" class="nav-item" data-page="collections" onclick="navigateTo('collections'); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                    d="m17 21-5-4-5 4V3.889a.92.92 0 0 1 .244-.629.808.808 0 0 1 .59-.26h8.333a.81.81 0 0 1 .589.26.92.92 0 0 1 .244.63V21Z">
+                </path>
+            </svg>
+            <span class="nav-item-label" data-i18n="navCollections">Collections</span>
+        </a>
+
+        <a href="#" class="nav-item" data-page="profile" onclick="navigateTo('profile'); return false;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span class="nav-item-label" data-i18n="navProfile">Profile</span>
+        </a>
+        <a href="/rooms" class="nav-item" id="rooms-nav-item" data-page="rooms">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11l4 4V5z"></path>
+                <line x1="7" y1="8" x2="17" y2="8"></line>
+                <line x1="7" y1="11" x2="13" y2="11"></line>
+            </svg>
+            <span class="nav-item-label" data-i18n="navRooms">Комнаты</span>
+        </a>
+
+
+        <a href="/admin.html" class="nav-item" id="admin-nav-item" data-page="admin" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z">
+                </path>
+            </svg>
+            <span class="nav-item-label" data-i18n="navAdmin">Admin</span>
+        </a>
+    </div>
+
+    <!-- SORT MODAL SHEET -->
+
+    <!-- COLLECTION MODAL -->
+    <div class="modal-overlay" id="collection-modal">
+        <div class="modal-box">
+            <div class="modal-title" data-i18n="addToCollectionTitle">Add to collection</div>
+            <div id="collection-modal-list"></div>
+            <button class="modal-option modal-create-btn" onclick="createCollectionFromVideo()"
+                data-i18n="createCollection">+ Create new collection</button>
+            <button class="modal-option modal-cancel-btn" onclick="closeCollectionModal()"
+                data-i18n="cancel">Cancel</button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toast-container"></div>
+
+    <script src="notifier.js"></script>
+    <script src="terms-gate.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Футаж</title>
+  <link rel="stylesheet" href="/rooms.css">
+</head>
+<body class="footage-page">
+  <header class="top">
+    <a class="back" href="/" aria-label="Назад">←</a>
+    <div class="top-title">
+      <h1 id="f-title">Загрузка…</h1>
+      <p id="f-meta"></p>
+    </div>
+    <button id="f-copy" class="btn ghost" type="button" hidden>Копировать тег</button>
+  </header>
+
+  <main class="wrap">
+    <video id="f-video" class="video" controls preload="metadata" playsinline hidden></video>
+    <p id="f-status" class="status"></p>
+    <p id="f-tag" class="footage-meta muted small" hidden></p>
+  </main>
+
+  <script src="/notifier.js"></script>
+  <script src="/footage-client.js"></script>
+</body>
+</html>

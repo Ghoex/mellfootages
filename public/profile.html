@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile — Mell Footage</title>
+    <style>
+        :root {
+            --primary: #7ec384;
+            --primary-dark: #5fa368;
+            --bg: #e8f5e9;
+            --bg2: #f5f9f3;
+            --surface: rgba(255, 255, 255, .88);
+            --surface-strong: #fff;
+            --text: #1e1e1e;
+            --muted: #778077;
+            --border: #c1d4b8;
+            --shadow: 0 10px 35px rgba(51, 84, 55, .12);
+            --verified: #2196f3;
+            --tag-bg: rgba(126, 195, 132, .16);
+            --tag-text: #4d8653;
+            --radius: 18px;
+            --small-radius: 12px;
+        }
+
+        body.dark-theme {
+            --bg: #0a0e27;
+            --bg2: #15182a;
+            --surface: rgba(31, 34, 45, .9);
+            --surface-strong: #24262f;
+            --text: #f2f4f2;
+            --muted: #a5ada6;
+            --border: #3f4741;
+            --shadow: 0 12px 35px rgba(0, 0, 0, .34);
+            --tag-bg: rgba(126, 195, 132, .14);
+            --tag-text: #a9ddb0;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0 }
+        html, body { min-height: 100%; width: 100% }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 10% 0%, rgba(126, 195, 132, .22), transparent 34%),
+                radial-gradient(circle at 100% 10%, rgba(95, 163, 104, .14), transparent 28%),
+                linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+            transition: background .25s, color .25s;
+        }
+
+        body.dark-theme {
+            background:
+                radial-gradient(circle at 10% 0%, rgba(126, 195, 132, .10), transparent 34%),
+                radial-gradient(circle at 100% 10%, rgba(69, 90, 73, .12), transparent 28%),
+                linear-gradient(135deg, var(--bg) 0%, var(--bg2) 100%);
+        }
+
+        button, a { font: inherit }
+        a { color: inherit }
+
+        .topnav {
+            position: sticky; top: 0; z-index: 100;
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 18px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            background: color-mix(in srgb, var(--surface-strong) 84%, transparent);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 5px 18px rgba(0,0,0,.06);
+        }
+
+        .logo {
+            font-family: Georgia, serif; font-style: italic;
+            color: var(--primary); font-size: 1.35rem; font-weight: 700;
+            text-decoration: none; white-space: nowrap;
+        }
+
+        .spacer { flex: 1 }
+
+        .nav-link, .theme-btn, #settings-btn {
+            border: 1px solid var(--border);
+            background: var(--surface); color: var(--text); transition: .2s ease;
+        }
+
+        .nav-link {
+            text-decoration: none; padding: 8px 13px;
+            border-radius: 10px; font-size: .9rem;
+        }
+
+        .theme-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+
+        .theme-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none }
+
+        #settings-btn {
+            padding: 8px 13px; border-radius: 10px;
+            cursor: pointer; font-weight: 600;
+        }
+
+        .nav-link:hover, .theme-btn:hover, #settings-btn:hover {
+            border-color: var(--primary); transform: translateY(-1px);
+        }
+
+        .page {
+            width: min(1040px, calc(100% - 28px));
+            margin: 0 auto; padding: 30px 0 60px;
+            display: flex; flex-direction: column; gap: 28px;
+        }
+
+        /* ---------- PROFILE HERO ---------- */
+
+        .not-logged {
+            padding: 40px; text-align: center;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: var(--radius); box-shadow: var(--shadow);
+        }
+
+        .not-logged h2 { margin-bottom: 12px; }
+        .not-logged p { color: var(--muted); margin-bottom: 10px; }
+        .not-logged a {
+            display: inline-block; margin-top: 16px;
+            background: var(--primary); color: #fff; text-decoration: none;
+            padding: 10px 28px; border-radius: 12px; font-weight: 700; transition: .2s;
+        }
+        .not-logged a:hover { background: var(--primary-dark); }
+
+        .profile-card {
+            position: relative; overflow: hidden;
+            display: flex; align-items: center; gap: 22px;
+            padding: 26px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 24px;
+            box-shadow: var(--shadow); backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .profile-card::after {
+            content: ""; position: absolute; right: -70px; top: -80px;
+            width: 220px; height: 220px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(126,195,132,.24), transparent 70%);
+            pointer-events: none;
+        }
+
+        /* AVATAR — кликабельный */
+        .avatar {
+            width: 94px; height: 94px; flex: 0 0 94px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff; font-size: 2.2rem; font-weight: 800;
+            box-shadow: 0 8px 24px rgba(95,163,104,.32);
+            border: 4px solid rgba(255,255,255,.75);
+            position: relative; overflow: hidden;
+            cursor: pointer; transition: .2s;
+        }
+
+        .avatar:hover .avatar-overlay { opacity: 1; }
+
+        .avatar img {
+            width: 100%; height: 100%; object-fit: cover;
+            position: absolute; inset: 0; border-radius: 50%;
+        }
+
+        .avatar-overlay {
+            position: absolute; inset: 0; border-radius: 50%;
+            background: rgba(0,0,0,.45);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity .2s;
+            color: #fff; font-size: .75rem; font-weight: 700;
+            text-align: center; line-height: 1.2; padding: 4px;
+        }
+
+        #avatar-file-input { display: none; }
+
+        .profile-info { min-width: 0; flex: 1; }
+
+        .profile-name-row {
+            display: flex; align-items: center; flex-wrap: wrap;
+            gap: 8px; margin-bottom: 7px;
+        }
+
+        .profile-name-row h2 {
+            font-size: 1.75rem; line-height: 1.15;
+            font-weight: 800; word-break: break-word; margin-bottom: 0;
+        }
+
+        .verified-badge {
+            width: 21px; height: 21px; flex: 0 0 21px;
+            display: inline-flex; align-items: center; justify-content: center;
+            border-radius: 50%; background: var(--verified); color: #fff;
+            font-size: 13px; font-weight: 900;
+            box-shadow: 0 2px 8px rgba(33,150,243,.32); line-height: 1;
+        }
+
+        .user-tags {
+            display: flex; align-items: center; flex-wrap: wrap;
+            gap: 6px; margin: 2px 0 12px;
+        }
+
+        .user-tag-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 9px; border-radius: 999px;
+            background: var(--tag-bg); color: var(--tag-text);
+            border: 1px solid color-mix(in srgb, var(--primary) 60%, transparent);
+            font-size: .75rem; font-weight: 800; white-space: nowrap;
+        }
+
+        .role-badge {
+            display: inline-flex; align-items: center;
+            padding: 5px 10px; border-radius: 999px;
+            background: rgba(126,195,132,.13);
+            border: 1px solid var(--border); color: var(--primary-dark);
+            font-size: .76rem; font-weight: 750; margin-bottom: 14px;
+        }
+
+        /* activity status pill */
+        .activity-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 11px; border-radius: 999px;
+            background: rgba(126,195,132,.10);
+            border: 1px solid var(--border);
+            font-size: .8rem; font-weight: 700; margin-bottom: 10px; cursor: pointer;
+            transition: .2s; color: var(--text);
+        }
+        .activity-pill:hover { border-color: var(--primary); }
+        .activity-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #aaa; flex-shrink: 0; transition: background .3s;
+        }
+        .activity-dot.visible { background: #4caf50; }
+
+        .telegram-btn {
+            display: inline-flex; align-items: center;
+            background-color: #229ed9; color: white;
+            border: 1px solid #229ed9; padding: 9px 16px;
+            border-radius: 12px; cursor: pointer; font-size: .88rem;
+            font-weight: 700; margin-top: 4px; transition: .2s;
+        }
+        .telegram-btn:hover { background-color: #168dcc; transform: translateY(-1px); }
+
+        #telegramCode { margin-top: 12px; color: var(--text); font-size: .92rem; }
+        #telegramCode strong { display: inline-block; margin: 5px 0; }
+        #telegramCode code {
+            display: inline-block; padding: 7px 10px;
+            background: var(--surface-strong); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text); margin: 4px 0;
+        }
+
+        .logout-btn {
+            align-self: flex-start;
+            background-color: #e53935; color: #fff;
+            border: 1px solid #e53935; padding: 9px 20px;
+            border-radius: 12px; cursor: pointer;
+            font-size: .9rem; font-weight: 700; transition: .2s;
+        }
+        .logout-btn:hover { background-color: #c62828; transform: translateY(-1px); }
+
+        /* ---------- SECTIONS ---------- */
+
+        .section { display: flex; flex-direction: column; gap: 14px; }
+
+        .section-header {
+            display: flex; align-items: end;
+            justify-content: space-between; gap: 15px;
+        }
+
+        .section-header h3 { font-size: 1.15rem; font-weight: 800; }
+        .section-header span { font-size: .82rem; color: var(--muted); }
+        .section-header a {
+            font-size: .85rem; color: var(--primary-dark);
+            text-decoration: none; font-weight: 700;
+        }
+        .section-header a:hover { text-decoration: underline; }
+
+        /* ---------- COLLECTIONS ---------- */
+
+        .collection-list { display: grid; gap: 12px; }
+
+        .collection-item {
+            display: flex; align-items: center; gap: 14px;
+            padding: 15px 16px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 16px;
+            box-shadow: 0 5px 18px rgba(0,0,0,.05);
+            transition: transform .2s, box-shadow .2s, border-color .2s;
+        }
+        .collection-item:hover {
+            transform: translateY(-2px); border-color: var(--primary);
+            box-shadow: 0 10px 24px rgba(126,195,132,.16);
+        }
+
+        .col-icon {
+            width: 46px; height: 46px; flex: 0 0 46px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 13px; background: rgba(126,195,132,.13);
+            border: 1px solid var(--border); font-size: 1.35rem;
+        }
+
+        .col-info { flex: 1; min-width: 0; }
+        .col-name { font-size: .98rem; font-weight: 750; word-break: break-word; margin-bottom: 3px; }
+        .col-meta { color: var(--muted); font-size: .78rem; }
+        .col-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+
+        .btn-sm {
+            border: 1px solid var(--border); border-radius: 10px;
+            padding: 7px 11px; font-size: .8rem; font-weight: 650;
+            cursor: pointer; text-decoration: none; display: inline-block; transition: .2s;
+        }
+
+        .btn-view { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .btn-view:hover { background: var(--primary-dark); }
+        .btn-copy { background: var(--surface-strong); color: var(--text); }
+        .btn-copy:hover { border-color: var(--primary); }
+        .btn-delete { background: #e53935; color: #fff; border-color: #e53935; }
+        .btn-delete:hover { background: #c62828; }
+
+        .new-col-form {
+            display: flex; flex-direction: column; gap: 10px;
+            padding: 18px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 16px;
+            box-shadow: 0 5px 18px rgba(0,0,0,.05);
+        }
+        .new-col-form h4 { font-weight: 800; margin-bottom: 4px; }
+
+        .new-col-form input, .new-col-form textarea {
+            background: var(--surface-strong); border: 1px solid var(--border);
+            border-radius: 10px; padding: 9px 12px; color: var(--text);
+            font-size: .95rem; outline: none; width: 100%; transition: border-color .2s;
+        }
+        .new-col-form input:focus, .new-col-form textarea:focus { border-color: var(--primary); }
+        .new-col-form input::placeholder, .new-col-form textarea::placeholder { color: var(--muted); }
+        .new-col-form textarea { resize: vertical; min-height: 60px; }
+        .new-col-form label {
+            font-size: .9rem; color: var(--text);
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .btn-create {
+            align-self: flex-start; background: var(--primary); color: #fff;
+            border: none; padding: 10px 24px; border-radius: 12px;
+            cursor: pointer; font-weight: 700; font-size: .95rem; transition: .2s;
+        }
+        .btn-create:hover { background: var(--primary-dark); }
+
+        /* ---------- LIKED VIDEOS ---------- */
+
+        .liked-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .liked-card {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 14px; overflow: hidden;
+            display: flex; flex-direction: column;
+            box-shadow: 0 5px 18px rgba(0,0,0,.05); transition: transform .2s, box-shadow .2s;
+        }
+        .liked-card:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(126,195,132,.16); }
+
+        .liked-thumb { width: 100%; aspect-ratio: 9/16; background-color: #000; overflow: hidden; }
+        .liked-thumb video, .liked-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+        .liked-info { padding: 8px 10px; font-size: .78rem; color: var(--text); word-break: break-word; }
+        .liked-info a { color: var(--primary-dark); text-decoration: none; font-size: .75rem; font-weight: 700; }
+        .liked-info a:hover { text-decoration: underline; }
+
+        .empty-msg {
+            padding: 34px 20px; text-align: center;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; color: var(--muted); font-size: .95rem;
+        }
+        .empty-msg a { color: var(--primary-dark); font-weight: 700; }
+
+        /* ---------- SUBMISSIONS ---------- */
+
+        .sub-list { display: flex; flex-direction: column; gap: 10px; }
+
+        .sub-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 16px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 14px;
+            box-shadow: 0 5px 18px rgba(0,0,0,.05);
+        }
+
+        .sub-name { flex: 1; font-weight: 750; word-break: break-word; }
+        .sub-date { font-size: .8rem; color: var(--muted); white-space: nowrap; }
+
+        .badge { padding: 4px 11px; border-radius: 999px; font-size: .78rem; font-weight: 800; white-space: nowrap; }
+        .badge-pending { background: rgba(234,179,8,.16); color: #a16207; }
+        .badge-approved { background: rgba(126,195,132,.18); color: var(--primary-dark); }
+        .badge-rejected { background: rgba(229,57,53,.14); color: #c62828; }
+
+        body.dark-theme .badge-pending { background: rgba(234,179,8,.16); color: #fde68a; }
+        body.dark-theme .badge-approved { background: rgba(126,195,132,.16); color: #a9ddb0; }
+        body.dark-theme .badge-rejected { background: rgba(229,57,53,.18); color: #f0b0b0; }
+
+        /* ---------- TOAST ---------- */
+
+        .toast {
+            position: fixed; right: 18px; bottom: 18px; z-index: 9999;
+            display: none; padding: 12px 16px; border-radius: 12px;
+            background: #2e7d32; color: #fff;
+            box-shadow: 0 10px 28px rgba(0,0,0,.22);
+        }
+        .toast.show { display: block; animation: toastIn .22s ease; }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(8px) }
+            to   { opacity: 1; transform: translateY(0)  }
+        }
+
+        /* ========================================================
+           SETTINGS MODAL
+           ======================================================== */
+
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 500;
+            background: rgba(0,0,0,.45); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center; padding: 16px;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: var(--surface-strong); border: 1px solid var(--border);
+            border-radius: 22px; box-shadow: 0 24px 60px rgba(0,0,0,.24);
+            width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto;
+            padding: 28px 24px; display: flex; flex-direction: column; gap: 22px;
+            animation: modalIn .22s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(.96) }
+            to   { opacity: 1; transform: scale(1)  }
+        }
+
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        }
+        .modal-header h3 { font-size: 1.15rem; font-weight: 800; }
+        .modal-close {
+            width: 34px; height: 34px; border-radius: 50%;
+            background: var(--surface); border: 1px solid var(--border);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; color: var(--muted); transition: .2s;
+        }
+        .modal-close:hover { border-color: var(--primary); color: var(--text); }
+
+        .modal-section { display: flex; flex-direction: column; gap: 10px; }
+        .modal-section-title {
+            font-size: .8rem; font-weight: 800; color: var(--muted);
+            text-transform: uppercase; letter-spacing: .06em;
+        }
+
+        .field-group { display: flex; flex-direction: column; gap: 6px; }
+        .field-label { font-size: .88rem; font-weight: 700; }
+        .field-input {
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 10px; padding: 10px 13px; color: var(--text);
+            font-size: .95rem; outline: none; width: 100%; transition: border-color .2s;
+        }
+        .field-input:focus { border-color: var(--primary); }
+        .field-input::placeholder { color: var(--muted); }
+
+        /* Password field wrapper */
+        .pw-wrap { position: relative; }
+        .pw-wrap .field-input { padding-right: 42px; }
+        .pw-eye {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            cursor: pointer; color: var(--muted); background: none; border: none;
+            display: flex; align-items: center; padding: 0;
+        }
+        .pw-eye svg { width: 18px; height: 18px; stroke: currentColor; fill: none; }
+
+        .btn-save {
+            background: var(--primary); color: #fff; border: none;
+            padding: 10px 22px; border-radius: 12px; cursor: pointer;
+            font-weight: 700; font-size: .95rem; transition: .2s; align-self: flex-start;
+        }
+        .btn-save:hover { background: var(--primary-dark); }
+        .btn-save:disabled { opacity: .6; cursor: default; }
+
+        /* Toggle switch */
+        .toggle-row {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            padding: 12px 14px; background: var(--surface);
+            border: 1px solid var(--border); border-radius: 12px;
+        }
+        .toggle-info { display: flex; flex-direction: column; gap: 2px; }
+        .toggle-title { font-size: .93rem; font-weight: 700; }
+        .toggle-desc { font-size: .78rem; color: var(--muted); }
+
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; inset: 0;
+            background: var(--border); border-radius: 999px; transition: .3s;
+        }
+        .slider:before {
+            content: ""; position: absolute;
+            width: 18px; height: 18px; left: 3px; bottom: 3px;
+            background: #fff; border-radius: 50%; transition: .3s;
+        }
+        .switch input:checked + .slider { background: var(--primary); }
+        .switch input:checked + .slider:before { transform: translateX(20px); }
+
+        .modal-divider { border: none; border-top: 1px solid var(--border); }
+
+        /* ========================================================
+           RESPONSIVE
+           ======================================================== */
+
+        @media (max-width: 700px) {
+            .topnav { padding: 10px 12px }
+            .logo { font-size: 1.15rem }
+            #settings-btn { display: none }
+            .page { width: min(100% - 18px, 1040px); padding-top: 18px }
+            .profile-card { align-items: flex-start; flex-wrap: wrap; padding: 19px; gap: 15px; }
+            .avatar { width: 72px; height: 72px; flex-basis: 72px; font-size: 1.7rem }
+            .profile-name-row h2 { font-size: 1.35rem }
+            .logout-btn { margin-left: auto; }
+            .collection-item, .sub-item { align-items: flex-start; flex-wrap: wrap }
+            .col-actions { width: 100%; padding-left: 60px }
+            .sub-name { width: 100%; flex-basis: 100%; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="topnav">
+        <a href="/" class="logo">Mell Footage</a>
+        <div class="spacer"></div>
+        <a href="/" class="nav-link" id="backLink">← Back</a>
+        <button id="settings-btn" onclick="openSettings()">⚙ Settings</button>
+        <button class="theme-btn" onclick="toggleTheme()" aria-label="Theme">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+        </button>
+    </nav>
+
+    <div class="page" id="page-content">
+        <p id="loadingText" style="color:var(--muted); text-align:center; padding:40px;">Loading...</p>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <!-- hidden file input for avatar -->
+    <input type="file" id="avatar-file-input" accept="image/*">
+
+    <!-- ======================================================
+         SETTINGS MODAL
+         ====================================================== -->
+    <div class="modal-overlay" id="settings-modal" onclick="closeSettingsOutside(event)">
+        <div class="modal">
+
+            <div class="modal-header">
+                <h3 id="modal-title-settings">⚙ Settings</h3>
+                <button class="modal-close" onclick="closeSettings()">✕</button>
+            </div>
+
+            <!-- AVATAR -->
+            <div class="modal-section">
+                <div class="modal-section-title" id="ms-avatar">Avatar</div>
+                <div style="display:flex; align-items:center; gap:14px;">
+                    <div class="avatar" id="modal-avatar-preview" style="width:64px;height:64px;font-size:1.6rem;flex:0 0 64px;cursor:default;"></div>
+                    <button class="btn-save" onclick="document.getElementById('avatar-file-input').click()" id="btn-change-avatar">📷 Change photo</button>
+                    <button class="btn-save" id="btn-remove-avatar" onclick="removeAvatar()" style="background:#e53935;">Remove</button>
+                </div>
+                <div id="avatar-upload-status" style="font-size:.82rem; color:var(--muted);"></div>
+            </div>
+
+            <hr class="modal-divider">
+
+            <!-- ACTIVITY VISIBILITY -->
+            <div class="modal-section">
+                <div class="modal-section-title" id="ms-privacy">Privacy</div>
+                <div class="toggle-row">
+                    <div class="toggle-info">
+                        <span class="toggle-title" id="tgl-activity-title">Show activity</span>
+                        <span class="toggle-desc" id="tgl-activity-desc">Other users can see when you are online</span>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="toggle-activity" onchange="saveActivityVisibility()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <hr class="modal-divider">
+
+            <!-- CHANGE NICKNAME -->
+            <div class="modal-section">
+                <div class="modal-section-title" id="ms-nickname">Nickname</div>
+                <div class="field-group">
+                    <label class="field-label" id="lbl-new-nick">New nickname</label>
+                    <input type="text" class="field-input" id="input-nickname"
+                           placeholder="Enter new nickname" maxlength="32" autocomplete="off">
+                </div>
+                <button class="btn-save" id="btn-save-nick" onclick="saveNickname()">Save nickname</button>
+            </div>
+
+            <hr class="modal-divider">
+
+            <!-- CHANGE PASSWORD -->
+            <div class="modal-section">
+                <div class="modal-section-title" id="ms-password">Password</div>
+                <div class="field-group">
+                    <label class="field-label" id="lbl-cur-pw">Current password</label>
+                    <div class="pw-wrap">
+                        <input type="password" class="field-input" id="input-pw-current"
+                               placeholder="••••••••" autocomplete="current-password">
+                        <button class="pw-eye" onclick="togglePw('input-pw-current', this)">
+                            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label" id="lbl-new-pw">New password</label>
+                    <div class="pw-wrap">
+                        <input type="password" class="field-input" id="input-pw-new"
+                               placeholder="Min 6 characters" autocomplete="new-password">
+                        <button class="pw-eye" onclick="togglePw('input-pw-new', this)">
+                            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="field-group">
+                    <label class="field-label" id="lbl-confirm-pw">Confirm new password</label>
+                    <div class="pw-wrap">
+                        <input type="password" class="field-input" id="input-pw-confirm"
+                               placeholder="Repeat new password" autocomplete="new-password">
+                        <button class="pw-eye" onclick="togglePw('input-pw-confirm', this)">
+                            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn-save" id="btn-save-pw" onclick="savePassword()">Change password</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+        /* =========================================================
+           LANGUAGE
+           ========================================================= */
+
+        const translations = {
+
+            ru: {
+                back: '← Назад',
+                settings: '⚙ Настройки',
+                loading: 'Загрузка...',
+                loginRequiredTitle: 'Вы не вошли в аккаунт',
+                loginRequiredText: 'Чтобы видеть профиль, нужно авторизоваться.',
+                login: 'Войти / Зарегистрироваться',
+                logout: 'Выйти',
+                linkTelegram: '🔗 Привязать Telegram',
+                yourCode: 'Твой код:',
+                telegramBot: 'Отправь его нашему Telegram-боту:',
+                codeExpires: '⏰ Код действует 10 минут.',
+                collections: '📁 Коллекции',
+                createCollection: 'Создать новую коллекцию',
+                collectionName: 'Название коллекции...',
+                collectionDescription: 'Описание (необязательно)...',
+                publicCollection: 'Публичная (доступна по ссылке)',
+                privateCollection: 'Приватная',
+                public: 'Публичная',
+                create: 'Создать',
+                noCollections: 'Нет коллекций. Создайте первую!',
+                open: 'Открыть',
+                copyLink: 'Копировать ссылку',
+                delete: 'Удалить',
+                submissions: '📤 Мои отправки',
+                sendFootage: '+ Отправить футаж',
+                noSubmissions: 'Ты ещё ничего не отправлял.',
+                pending: '⏳ На проверке',
+                approved: '✅ Одобрен',
+                rejected: '❌ Отклонён',
+                likedVideos: '♥ Понравившиеся видео',
+                noLikedVideos: 'Вы ещё ничего не лайкнули.',
+                download: '⬇ Скачать',
+                pieces: 'шт.',
+                collectionNameRequired: 'Введите название!',
+                collectionCreated: 'Коллекция создана!',
+                collectionDeleted: 'Коллекция удалена',
+                deleteCollectionConfirm: 'Удалить коллекцию?',
+                linkCopied: 'Ссылка скопирована!',
+                error: 'Ошибка',
+                loginError: 'Нужно войти в аккаунт',
+                telegramError: 'Ошибка Telegram',
+                // settings modal
+                modalSettings: '⚙ Настройки',
+                msAvatar: 'Аватар',
+                msPrivacy: 'Приватность',
+                msNickname: 'Никнейм',
+                msPassword: 'Пароль',
+                changePhoto: '📷 Сменить фото',
+                removeAvatar: 'Удалить',
+                tglActivityTitle: 'Показывать активность',
+                tglActivityDesc: 'Другие пользователи видят, когда вы онлайн',
+                activityOn: '🟢 Активность видна',
+                activityOff: '⚫ Активность скрыта',
+                lblNewNick: 'Новый никнейм',
+                inputNickPlaceholder: 'Введите новый никнейм',
+                btnSaveNick: 'Сохранить никнейм',
+                lblCurPw: 'Текущий пароль',
+                lblNewPw: 'Новый пароль',
+                lblConfirmPw: 'Повторите новый пароль',
+                btnSavePw: 'Сменить пароль',
+                avatarUpdated: 'Аватар обновлён!',
+                avatarRemoved: 'Аватар удалён',
+                nickUpdated: 'Никнейм обновлён!',
+                pwUpdated: 'Пароль изменён!',
+                pwMismatch: 'Пароли не совпадают',
+                pwShort: 'Минимум 6 символов',
+                activitySaved: 'Настройки сохранены',
+                nickEmpty: 'Введите никнейм',
+                uploading: 'Загрузка...',
+            },
+
+            uk: {
+                back: '← Назад',
+                settings: '⚙ Налаштування',
+                loading: 'Завантаження...',
+                loginRequiredTitle: 'Ви не увійшли в акаунт',
+                loginRequiredText: 'Щоб переглядати профіль, потрібно авторизуватися.',
+                login: 'Увійти / Зареєструватися',
+                logout: 'Вийти',
+                linkTelegram: '🔗 Прив’язати Telegram',
+                yourCode: 'Твій код:',
+                telegramBot: 'Відправ його нашому Telegram-боту:',
+                codeExpires: '⏰ Код діє 10 хвилин.',
+                collections: '📁 Колекції',
+                createCollection: 'Створити нову колекцію',
+                collectionName: 'Назва колекції...',
+                collectionDescription: 'Опис (необов’язково)...',
+                publicCollection: 'Публічна (доступна за посиланням)',
+                privateCollection: 'Приватна',
+                public: 'Публічна',
+                create: 'Створити',
+                noCollections: 'Немає колекцій. Створіть першу!',
+                open: 'Відкрити',
+                copyLink: 'Копіювати посилання',
+                delete: 'Видалити',
+                submissions: '📤 Мої відправки',
+                sendFootage: '+ Відправити футаж',
+                noSubmissions: 'Ти ще нічого не відправляв.',
+                pending: '⏳ На перевірці',
+                approved: '✅ Схвалено',
+                rejected: '❌ Відхилено',
+                likedVideos: '♥ Вподобані відео',
+                noLikedVideos: 'Ти ще нічого не вподобав.',
+                download: '⬇ Завантажити',
+                pieces: 'шт.',
+                collectionNameRequired: 'Введіть назву!',
+                collectionCreated: 'Колекцію створено!',
+                collectionDeleted: 'Колекцію видалено',
+                deleteCollectionConfirm: 'Видалити колекцію?',
+                linkCopied: 'Посилання скопійовано!',
+                error: 'Помилка',
+                loginError: 'Потрібно увійти в акаунт',
+                telegramError: 'Помилка Telegram',
+                modalSettings: '⚙ Налаштування',
+                msAvatar: 'Аватар',
+                msPrivacy: 'Приватність',
+                msNickname: 'Нікнейм',
+                msPassword: 'Пароль',
+                changePhoto: '📷 Змінити фото',
+                removeAvatar: 'Видалити',
+                tglActivityTitle: 'Показувати активність',
+                tglActivityDesc: 'Інші користувачі бачать, коли ви онлайн',
+                activityOn: '🟢 Активність видна',
+                activityOff: '⚫ Активність прихована',
+                lblNewNick: 'Новий нікнейм',
+                inputNickPlaceholder: 'Введіть новий нікнейм',
+                btnSaveNick: 'Зберегти нікнейм',
+                lblCurPw: 'Поточний пароль',
+                lblNewPw: 'Новий пароль',
+                lblConfirmPw: 'Повторіть новий пароль',
+                btnSavePw: 'Змінити пароль',
+                avatarUpdated: 'Аватар оновлено!',
+                avatarRemoved: 'Аватар видалено',
+                nickUpdated: 'Нікнейм оновлено!',
+                pwUpdated: 'Пароль змінено!',
+                pwMismatch: 'Паролі не збігаються',
+                pwShort: 'Мінімум 6 символів',
+                activitySaved: 'Налаштування збережено',
+                nickEmpty: 'Введіть нікнейм',
+                uploading: 'Завантаження...',
+            },
+
+            en: {
+                back: '← Back',
+                settings: '⚙ Settings',
+                loading: 'Loading...',
+                loginRequiredTitle: 'You are not logged in',
+                loginRequiredText: 'You need to log in to view your profile.',
+                login: 'Login / Register',
+                logout: 'Logout',
+                linkTelegram: '🔗 Link Telegram',
+                yourCode: 'Your code:',
+                telegramBot: 'Send it to our Telegram bot:',
+                codeExpires: '⏰ Code is valid for 10 minutes.',
+                collections: '📁 Collections',
+                createCollection: 'Create a new collection',
+                collectionName: 'Collection name...',
+                collectionDescription: 'Description (optional)...',
+                publicCollection: 'Public (available by link)',
+                privateCollection: 'Private',
+                public: 'Public',
+                create: 'Create',
+                noCollections: 'No collections. Create the first one!',
+                open: 'Open',
+                copyLink: 'Copy link',
+                delete: 'Delete',
+                submissions: '📤 My submissions',
+                sendFootage: '+ Submit footage',
+                noSubmissions: 'You have not submitted anything yet.',
+                pending: '⏳ Pending',
+                approved: '✅ Approved',
+                rejected: '❌ Rejected',
+                likedVideos: '♥ Liked videos',
+                noLikedVideos: 'You have not liked anything yet.',
+                download: '⬇ Download',
+                pieces: 'pcs.',
+                collectionNameRequired: 'Enter a name!',
+                collectionCreated: 'Collection created!',
+                collectionDeleted: 'Collection deleted',
+                deleteCollectionConfirm: 'Delete collection?',
+                linkCopied: 'Link copied!',
+                error: 'Error',
+                loginError: 'Login required',
+                telegramError: 'Telegram error',
+                modalSettings: '⚙ Settings',
+                msAvatar: 'Avatar',
+                msPrivacy: 'Privacy',
+                msNickname: 'Nickname',
+                msPassword: 'Password',
+                changePhoto: '📷 Change photo',
+                removeAvatar: 'Remove',
+                tglActivityTitle: 'Show activity',
+                tglActivityDesc: 'Other users can see when you are online',
+                activityOn: '🟢 Activity visible',
+                activityOff: '⚫ Activity hidden',
+                lblNewNick: 'New nickname',
+                inputNickPlaceholder: 'Enter new nickname',
+                btnSaveNick: 'Save nickname',
+                lblCurPw: 'Current password',
+                lblNewPw: 'New password',
+                lblConfirmPw: 'Confirm new password',
+                btnSavePw: 'Change password',
+                avatarUpdated: 'Avatar updated!',
+                avatarRemoved: 'Avatar removed',
+                nickUpdated: 'Nickname updated!',
+                pwUpdated: 'Password changed!',
+                pwMismatch: 'Passwords do not match',
+                pwShort: 'Minimum 6 characters',
+                activitySaved: 'Settings saved',
+                nickEmpty: 'Enter a nickname',
+                uploading: 'Uploading...',
+            }
+        };
+
+        let currentLang = localStorage.getItem('app_lang') || 'en';
+        if (!translations[currentLang]) currentLang = 'en';
+        document.documentElement.lang = currentLang;
+
+        (function applySavedAccent() {
+            const accent = localStorage.getItem('accent_color');
+            if (accent && /^#[0-9a-fA-F]{6}$/.test(accent)) {
+                document.documentElement.style.setProperty('--primary', accent);
+            }
+        })();
+
+        function t(key) {
+            return translations[currentLang]?.[key] ?? translations.en?.[key] ?? key;
+        }
+
+        function escapeHtml(s) {
+            return String(s ?? '')
+                .replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;').replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
+
+        if (localStorage.getItem('theme') === 'dark' || localStorage.getItem('darkTheme') === 'true') {
+            document.body.classList.add('dark-theme');
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        function showToast(msg, color = '#2e7d32') {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.backgroundColor = color;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        /* =========================================================
+           LOAD PROFILE
+           ========================================================= */
+
+        let _profileData = null; // кэш профиля
+
+        async function loadProfile() {
+            const page = document.getElementById('page-content');
+
+            try {
+                const meRes = await fetch('/api/me', { credentials: 'same-origin' });
+                const me = await meRes.json();
+
+                if (!me.loggedIn) {
+                    page.innerHTML = `
+                        <div class="not-logged">
+                            <h2>${t('loginRequiredTitle')}</h2>
+                            <p>${t('loginRequiredText')}</p>
+                            <a href="/auth">${t('login')}</a>
+                        </div>`;
+                    return;
+                }
+
+                const [profRes, subsRes] = await Promise.all([
+                    fetch('/api/profile', { credentials: 'same-origin' }),
+                    fetch('/api/submissions/my', { credentials: 'same-origin' })
+                ]);
+
+                if (!profRes.ok) throw new Error('Profile request failed');
+
+                const prof = await profRes.json();
+                _profileData = prof;
+
+                const subs = subsRes.ok ? await subsRes.json() : [];
+
+                // fallback tags
+                if (!Array.isArray(prof.tags) && prof.username) {
+                    try {
+                        const userRes = await fetch(`/api/user/${encodeURIComponent(prof.username)}`, { credentials: 'same-origin' });
+                        if (userRes.ok) {
+                            const userData = await userRes.json();
+                            if (Array.isArray(userData.tags)) prof.tags = userData.tags;
+                        }
+                    } catch (e) { /* ignore */ }
+                }
+
+                const activityVisible = prof.activity_visible !== false; // default true
+                const activityLabel = activityVisible ? t('activityOn') : t('activityOff');
+
+                page.innerHTML = `
+                   <div class="profile-card">
+
+                        <div class="avatar" id="prof-avatar" onclick="document.getElementById('avatar-file-input').click()" title="${t('changePhoto')}">
+                            <span id="prof-avatar-letter"></span>
+                            <div class="avatar-overlay">📷</div>
+                        </div>
+
+                        <div class="profile-info">
+                            <div class="profile-name-row">
+                                <h2 id="prof-username"></h2>
+                                <span id="prof-verified" class="verified-badge" title="Verified" style="display:none;">✓</span>
+                            </div>
+                            <div id="prof-tags" class="user-tags"></div>
+                            <span class="role-badge" id="prof-role"></span>
+
+                            <button class="activity-pill" id="activity-pill-btn" onclick="openSettings()" title="${t('tglActivityDesc')}">
+                                <span class="activity-dot ${activityVisible ? 'visible' : ''}" id="activity-dot"></span>
+                                <span id="activity-pill-label">${activityLabel}</span>
+                            </button>
+
+                            <div>
+                                <button class="telegram-btn" onclick="generateTelegramCode()">${t('linkTelegram')}</button>
+                            </div>
+                            <div id="telegramCode"></div>
+                        </div>
+
+                        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+                            <button class="btn-save" onclick="openSettings()" style="white-space:nowrap;">${t('settings')}</button>
+                            <button class="logout-btn" onclick="logout()">${t('logout')}</button>
+                        </div>
+
+                   </div>
+
+                   <!-- COLLECTIONS -->
+                   <div class="section">
+                        <div class="section-header">
+                            <h3>${t('collections')}</h3>
+                            <span id="col-count"></span>
+                        </div>
+                        <div id="collections-list" class="collection-list"></div>
+                        <div class="new-col-form">
+                            <h4>${t('createCollection')}</h4>
+                            <input type="text" id="col-name" maxlength="100" placeholder="${t('collectionName')}">
+                            <textarea id="col-desc" maxlength="500" placeholder="${t('collectionDescription')}"></textarea>
+                            <div class="form-row">
+                                <label>
+                                    <input type="checkbox" id="col-public" checked>
+                                    ${t('publicCollection')}
+                                </label>
+                            </div>
+                            <button class="btn-create" onclick="createCollection()">${t('create')}</button>
+                        </div>
+                   </div>
+
+                   <!-- SUBMISSIONS -->
+                   <div class="section">
+                        <div class="section-header">
+                            <h3>${t('submissions')}</h3>
+                        </div>
+                        <div class="sub-list" id="sub-list"></div>
+                   </div>
+
+                   <!-- LIKED VIDEOS -->
+                   <div class="section">
+                        <div class="section-header">
+                            <h3>${t('likedVideos')}</h3>
+                            <span id="liked-count"></span>
+                        </div>
+                        <div id="liked-grid" class="liked-grid"></div>
+                   </div>
+                `;
+
+                // fill data
+                const username = String(prof.username || '');
+                document.getElementById('prof-avatar-letter').textContent = username ? username.charAt(0).toUpperCase() : '?';
+
+                // avatar image
+                if (prof.avatar_url) {
+                    const imgEl = document.createElement('img');
+                    imgEl.src = prof.avatar_url;
+                    imgEl.alt = username;
+                    document.getElementById('prof-avatar').appendChild(imgEl);
+                }
+
+                document.getElementById('prof-username').textContent = username;
+
+                const verified = prof.is_verified === true || prof.is_verified === 1 || prof.is_verified === '1' || prof.verified === true;
+                document.getElementById('prof-verified').style.display = verified ? 'inline-flex' : 'none';
+
+                // tags
+                const tagsEl = document.getElementById('prof-tags');
+                tagsEl.innerHTML = '';
+                (Array.isArray(prof.tags) ? prof.tags : []).forEach(tag => {
+                    if (!tag) return;
+                    const tagName = String(tag.name || '').trim();
+                    if (!tagName) return;
+                    let tagColor = String(tag.color || '#7ec384');
+                    if (!/^#[0-9a-fA-F]{3,8}$/.test(tagColor)) tagColor = '#7ec384';
+                    const el = document.createElement('span');
+                    el.className = 'user-tag-badge';
+                    el.style.color = tagColor;
+                    el.style.backgroundColor = tagColor + '22';
+                    el.style.borderColor = tagColor;
+                    if (tag.icon) { const ic = document.createElement('span'); ic.textContent = String(tag.icon); el.appendChild(ic); }
+                    const nm = document.createElement('span'); nm.textContent = tagName; el.appendChild(nm);
+                    tagsEl.appendChild(el);
+                });
+
+                document.getElementById('prof-role').textContent = prof.role || 'user';
+
+                const collections = Array.isArray(prof.collections) ? prof.collections : [];
+                document.getElementById('col-count').textContent = `${collections.length} ${t('pieces')}`;
+
+                const likedVideos = Array.isArray(prof.liked_videos) ? prof.liked_videos : [];
+                document.getElementById('liked-count').textContent = `${likedVideos.length} ${t('pieces')}`;
+
+                renderCollections(collections);
+                renderSubmissions(subs);
+                renderLiked(likedVideos);
+
+                // pre-fill settings modal inputs
+                document.getElementById('input-nickname').value = username;
+                document.getElementById('toggle-activity').checked = activityVisible;
+                updateModalAvatarPreview(prof.avatar_url, username);
+                updateSettingsModalText();
+
+            } catch (error) {
+                console.error('Profile loading error:', error);
+                page.innerHTML = `<div class="not-logged"><h2>${t('error')}</h2><p>${t('loginError')}</p></div>`;
+            }
+        }
+
+        /* =========================================================
+           SETTINGS MODAL
+           ========================================================= */
+
+        function openSettings() {
+            document.getElementById('settings-modal').classList.add('open');
+        }
+
+        function closeSettings() {
+            document.getElementById('settings-modal').classList.remove('open');
+        }
+
+        function closeSettingsOutside(e) {
+            if (e.target === document.getElementById('settings-modal')) closeSettings();
+        }
+
+        function updateSettingsModalText() {
+            document.getElementById('modal-title-settings').textContent = t('modalSettings');
+            document.getElementById('ms-avatar').textContent = t('msAvatar');
+            document.getElementById('ms-privacy').textContent = t('msPrivacy');
+            document.getElementById('ms-nickname').textContent = t('msNickname');
+            document.getElementById('ms-password').textContent = t('msPassword');
+            document.getElementById('btn-change-avatar').textContent = t('changePhoto');
+            document.getElementById('btn-remove-avatar').textContent = t('removeAvatar');
+            document.getElementById('tgl-activity-title').textContent = t('tglActivityTitle');
+            document.getElementById('tgl-activity-desc').textContent = t('tglActivityDesc');
+            document.getElementById('lbl-new-nick').textContent = t('lblNewNick');
+            document.getElementById('input-nickname').placeholder = t('inputNickPlaceholder');
+            document.getElementById('btn-save-nick').textContent = t('btnSaveNick');
+            document.getElementById('lbl-cur-pw').textContent = t('lblCurPw');
+            document.getElementById('lbl-new-pw').textContent = t('lblNewPw');
+            document.getElementById('lbl-confirm-pw').textContent = t('lblConfirmPw');
+            document.getElementById('btn-save-pw').textContent = t('btnSavePw');
+        }
+
+        function updateModalAvatarPreview(avatarUrl, username) {
+            const preview = document.getElementById('modal-avatar-preview');
+            if (!preview) return;
+            preview.innerHTML = '';
+            if (avatarUrl) {
+                const img = document.createElement('img');
+                img.src = avatarUrl; img.alt = username;
+                preview.appendChild(img);
+            } else {
+                preview.textContent = (username || '?').charAt(0).toUpperCase();
+            }
+        }
+
+        /* =========================================================
+           AVATAR UPLOAD
+           ========================================================= */
+
+        document.getElementById('avatar-file-input').addEventListener('change', async function () {
+            const file = this.files[0];
+            if (!file) return;
+
+            // max 5 MB
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Max 5 MB', '#e53935');
+                return;
+            }
+
+            const statusEl = document.getElementById('avatar-upload-status');
+            if (statusEl) statusEl.textContent = t('uploading');
+
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            try {
+                const res = await fetch('/api/profile/avatar', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: formData
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.avatar_url) {
+                    showToast(t('avatarUpdated'));
+                    if (statusEl) statusEl.textContent = '';
+                    // update all avatar elements
+                    updateAvatarEverywhere(data.avatar_url);
+                } else {
+                    showToast(data.error || t('error'), '#e53935');
+                    if (statusEl) statusEl.textContent = '';
+                }
+            } catch (e) {
+                console.error('Avatar upload error:', e);
+                showToast(t('error'), '#e53935');
+                if (statusEl) statusEl.textContent = '';
+            }
+
+            this.value = ''; // reset input
+        });
+
+        function updateAvatarEverywhere(url) {
+            // profile card avatar
+            const profAvatar = document.getElementById('prof-avatar');
+            if (profAvatar) {
+                let img = profAvatar.querySelector('img');
+                if (!img) { img = document.createElement('img'); profAvatar.appendChild(img); }
+                img.src = url;
+            }
+            // modal preview
+            if (_profileData) updateModalAvatarPreview(url, _profileData.username || '');
+        }
+
+        async function removeAvatar() {
+            try {
+                const res = await fetch('/api/profile/avatar', {
+                    method: 'DELETE',
+                    credentials: 'same-origin'
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(t('avatarRemoved'));
+                    const profAvatar = document.getElementById('prof-avatar');
+                    if (profAvatar) { const img = profAvatar.querySelector('img'); if (img) img.remove(); }
+                    if (_profileData) updateModalAvatarPreview(null, _profileData.username || '');
+                } else {
+                    showToast(data.error || t('error'), '#e53935');
+                }
+            } catch (e) {
+                showToast(t('error'), '#e53935');
+            }
+        }
+
+        /* =========================================================
+           ACTIVITY VISIBILITY
+           ========================================================= */
+
+        async function saveActivityVisibility() {
+            const visible = document.getElementById('toggle-activity').checked;
+
+            try {
+                const res = await fetch('/api/profile/activity-visibility', {
+                    method: 'PATCH',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ activity_visible: visible })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(t('activitySaved'));
+                    // update pill on profile card
+                    const dot = document.getElementById('activity-dot');
+                    const lbl = document.getElementById('activity-pill-label');
+                    if (dot) { dot.classList.toggle('visible', visible); }
+                    if (lbl) { lbl.textContent = visible ? t('activityOn') : t('activityOff'); }
+                } else {
+                    showToast(data.error || t('error'), '#e53935');
+                    // revert toggle
+                    document.getElementById('toggle-activity').checked = !visible;
+                }
+            } catch (e) {
+                showToast(t('error'), '#e53935');
+                document.getElementById('toggle-activity').checked = !visible;
+            }
+        }
+
+        /* =========================================================
+           CHANGE NICKNAME
+           ========================================================= */
+
+        async function saveNickname() {
+            const nickInput = document.getElementById('input-nickname');
+            const nick = nickInput.value.trim();
+
+            if (!nick) { showToast(t('nickEmpty'), '#e53935'); return; }
+
+            const btn = document.getElementById('btn-save-nick');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/profile/nickname', {
+                    method: 'PATCH',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nickname: nick })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(t('nickUpdated'));
+                    // update displayed username
+                    const uEl = document.getElementById('prof-username');
+                    if (uEl) uEl.textContent = nick;
+                    const avatarLetter = document.getElementById('prof-avatar-letter');
+                    if (avatarLetter) avatarLetter.textContent = nick.charAt(0).toUpperCase();
+                } else {
+                    showToast(data.error || t('error'), '#e53935');
+                }
+            } catch (e) {
+                showToast(t('error'), '#e53935');
+            }
+
+            btn.disabled = false;
+        }
+
+        /* =========================================================
+           CHANGE PASSWORD
+           ========================================================= */
+
+        function togglePw(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        async function savePassword() {
+            const current = document.getElementById('input-pw-current').value;
+            const newPw    = document.getElementById('input-pw-new').value;
+            const confirm  = document.getElementById('input-pw-confirm').value;
+
+            if (newPw !== confirm) { showToast(t('pwMismatch'), '#e53935'); return; }
+            if (newPw.length < 6)  { showToast(t('pwShort'), '#e53935');    return; }
+
+            const btn = document.getElementById('btn-save-pw');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/profile/password', {
+                    method: 'PATCH',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ current_password: current, new_password: newPw })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(t('pwUpdated'));
+                    document.getElementById('input-pw-current').value = '';
+                    document.getElementById('input-pw-new').value = '';
+                    document.getElementById('input-pw-confirm').value = '';
+                } else {
+                    showToast(data.error || t('error'), '#e53935');
+                }
+            } catch (e) {
+                showToast(t('error'), '#e53935');
+            }
+
+            btn.disabled = false;
+        }
+
+        /* =========================================================
+           TELEGRAM
+           ========================================================= */
+
+        async function generateTelegramCode() {
+            try {
+                const response = await fetch('/api/telegram/link-code', {
+                    method: 'POST', credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await response.json();
+                if (!response.ok) { alert(data.error || t('telegramError')); return; }
+                document.getElementById('telegramCode').innerHTML = `
+                    <p>${t('yourCode')}</p>
+                    <strong style="font-size:32px;">${escapeHtml(data.code)}</strong>
+                    <p>${t('telegramBot')} <b>@Mllcards_bot</b></p>
+                    <code>/link ${escapeHtml(data.code)}</code>
+                    <p>${t('codeExpires')}</p>`;
+            } catch (e) { alert(t('telegramError')); }
+        }
+
+        /* =========================================================
+           COLLECTIONS
+           ========================================================= */
+
+        function renderCollections(cols) {
+            const list = document.getElementById('collections-list');
+            if (!Array.isArray(cols) || !cols.length) {
+                list.innerHTML = `<div class="empty-msg">${t('noCollections')}</div>`; return;
+            }
+            list.innerHTML = '';
+            cols.forEach(c => {
+                const item = document.createElement('div');
+                item.className = 'collection-item';
+                item.id = `col-item-${c.id}`;
+
+                const icon = document.createElement('div'); icon.className = 'col-icon'; icon.textContent = c.is_public ? '🌐' : '🔒';
+                const info = document.createElement('div'); info.className = 'col-info';
+                const name = document.createElement('div'); name.className = 'col-name'; name.textContent = c.name;
+                const meta = document.createElement('div'); meta.className = 'col-meta'; meta.textContent = c.is_public ? t('public') : t('privateCollection');
+                info.append(name, meta);
+
+                const actions = document.createElement('div'); actions.className = 'col-actions';
+                const openBtn = document.createElement('a'); openBtn.href = `/collection/${c.id}`; openBtn.className = 'btn-sm btn-view'; openBtn.textContent = t('open');
+                actions.appendChild(openBtn);
+
+                if (c.is_public) {
+                    const copyBtn = document.createElement('button'); copyBtn.className = 'btn-sm btn-copy'; copyBtn.textContent = t('copyLink'); copyBtn.onclick = () => copyLink(c.id);
+                    actions.appendChild(copyBtn);
+                }
+
+                const delBtn = document.createElement('button'); delBtn.className = 'btn-sm btn-delete'; delBtn.textContent = t('delete'); delBtn.onclick = () => deleteCollection(c.id);
+                actions.appendChild(delBtn);
+
+                item.append(icon, info, actions);
+                list.appendChild(item);
+            });
+        }
+
+        /* =========================================================
+           SUBMISSIONS
+           ========================================================= */
+
+        function renderSubmissions(subs) {
+            const list = document.getElementById('sub-list');
+            if (!Array.isArray(subs) || !subs.length) {
+                list.innerHTML = `<div class="empty-msg">${t('noSubmissions')} <a href="/submit">${t('sendFootage')}</a></div>`; return;
+            }
+            list.innerHTML = '';
+            const labels = { pending: t('pending'), approved: t('approved'), rejected: t('rejected') };
+            const badgeClass = { pending: 'badge-pending', approved: 'badge-approved', rejected: 'badge-rejected' };
+            const localeMap = { ru: 'ru-RU', uk: 'uk-UA', en: 'en-US' };
+            const locale = localeMap[currentLang] || 'en-US';
+
+            subs.forEach(s => {
+                const item = document.createElement('div'); item.className = 'sub-item';
+                const name = document.createElement('div'); name.className = 'sub-name'; name.textContent = s.display_name;
+                const date = document.createElement('div'); date.className = 'sub-date';
+                const pd = new Date(s.created_at);
+                date.textContent = !isNaN(pd.getTime()) ? pd.toLocaleDateString(locale) : (s.created_at || '');
+                const badge = document.createElement('div'); badge.className = `badge ${badgeClass[s.status] || ''}`; badge.textContent = labels[s.status] || s.status || '';
+                item.append(name, date, badge);
+                list.appendChild(item);
+            });
+        }
+
+        /* =========================================================
+           LIKED VIDEOS
+           ========================================================= */
+
+        function renderLiked(videos) {
+            const grid = document.getElementById('liked-grid');
+            if (!Array.isArray(videos) || !videos.length) {
+                grid.innerHTML = `<div class="empty-msg">${t('noLikedVideos')}</div>`; return;
+            }
+            grid.innerHTML = '';
+            videos.forEach(name => {
+                const isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(name);
+                const card = document.createElement('div'); card.className = 'liked-card';
+                const thumb = document.createElement('div'); thumb.className = 'liked-thumb';
+                const media = document.createElement(isImg ? 'img' : 'video');
+                media.src = `/videos/${encodeURIComponent(name)}`;
+                if (!isImg) { media.preload = 'metadata'; } else { media.alt = name; media.loading = 'lazy'; }
+                thumb.appendChild(media);
+                const info = document.createElement('div'); info.className = 'liked-info';
+                const nameEl = document.createElement('div'); nameEl.textContent = name;
+                const dlLink = document.createElement('a'); dlLink.href = `/videos/${encodeURIComponent(name)}`; dlLink.download = name; dlLink.textContent = t('download');
+                info.append(nameEl, dlLink);
+                card.append(thumb, info);
+                grid.appendChild(card);
+            });
+        }
+
+        /* =========================================================
+           CREATE / DELETE COLLECTION
+           ========================================================= */
+
+        async function createCollection() {
+            const name = document.getElementById('col-name').value.trim();
+            const desc = document.getElementById('col-desc').value.trim();
+            const isPublic = document.getElementById('col-public').checked ? 1 : 0;
+            if (!name) { showToast(t('collectionNameRequired'), '#e53935'); return; }
+            try {
+                const res = await fetch('/api/collections', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin', body: JSON.stringify({ name, description: desc, is_public: isPublic })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(t('collectionCreated'));
+                    document.getElementById('col-name').value = '';
+                    document.getElementById('col-desc').value = '';
+                    await loadProfile();
+                } else { showToast(data.error || t('error'), '#e53935'); }
+            } catch (e) { showToast(t('error'), '#e53935'); }
+        }
+
+        async function deleteCollection(id) {
+            if (!confirm(t('deleteCollectionConfirm'))) return;
+            try {
+                const res = await fetch(`/api/collections/${id}`, { method: 'DELETE', credentials: 'same-origin' });
+                const data = await res.json();
+                if (data.success) { showToast(t('collectionDeleted'), '#e53935'); document.getElementById(`col-item-${id}`)?.remove(); }
+                else { showToast(data.error || t('error'), '#e53935'); }
+            } catch (e) { showToast(t('error'), '#e53935'); }
+        }
+
+        function copyLink(id) {
+            const url = `${location.origin}/collection/${id}`;
+            navigator.clipboard.writeText(url).then(() => showToast(t('linkCopied'))).catch(() => showToast(url, '#555'));
+        }
+
+        /* =========================================================
+           LOGOUT
+           ========================================================= */
+
+        async function logout() {
+            try { await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' }); } catch (e) { }
+            location.href = '/';
+        }
+
+        /* =========================================================
+           INIT
+           ========================================================= */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            currentLang = localStorage.getItem('app_lang') || 'en';
+            if (!translations[currentLang]) currentLang = 'en';
+            document.documentElement.lang = currentLang;
+            document.getElementById('backLink').textContent = t('back');
+            document.getElementById('settings-btn').textContent = t('settings');
+            document.getElementById('loadingText').textContent = t('loading');
+            updateSettingsModalText();
+            loadProfile();
+        });
+
+    </script>
+
+</body>
+</html>
