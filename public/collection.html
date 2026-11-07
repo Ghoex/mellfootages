@@ -204,33 +204,53 @@ async function downloadVideo(filename, button){
     }
 }
 
+// Скачивание всей коллекции одним ZIP-архивом (по 30 файлов за архив)
 async function downloadAll(){
     const btn = document.querySelector('.download-all-btn');
     const progress = document.getElementById('progress');
-    const cards = document.querySelectorAll('.video-card');
+    const filenames = [...document.querySelectorAll('.video-card .video-title')].map(el => el.textContent);
+    if (!filenames.length) return;
 
-    if (!cards.length) return;
+    const CHUNK = 30;
+    const chunks = [];
+    for (let i = 0; i < filenames.length; i += CHUNK) chunks.push(filenames.slice(i, i + CHUNK));
 
     btn.disabled = true;
     btn.textContent = 'Скачивание...';
     progress.classList.add('visible');
 
-    const filenames = [...cards].map(c => {
-        const title = c.querySelector('.video-title').textContent;
-        return title;
-    });
-
-    for (let i = 0; i < filenames.length; i++) {
-        progress.textContent = `${i + 1} / ${filenames.length}`;
-        await downloadVideo(filenames[i]);
-        await new Promise(r => setTimeout(r, 500));
+    try {
+        for (let i = 0; i < chunks.length; i++) {
+            progress.textContent = `Архив ${i + 1} из ${chunks.length}...`;
+            const res = await fetch('/api/download-zip', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ names: chunks[i] })
+            });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(data.error || 'Ошибка архива');
+            }
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `collection_${collectionId}_part${i + 1}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 10000);
+            await new Promise(r => setTimeout(r, 800));
+        }
+        progress.textContent = `✅ Готово! ${filenames.length} файлов в ${chunks.length} архивах`;
+    } catch (e) {
+        progress.textContent = `❌ ${e.message}`;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '⬇ Скачать всё';
+        setTimeout(() => progress.classList.remove('visible'), 5000);
     }
-
-    progress.textContent = `✅ Готово! ${filenames.length} файлов`;
-    btn.disabled = false;
-    btn.textContent = '⬇ Скачать всё';
-
-    setTimeout(() => progress.classList.remove('visible'), 4000);
 }
 
 function escapeHtml(s){

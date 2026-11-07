@@ -116,6 +116,14 @@
 
             </div>
 
+            <div class="sort-row" id="sort-group">
+                <button class="chip active" data-sort="default" onclick="setSort('default', this)">Все</button>
+                <button class="chip" data-sort="newest" onclick="setSort('newest', this)">🆕 Новые</button>
+                <button class="chip" data-sort="popular" onclick="setSort('popular', this)">🔥 Популярные</button>
+                <button class="chip" id="local-fav-btn" onclick="toggleLocalOnly(this)">★ Сохранённое</button>
+                <button class="chip" id="select-mode-btn" onclick="toggleSelectMode()">☑ Выбрать</button>
+            </div>
+
             <div id="video-container">
                 <!-- Скелетон загрузчики загружаются JS скриптом по умолчанию -->
             </div>
@@ -588,7 +596,21 @@
         </a>
     </div>
 
-    <!-- SORT MODAL SHEET -->
+    <!-- ПАНЕЛЬ ВЫБОРА ДЛЯ ZIP -->
+    <div class="select-bar" id="select-bar" hidden>
+        <span id="select-count">Выбрано: 0</span>
+        <button type="button" class="btn btn-small" id="select-download-btn" onclick="downloadSelected()" disabled>⬇ Скачать ZIP</button>
+        <button type="button" class="btn btn-small btn-outline" onclick="toggleSelectMode()">Отмена</button>
+    </div>
+
+    <!-- ОКНО ТЕГОВ ФУТАЖА (для модераторов) -->
+    <div class="modal-overlay" id="tag-modal" onclick="if(event.target===this)closeTagModal()">
+        <div class="modal-box">
+            <div class="modal-title">Теги футажа</div>
+            <div id="tag-modal-body"></div>
+            <button class="modal-option modal-cancel-btn" onclick="closeTagModal()">Закрыть</button>
+        </div>
+    </div>
 
     <!-- COLLECTION MODAL -->
     <div class="modal-overlay" id="collection-modal">
@@ -608,6 +630,7 @@
     <script src="notifier.js"></script>
     <script src="terms-gate.js"></script>
     <script src="script.js"></script>
+    <script src="video-features.js"></script>
 </body>
 
 </html>

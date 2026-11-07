@@ -16,6 +16,7 @@ const SQLiteStore = require('connect-sqlite3')(session);
 const { spawn } = require('child_process');
 const { mountRooms, initRooms } = require('./rooms');
 const { mountMailAuth, initMailAuth } = require('./mail-auth');
+const { mountFeatures, initFeatures, markUploaded, getVideoExtras, renameVideoExtras, deleteVideoExtras } = require('./features');
 
 let ffmpegPath = null;
 try {
@@ -145,13 +146,12 @@ app.options('*path', cors(corsOptions));
 // ============================================================
 const limiter = rateLimit({
     windowMs: 3 * 60 * 1000,
-    max: 40,
+    max: 150,
     message: 'Слишком много запросов, попробуйте позже',
     standardHeaders: true,
     legacyHeaders: false,
     skip: (req) => req.path.startsWith('/stream')
 });
-
 // Строгий лимит на вход/регистрацию.
 // ВНИМАНИЕ: в исходниках было max: 5 и max: 20 — выбрано 5 (см. примечания).
 const authLimiter = rateLimit({
@@ -370,6 +370,7 @@ app.use(async (req, res, next) => {
 app.use('/api', limiter);
 
 mountRooms(app, () => db); // комнаты-чаты: /rooms, /room/:id, /api/rooms/*
+mountFeatures(app); // теги футажей, пакетное скачивание ZIP
 
 // Регистрация и восстановление пароля по email (код через Resend)
 mountMailAuth(app, { getDb: () => db, bcrypt, authLimiter, USERNAME_REGEX, RESERVED_USERNAMES, TERMS_VERSION });
@@ -381,7 +382,7 @@ const pub = (file) => (req, res) => res.sendFile(path.join(__dirname, 'public', 
 
 app.get('/', pub('index.html'));
 // ПРИМЕЧАНИЕ: в первом документе /music было закрыто (503), во втором — открыто. Оставлено открытым.
-app.get('/music', pub('music.html'));
+app.get('/music', pub('music/music.html'));
 app.get('/news', pub('news.html'));
 app.get('/auth', pub('auth.html'));
 app.get('/admin', requireModerator, pub('admin.html'));
@@ -491,6 +492,7 @@ app.get('/api/videos', (req, res) => {
                 WHERE s.status = 'approved' AND s.final_filename IS NOT NULL
             `);
 
+            const extrasByFile = await getVideoExtras(videoFiles);
             const subByFile = new Map(approvedSubs.map(s => [s.filename, s]));
             const userIds = [...new Set(approvedSubs.map(s => s.user_id))];
             const tagsByUser = new Map();
@@ -516,10 +518,15 @@ app.get('/api/videos', (req, res) => {
 
             const result = videoFiles.map(name => {
                 const sub = subByFile.get(name);
+                const extras = extrasByFile.get(name) || { tags: [], likes: 0, downloads: 0, uploaded_at: null };
                 return {
                     id: name.replace(/\.[^/.]+$/, ''),
                     name,
                     url: `${baseUrl}/videos/${encodeURIComponent(name)}`,
+                    tags: extras.tags,
+                    likes: extras.likes,
+                    downloads: extras.downloads,
+                    uploaded_at: extras.uploaded_at,
                     uploader: sub ? {
                         username: sub.username,
                         role: sub.role,
@@ -610,6 +617,7 @@ app.delete('/api/admin/videos/:filename', requireAdmin, async (req, res) => {
         await db.run('DELETE FROM video_likes WHERE video_name = ?', [filename]);
         await db.run('DELETE FROM video_downloads WHERE video_name = ?', [filename]);
         await db.run('DELETE FROM collection_items WHERE video_name = ?', [filename]);
+        await deleteVideoExtras(filename);
 
         res.json({ success: true, message: 'Видео удалено' });
     } catch (error) {
@@ -656,6 +664,7 @@ app.post('/api/admin/videos/:filename/rename', requireAdmin, async (req, res) =>
         await db.run('UPDATE video_likes SET video_name = ? WHERE video_name = ?', [newFilename, oldFilename]);
         await db.run('UPDATE video_downloads SET video_name = ? WHERE video_name = ?', [newFilename, oldFilename]);
         await db.run('UPDATE collection_items SET video_name = ? WHERE video_name = ?', [newFilename, oldFilename]);
+        await renameVideoExtras(oldFilename, newFilename);
 
         res.json({ success: true, message: 'Видео переименовано', new_filename: newFilename });
     } catch (error) {
@@ -785,9 +794,20 @@ app.post('/api/likes/:videoName', async (req, res) => {
     }
 });
 
+// Учёт скачиваний: один раз на сессию в час на каждый футаж,
+// чтобы популярность нельзя было накрутить повторными запросами
+const DOWNLOAD_WINDOW_MS = 60 * 60 * 1000;
+
 app.post('/api/downloads/:videoName', async (req, res) => {
-    const { videoName } = req.params;
+    const videoName = path.basename(decodeURIComponent(req.params.videoName));
     const userId = req.session.user?.id;
+
+    if (!req.session.dlSeen) req.session.dlSeen = {};
+    const last = req.session.dlSeen[videoName] || 0;
+    if (Date.now() - last < DOWNLOAD_WINDOW_MS) {
+        return res.json({ success: true, counted: false });
+    }
+    req.session.dlSeen[videoName] = Date.now();
 
     await db.run(
         'INSERT INTO video_downloads (video_name, count) VALUES (?, 1) ON CONFLICT(video_name) DO UPDATE SET count = count + 1',
@@ -801,7 +821,7 @@ app.post('/api/downloads/:videoName', async (req, res) => {
         );
     }
 
-    res.json({ success: true });
+    res.json({ success: true, counted: true });
 });
 
 app.get('/api/downloads/:videoName', async (req, res) => {
@@ -1561,6 +1581,7 @@ app.post('/api/admin/submissions/:id/approve', requireModerator, async (req, res
             "UPDATE submissions SET status = 'approved', display_name = ?, final_filename = ? WHERE id = ?",
             [newName, finalName, sub.id]
         );
+        await markUploaded(finalName);
 
         const videoLink = `${SITE_URL}/videos/${encodeURIComponent(finalName)}`;
 
@@ -2183,6 +2204,7 @@ async function startServer() {
 
         await initRooms(db); // таблицы комнат, жалоб и мута
         await initMailAuth(db); // колонки email и уникальный индекс
+        await initFeatures(db, { videosDir: VIDEOS_DIR, allowedExtensions: ALLOWED_UPLOAD_EXTENSIONS });
 
         console.log('✅ БД подключена!');
 

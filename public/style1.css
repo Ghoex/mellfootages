@@ -2395,3 +2395,126 @@ body:not(.dark-theme) .ps-count {
 .pc-list .collection-item .btn {
     white-space: nowrap;
 }
+
+/* =====================================================================
+   v8 — сортировка, локальное избранное, выбор для ZIP, теги футажей
+   ===================================================================== */
+
+.sort-row {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-bottom: 14px;
+}
+
+.sort-row::-webkit-scrollbar { display: none; }
+
+.sort-row .chip.active {
+    background: var(--primary);
+    color: var(--text-light);
+    border-color: var(--primary);
+}
+
+/* Галочка выбора на карточке */
+.pick-box {
+    display: none;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 3;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, .55);
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.pick-box input {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+body.select-mode .pick-box { display: flex; }
+body.select-mode .video-card { outline: 0; }
+body.select-mode .video-card:has(.pick-box input:checked) {
+    box-shadow: 0 0 0 3px var(--primary);
+}
+
+.video-card { position: relative; }
+
+/* Звёздочка локального избранного */
+.fav-btn {
+    flex: 0 0 auto;
+    padding: 8px 10px;
+    background: rgba(241, 196, 15, .12);
+    color: #c99a06;
+    border: 1px solid #f1c40f;
+}
+
+.fav-btn.on,
+.fav-btn:hover {
+    background: #f1c40f;
+    color: #fff;
+}
+
+/* Кнопка тегов для модераторов */
+.tag-video-btn {
+    background: rgba(155, 89, 182, .12);
+    color: #9b59b6;
+    border: 1px solid #9b59b6;
+    margin-top: 2px;
+}
+
+.tag-video-btn:hover {
+    background: #9b59b6;
+    color: #fff;
+}
+
+.video-tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+/* Панель выбора внизу, над навигацией */
+.select-bar {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 90px;
+    z-index: 70;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: #242738;
+    color: #e6e9f2;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    max-width: calc(100% - 24px);
+}
+
+.select-bar[hidden] { display: none; }
+
+.select-bar button:disabled { opacity: .5; cursor: not-allowed; }
+
+.tag-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.tag-option.on {
+    background: rgba(126, 195, 132, .22);
+}
+
+.tag-state {
+    font-size: .78rem;
+    opacity: .75;
+}

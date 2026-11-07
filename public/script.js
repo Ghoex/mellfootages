@@ -306,6 +306,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateActiveLangButton();
     applyAllSettings();
     initStatsObserver(); // <-- инициализируем lazy stats observer
+    initVideoFeatures(); // избранное, сортировка, выбор для ZIP (video-features.js)
 
     await checkAuth();
     renderAuthArea();
@@ -943,7 +944,7 @@ function normalizeVideo(video, index = 0) {
         category: video.category ?? null,
         categories,
         uploader: video.uploader || null,
-        createdAt: video.createdAt ?? video.created_at ?? video.uploadedAt ?? video.uploaded_at ?? video.date ?? video.mtime ?? null,
+        createdAt: video.uploaded_at ?? video.createdAt ?? video.created_at ?? video.uploadedAt ?? video.uploaded_at ?? video.date ?? video.mtime ?? null,
         index
     };
 }
@@ -1007,7 +1008,7 @@ function parseTimestamp(value) {
 }
 
 function getDateValue(video) {
-    const candidates = [video.createdAt, video.created_at, video.uploadedAt, video.uploaded_at, video.mtime, video.modifiedAt, video.modified_at, video.timestamp];
+    const candidates = [video.uploaded_at, video.createdAt, video.created_at, video.uploadedAt, video.mtime, video.modifiedAt, video.modified_at, video.timestamp];
     for (const candidate of candidates) {
         const parsed = parseTimestamp(candidate);
         if (parsed !== null) return parsed;
@@ -1096,7 +1097,7 @@ async function applySort(sortType) {
 
     closeSortSheet();
 
-    if (['popular', 'likes', 'downloads'].includes(currentSort)) await ensureStatsForVideos(filteredVideos);
+    // Лайки и скачивания приходят с сервером в /api/videos, отдельных запросов не нужно
     if (currentSort === 'newest') await ensureNewestDates(filteredVideos);
 
     sortFilteredVideos();
@@ -1141,14 +1142,10 @@ async function filterAndRenderVideos(reset) {
         const categories      = getVideoCategories(video);
         const matchesCategory = currentCategory === 'all' ||
             categories.some(c => c.localeCompare(currentCategory, undefined, { sensitivity: 'base' }) === 0);
+        const matchesLocal    = listFilter !== 'local' || localFavs.has(video.name);
 
-        return matchesSearch && matchesCategory;
+        return matchesSearch && matchesCategory && matchesLocal;
     });
-
-    if (['popular', 'likes', 'downloads'].includes(currentSort)) {
-        const missing = filteredVideos.filter(v => !statsCache[v.name]);
-        if (missing.length) await ensureStatsForVideos(missing);
-    }
 
     sortFilteredVideos();
     renderGrid();
@@ -1333,6 +1330,7 @@ function renderGrid() {
             </div>`;
 
         container.appendChild(card);
+        enhanceCard(card, video); // избранное, галочка для ZIP, теги модератора (video-features.js)
 
         // TRAFFIC OPTIMIZATION: lazy stats — только когда карточка видна
         card.dataset.statsName = filename;
