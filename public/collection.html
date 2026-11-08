@@ -116,7 +116,7 @@ async function loadCollection(){
         const res = await fetch(`/api/collections/${collectionId}`, { credentials: 'same-origin' });
 
         if (res.status === 403) {
-            content.innerHTML = '<p class="status error">🔒 Это приватная коллекция.</p>';
+            content.innerHTML = '<p class="status error">Это приватная коллекция.</p>';
             return;
         }
         if (res.status === 404) {
@@ -142,9 +142,9 @@ function renderCollection(col){
         <div class="collection-head">
             <h1>${escapeHtml(col.name)}</h1>
             <div class="collection-meta">
-                👤 ${escapeHtml(col.author || 'unknown')}
+                ${escapeHtml(col.author || 'unknown')}
                 · ${items.length} видео
-                · ${col.is_public ? '🌐 Публичная' : '🔒 Приватная'}
+                · ${col.is_public ? 'Публичная' : 'Приватная'}
             </div>
             ${col.description ? `<div class="collection-desc">${escapeHtml(col.description)}</div>` : ''}
             <div class="head-actions">
@@ -244,9 +244,9 @@ async function downloadAll(){
             setTimeout(() => URL.revokeObjectURL(url), 10000);
             await new Promise(r => setTimeout(r, 800));
         }
-        progress.textContent = `✅ Готово! ${filenames.length} файлов в ${chunks.length} архивах`;
+        progress.textContent = `Готово! ${filenames.length} файлов в ${chunks.length} архивах`;
     } catch (e) {
-        progress.textContent = `❌ ${e.message}`;
+        progress.textContent = `${e.message}`;
     } finally {
         btn.disabled = false;
         btn.textContent = '⬇ Скачать всё';

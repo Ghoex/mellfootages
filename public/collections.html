@@ -321,7 +321,7 @@ function renderCollections(){
             <h2>${escapeHtml(c.name)}</h2>
             <div class="collection-description">${escapeHtml(c.description || '')}</div>
             <div class="collection-meta">
-                ${c.is_public ? '🌐 ' + t('publicCollection') : '🔒 ' + t('privateCollection')}
+                ${c.is_public ? t('publicCollection') : t('privateCollection')}
                 · ${(c.items || []).length} ${t('videos')}
             </div>
             <div class="collection-actions">

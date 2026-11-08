@@ -652,7 +652,7 @@
     <!-- Report Modal -->
     <div class="modal-overlay" id="report-modal" onclick="closeReportIfBackdrop(event)">
         <div class="modal-box">
-            <div class="modal-title" id="report-modal-title">🚩 Report profile</div>
+            <div class="modal-title" id="report-modal-title">Report profile</div>
             <div class="modal-subtitle" id="report-modal-subtitle">Select a reason for reporting this user</div>
             <div class="report-reasons" id="report-reasons-list"></div>
             <div class="modal-actions">
@@ -670,21 +670,21 @@
             ru: {
                 back: '← Назад',
                 loading: 'Загрузка...',
-                userNotFoundTitle: '👤 Пользователь не найден',
+                userNotFoundTitle: 'Пользователь не найден',
                 userNotFoundText: 'Пользователя не существует.',
                 userNotSpecified: 'Пользователь не указан',
                 points: 'очков',
                 collections: 'коллекций',
                 likes: 'лайков',
-                publicCollections: '📁 Публичные коллекции',
+                publicCollections: 'Публичные коллекции',
                 noPublicCollections: 'У этого пользователя нет публичных коллекций.',
                 open: 'Открыть',
                 copyLink: 'Копировать ссылку',
                 linkCopied: 'Ссылка скопирована!',
                 pieces: 'шт.',
                 error: 'Ошибка загрузки профиля',
-                reportBtn: '🚩 Пожаловаться',
-                reportTitle: '🚩 Пожаловаться на профиль',
+                reportBtn: 'Пожаловаться',
+                reportTitle: 'Пожаловаться на профиль',
                 reportSubtitle: 'Выберите причину жалобы',
                 reportCancel: 'Отмена',
                 reportSubmit: 'Отправить жалобу',
@@ -695,21 +695,21 @@
             uk: {
                 back: '← Назад',
                 loading: 'Завантаження...',
-                userNotFoundTitle: '👤 Користувача не знайдено',
+                userNotFoundTitle: 'Користувача не знайдено',
                 userNotFoundText: 'Користувача не існує.',
                 userNotSpecified: 'Користувач не вказаний',
                 points: 'балів',
                 collections: 'колекцій',
                 likes: 'лайків',
-                publicCollections: '📁 Публічні колекції',
+                publicCollections: 'Публічні колекції',
                 noPublicCollections: 'У цього користувача немає публічних колекцій.',
                 open: 'Відкрити',
                 copyLink: 'Копіювати посилання',
                 linkCopied: 'Посилання скопійовано!',
                 pieces: 'шт.',
                 error: 'Помилка завантаження профілю',
-                reportBtn: '🚩 Поскаржитись',
-                reportTitle: '🚩 Поскаржитись на профіль',
+                reportBtn: 'Поскаржитись',
+                reportTitle: 'Поскаржитись на профіль',
                 reportSubtitle: 'Виберіть причину скарги',
                 reportCancel: 'Скасувати',
                 reportSubmit: 'Надіслати скаргу',
@@ -720,21 +720,21 @@
             en: {
                 back: '← Back',
                 loading: 'Loading...',
-                userNotFoundTitle: '👤 User not found',
+                userNotFoundTitle: 'User not found',
                 userNotFoundText: 'This user does not exist.',
                 userNotSpecified: 'User not specified',
                 points: 'points',
                 collections: 'collections',
                 likes: 'likes',
-                publicCollections: '📁 Public Collections',
+                publicCollections: 'Public Collections',
                 noPublicCollections: 'This user has no public collections.',
                 open: 'Open',
                 copyLink: 'Copy link',
                 linkCopied: 'Link copied!',
                 pieces: 'pcs.',
                 error: 'Profile load error',
-                reportBtn: '🚩 Report',
-                reportTitle: '🚩 Report profile',
+                reportBtn: 'Report',
+                reportTitle: 'Report profile',
                 reportSubtitle: 'Select a reason for reporting this user',
                 reportCancel: 'Cancel',
                 reportSubmit: 'Send report',
@@ -898,7 +898,7 @@
                 ${collections.length
                     ? collections.map(c => `
                         <div class="collection-item">
-                            <div class="col-icon">🌐</div>
+                            <div class="col-icon"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3z"/></svg></div>
                             <div class="col-info">
                                 <div class="col-name">${escapeHtml(c.name)}</div>
                                 <div class="col-meta">${escapeHtml(c.description || '')}</div>

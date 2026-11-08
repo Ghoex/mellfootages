@@ -343,3 +343,7 @@ body[data-ui="account"] .new-col-form .form-row label { display: flex; align-ite
     body[data-ui="account"] .profile-card > div:last-child { grid-column: 1 / -1; flex-direction: row !important; justify-content: flex-end; }
     body[data-ui="account"] .profile-card .telegram-btn { padding: 10px 14px; font-size: .85rem; }
 }
+
+/* Monochrome icons replace emoji in interface-only illustrations. */
+body[data-ui] .ui-icon { width: 20px; height: 20px; display: inline-block; vertical-align: middle; flex-shrink: 0; }
+body[data-ui] .stat-icon .ui-icon { width: 25px; height: 25px; }

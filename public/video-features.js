@@ -170,7 +170,7 @@ function enhanceCard(card, video) {
             const btn = document.createElement('button');
             btn.type = 'button';
             btn.className = 'action-btn tag-video-btn';
-            btn.textContent = '🏷 Теги';
+            btn.textContent = 'Теги';
             btn.addEventListener('click', (e) => { e.stopPropagation(); openTagModal(name); });
             info.appendChild(btn);
         }
