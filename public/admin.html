@@ -736,9 +736,11 @@
             }
         }
     </style>
+    <script src="/ui.js"></script>
+    <link rel="stylesheet" href="/ui.css">
 </head>
 
-<body>
+<body data-ui="admin">
 
     <div id="auth-gate-loader">Проверка доступа...</div>
 
@@ -746,7 +748,7 @@
     <div class="header">
         <div class="header-content">
             <div class="header-left">
-                <h1>📊 Mell Footage</h1>
+                <h1>Mell Footage</h1>
                 <p>Админ-панель • Полный контроль</p>
             </div>
             <div class="header-actions">
@@ -762,35 +764,35 @@
         <!-- STATISTICS CARDS -->
         <div class="grid">
             <div class="stat-card">
-                <div class="stat-icon users">👥</div>
+                <div class="stat-icon users"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.87"/><circle cx="9" cy="7" r="4"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
                 <div class="stat-label">Всего пользователей</div>
                 <div class="stat-number" id="statUsers">0</div>
                 <div class="stat-change positive">↑ +12 за неделю</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon mods">🛡️</div>
+                <div class="stat-icon mods"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 22 8-4V5l-8-3-8 3v13z"/></svg></div>
                 <div class="stat-label">Модераторы</div>
                 <div class="stat-number" id="statModerators">0</div>
                 <div class="stat-change">Активны сейчас</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon banned">⛔</div>
+                <div class="stat-icon banned"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m6 6 12 12"/></svg></div>
                 <div class="stat-label">Забанено</div>
                 <div class="stat-number" id="statBanned">0</div>
                 <div class="stat-change negative">↑ +2 за неделю</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon collections">📁</div>
+                <div class="stat-icon collections"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3z"/></svg></div>
                 <div class="stat-label">Коллекции</div>
                 <div class="stat-number" id="statCollections">0</div>
                 <div class="stat-change positive">↑ +8 за неделю</div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(52, 152, 219, 0.15); color: var(--accent-blue);">✅</div>
+                <div class="stat-icon" style="background: rgba(52, 152, 219, 0.15); color: var(--accent-blue);"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg></div>
                 <div class="stat-label">Верифицировано</div>
                 <div class="stat-number" id="statVerified">0</div>
                 <div class="stat-change">Синяя галочка</div>
@@ -800,11 +802,11 @@
         <!-- CHARTS -->
         <div class="charts-grid">
             <div class="chart-container">
-                <div class="chart-title">📈 Активность пользователей</div>
+                <div class="chart-title">Активность пользователей</div>
                 <canvas id="usersChart"></canvas>
             </div>
             <div class="chart-container">
-                <div class="chart-title">📊 Распределение по ролям</div>
+                <div class="chart-title">Распределение по ролям</div>
                 <canvas id="rolesChart"></canvas>
             </div>
         </div>
@@ -826,7 +828,7 @@
                     <label>Видеофайл</label>
                     <div class="file-input-wrapper">
                         <label for="videoInput" class="file-input-label">
-                            <span>📹</span>
+                            <span><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg></span>
                             <span>Выберите видео или перетащите сюда</span>
                         </label>
                         <input type="file" name="videoFile" id="videoInput" accept="video/*" required>
@@ -835,7 +837,7 @@
 
                 <video id="previewVideo" class="preview-video" controls></video>
 
-                <button type="submit" class="btn btn-success" style="width: 100%;">✅ Загрузить видео</button>
+                <button type="submit" class="btn btn-success" style="width: 100%;">Загрузить видео</button>
             </form>
 
             <div id="uploadStatus" style="margin-top: 12px; padding: 12px; border-radius: 8px; display: none;"></div>
@@ -844,7 +846,7 @@
         <!-- SUBMISSIONS SECTION -->
         <section class="section">
             <div class="section-header">
-                <h2>📥 Заявки на модерацию <span class="badge" id="subBadge" style="display: none;"></span></h2>
+                <h2>Заявки на модерацию <span class="badge" id="subBadge" style="display: none;"></span></h2>
             </div>
 
             <div class="table-wrapper">
@@ -871,8 +873,8 @@
         <!-- USERS SECTION -->
         <section class="section">
             <div class="section-header">
-                <h2>👥 Управление пользователями</h2>
-                <input type="text" id="userSearchInput" placeholder="🔍 Поиск по нику..." oninput="filterUsersTable()"
+                <h2>Управление пользователями</h2>
+                <input type="text" id="userSearchInput" placeholder="Поиск по нику..." oninput="filterUsersTable()"
                     style="max-width: 260px; margin: 0;">
             </div>
 
@@ -900,7 +902,7 @@
         <!-- TAGS SECTION -->
         <section class="section" id="tagsSection">
             <div class="section-header">
-                <h2>🏷️ Теги</h2>
+                <h2>Теги</h2>
             </div>
 
             <div id="tagCreateForm" style="display:none; margin-bottom: 20px;">
@@ -920,7 +922,7 @@
                         <input type="text" id="newTagIcon" placeholder="⭐" maxlength="10">
                     </div>
                     <div class="form-group" style="margin-bottom: 0; display:flex; align-items:flex-end;">
-                        <button class="btn btn-success" style="width: 100%;" onclick="createTag()">➕ Создать
+                        <button class="btn btn-success" style="width: 100%;" onclick="createTag()">Создать
                             тег</button>
                     </div>
                 </div>
@@ -933,7 +935,7 @@
         </section>
         <section class="section">
             <div class="section-header">
-                <h2>🚩 Жалобы <span class="badge" id="reportsBadge" style="display:none;"></span></h2>
+                <h2>Жалобы <span class="badge" id="reportsBadge" style="display:none;"></span></h2>
             </div>
             <div class="table-wrapper">
                 <table>
@@ -956,7 +958,7 @@
         <!-- COLLECTIONS SECTION -->
         <section class="section">
             <div class="section-header">
-                <h2>📚 Коллекции</h2>
+                <h2>Коллекции</h2>
             </div>
 
             <div class="table-wrapper">
@@ -989,7 +991,7 @@
     <div class="modal" id="approveModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>✅ Одобрить футаж</h2>
+                <h2>Одобрить футаж</h2>
             </div>
             <div class="form-group">
                 <label>Название</label>
@@ -1007,7 +1009,7 @@
     <div class="modal" id="userTagsModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>🏷️ Теги пользователя</h2>
+                <h2>Теги пользователя</h2>
                 <p style="color: var(--text-secondary); margin-top: 8px;" id="userTagsUsername"></p>
             </div>
 
@@ -1031,7 +1033,7 @@
     <div class="modal" id="banModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>⛔ Заблокировать пользователя</h2>
+                <h2>Заблокировать пользователя</h2>
                 <p style="color: var(--text-secondary); margin-top: 8px;" id="banUsername"></p>
             </div>
             <div class="form-group">
@@ -1079,7 +1081,7 @@
             status.style.display = 'block';
             status.style.backgroundColor = 'rgba(52, 152, 219, 0.15)';
             status.style.color = '#f5f7fa';
-            status.textContent = '⏳ Загрузка...';
+            status.textContent = 'Загрузка...';
 
             try {
                 const response = await fetch('/admin/upload', {
@@ -1096,7 +1098,7 @@
 
                 status.style.backgroundColor = 'rgba(39, 174, 96, 0.15)';
                 status.style.color = '#27ae60';
-                status.textContent = '✅ Видео успешно загружено: ' + text;
+                status.textContent = 'Видео успешно загружено: ' + text;
 
                 this.reset();
                 previewVideo.removeAttribute('src');
@@ -1105,7 +1107,7 @@
             } catch (error) {
                 status.style.backgroundColor = 'rgba(231, 76, 60, 0.15)';
                 status.style.color = '#e74c3c';
-                status.textContent = '❌ ' + error.message;
+                status.textContent = '' + error.message;
             }
         });
 
@@ -1256,7 +1258,7 @@
 
                 if (!subs.length) {
                     badge.style.display = 'none';
-                    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">🎉 Нет заявок на модерацию</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Нет заявок на модерацию</td></tr>';
                     return;
                 }
 
@@ -1282,10 +1284,10 @@
                     <td>
                         <div class="actions">
                             <button class="btn btn-sm btn-success" onclick="openApproveModal(${s.id}, '${escapeHtml(s.display_name)}')">
-                                ✅ Одобрить
+                                Одобрить
                             </button>
                             <button class="btn btn-sm btn-danger" onclick="rejectSubmission(${s.id})">
-                                ❌ Отклонить
+                                Отклонить
                             </button>
                         </div>
                     </td>
@@ -1293,7 +1295,7 @@
             `).join('');
 
             } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">❌ ${escapeHtml(e.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">${escapeHtml(e.message)}</td></tr>`;
             }
         }
 
@@ -1346,7 +1348,7 @@
                 window._users = users;
                 filterUsersTable();
             } catch (error) {
-                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">❌ ${escapeHtml(error.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
             }
         }
 
@@ -1368,7 +1370,7 @@
 
             if (!users.length) {
                 tbody.innerHTML = query
-                    ? `<tr><td colspan="6" class="empty-state">🔍 По запросу «${escapeHtml(query)}» никого не найдено</td></tr>`
+                    ? `<tr><td colspan="6" class="empty-state">По запросу «${escapeHtml(query)}» никого не найдено</td></tr>`
                     : '<tr><td colspan="6" class="empty-state">Пользователей нет</td></tr>';
                 return;
             }
@@ -1385,8 +1387,8 @@
                 const roleHtml = `<span class="role-badge ${roleClass}">${roleLabel}</span>`;
 
                 const statusHtml = user.is_banned
-                    ? '<span class="status banned">⛔ Забанен</span>'
-                    : '<span class="status active">✅ Активен</span>';
+                    ? '<span class="status banned">Забанен</span>'
+                    : '<span class="status active">Активен</span>';
 
                 const isAdmin = user.role === 'admin';
                 const isFullAdmin = window.currentUserRole === 'admin'; // выдаёт роли и может трогать других админов
@@ -1412,14 +1414,14 @@
                     }
 
                     if (canGrantTags) {
-                        actions += `<button class="btn btn-sm btn-primary" onclick="openUserTagsModal(${user.id}, '${escapeJsAttr(user.username)}')">🏷️ Теги</button>`;
+                        actions += `<button class="btn btn-sm btn-primary" onclick="openUserTagsModal(${user.id}, '${escapeJsAttr(user.username)}')">Теги</button>`;
                     }
 
                     if (canVerify) {
                         if (user.is_verified) {
                             actions += `<button class="btn btn-sm" style="background: #555; color: white;" onclick="unverifyUser(${user.id})">Снять галочку</button>`;
                         } else {
-                            actions += `<button class="btn btn-sm btn-primary" onclick="verifyUser(${user.id})">✔️ Выдать галочку</button>`;
+                            actions += `<button class="btn btn-sm btn-primary" onclick="verifyUser(${user.id})">Выдать галочку</button>`;
                         }
                     }
 
@@ -1440,7 +1442,7 @@
                         if (user.is_verified) {
                             actions += `<button class="btn btn-sm" style="background: #555; color: white;" onclick="unverifyUser(${user.id})">Снять галочку</button>`;
                         } else {
-                            actions += `<button class="btn btn-sm btn-primary" onclick="verifyUser(${user.id})">✔️ Выдать галочку</button>`;
+                            actions += `<button class="btn btn-sm btn-primary" onclick="verifyUser(${user.id})">Выдать галочку</button>`;
                         }
                     }
                 }
@@ -1672,7 +1674,7 @@
                         <td>${escapeHtml(c.name)}</td>
                         <td>${escapeHtml(c.username || 'unknown')}</td>
                         <td><strong>${c.item_count || 0}</strong></td>
-                        <td>${Number(c.is_public) ? '🌍 Публичная' : '🔒 Приватная'}</td>
+                        <td>${Number(c.is_public) ? 'Публичная' : 'Приватная'}</td>
                         <td>${c.created_at ? new Date(c.created_at).toLocaleDateString('ru-RU') : '-'}</td>
                         <td>
                             <button class="btn btn-sm btn-danger" onclick="deleteCollection(${c.id})">Удалить</button>
@@ -1682,7 +1684,7 @@
                 }).join('');
 
             } catch (error) {
-                tbody.innerHTML = `<tr><td colspan="7" class="empty-state">❌ ${escapeHtml(error.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="empty-state">${escapeHtml(error.message)}</td></tr>`;
             }
         }
 
@@ -1719,8 +1721,8 @@
             const isAdmin = window.currentUserRole === 'admin';
             createForm.style.display = isAdmin ? 'block' : 'none';
             hint.textContent = isAdmin
-                ? 'Тег можно выдать пользователю кнопкой «🏷️ Теги» в таблице пользователей ниже.'
-                : 'Создавать новые теги может только администратор. Выдавать существующие теги можно кнопкой «🏷️ Теги» в таблице пользователей.';
+                ? 'Тег можно выдать пользователю кнопкой «Теги» в таблице пользователей ниже.'
+                : 'Создавать новые теги может только администратор. Выдавать существующие теги можно кнопкой «Теги» в таблице пользователей.';
 
             try {
                 const tags = await api('/api/tags');
@@ -1738,7 +1740,7 @@
                     </span>
                 `).join('');
             } catch (error) {
-                list.innerHTML = `<span style="color: var(--danger); font-size: 13px;">❌ ${escapeHtml(error.message)}</span>`;
+                list.innerHTML = `<span style="color: var(--danger); font-size: 13px;">${escapeHtml(error.message)}</span>`;
             }
         }
 
@@ -1820,7 +1822,7 @@
                     ).join('');
                 }
             } catch (error) {
-                currentList.innerHTML = `<span style="color: var(--danger); font-size: 13px;">❌ ${escapeHtml(error.message)}</span>`;
+                currentList.innerHTML = `<span style="color: var(--danger); font-size: 13px;">${escapeHtml(error.message)}</span>`;
             }
         }
 
@@ -1885,7 +1887,7 @@
                     </tr>
                 `).join('');
             } catch (e) {
-                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">❌ ${escapeHtml(e.message)}</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">${escapeHtml(e.message)}</td></tr>`;
             }
         }
 
@@ -1965,7 +1967,7 @@
                     min-height:100vh; font-family:Arial; color:#f5f7fa; background:#0f1419;
                 ">
                     <div style="text-align:center; max-width:420px; padding:20px;">
-                        <h1 style="font-size:48px; margin-bottom:20px;">🔐</h1>
+                        <h1 style="font-size:48px; margin-bottom:20px;"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></h1>
                         <h2>Доступ запрещён</h2>
                         <p style="color:#7a8696; margin-top:10px;">${escapeHtml(message)}</p>
                         <button onclick="location.replace('/auth')" style="

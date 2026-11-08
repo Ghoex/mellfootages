@@ -74,8 +74,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
     .collection-head h1{font-size:1.5rem}
 }
 </style>
+    <script src="/ui.js"></script>
+    <link rel="stylesheet" href="/ui.css">
 </head>
-<body>
+<body data-ui="library">
 
 <div class="top-bar">
     <a href="/" class="logo">Mell Footage</a>
@@ -93,7 +95,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 </div>
 
 <script>
-if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+if (document.documentElement.dataset.uiTheme === 'dark') document.body.classList.add('dark-theme');
 
 function toggleTheme(){
     const dark = document.body.classList.toggle('dark-theme');
@@ -115,7 +117,7 @@ async function loadCollection(){
         const res = await fetch(`/api/collections/${collectionId}`, { credentials: 'same-origin' });
 
         if (res.status === 403) {
-            content.innerHTML = '<p class="status error">🔒 Это приватная коллекция.</p>';
+            content.innerHTML = '<p class="status error">Это приватная коллекция.</p>';
             return;
         }
         if (res.status === 404) {
@@ -141,9 +143,9 @@ function renderCollection(col){
         <div class="collection-head">
             <h1>${escapeHtml(col.name)}</h1>
             <div class="collection-meta">
-                👤 ${escapeHtml(col.author || 'unknown')}
+                ${escapeHtml(col.author || 'unknown')}
                 · ${items.length} видео
-                · ${col.is_public ? '🌐 Публичная' : '🔒 Приватная'}
+                · ${col.is_public ? 'Публичная' : 'Приватная'}
             </div>
             ${col.description ? `<div class="collection-desc">${escapeHtml(col.description)}</div>` : ''}
             <div class="head-actions">
@@ -243,9 +245,9 @@ async function downloadAll(){
             setTimeout(() => URL.revokeObjectURL(url), 10000);
             await new Promise(r => setTimeout(r, 800));
         }
-        progress.textContent = `✅ Готово! ${filenames.length} файлов в ${chunks.length} архивах`;
+        progress.textContent = `Готово! ${filenames.length} файлов в ${chunks.length} архивах`;
     } catch (e) {
-        progress.textContent = `❌ ${e.message}`;
+        progress.textContent = `${e.message}`;
     } finally {
         btn.disabled = false;
         btn.textContent = '⬇ Скачать всё';

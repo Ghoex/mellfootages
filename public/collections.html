@@ -120,8 +120,10 @@ h5{font-family:Georgia,serif;font-style:italic;color:var(--text-sidebar);font-si
     .page-head h1{font-size:1.7rem}
 }
 </style>
+    <script src="/ui.js"></script>
+    <link rel="stylesheet" href="/ui.css">
 </head>
-<body>
+<body data-ui="library">
 <div class="layout">
 <aside class="sidebar" id="sidebar">
     <!-- Кнопка закрытия -->
@@ -249,7 +251,7 @@ let currentLang = localStorage.getItem('app_lang') || 'en';
 let collections = [];
 let collectionSort = 'new';
 
-if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+if (document.documentElement.dataset.uiTheme === 'dark') document.body.classList.add('dark-theme');
 
 function t(key){ return translations[currentLang]?.[key] || translations.en[key] || key; }
 
@@ -320,7 +322,7 @@ function renderCollections(){
             <h2>${escapeHtml(c.name)}</h2>
             <div class="collection-description">${escapeHtml(c.description || '')}</div>
             <div class="collection-meta">
-                ${c.is_public ? '🌐 ' + t('publicCollection') : '🔒 ' + t('privateCollection')}
+                ${c.is_public ? t('publicCollection') : t('privateCollection')}
                 · ${(c.items || []).length} ${t('videos')}
             </div>
             <div class="collection-actions">

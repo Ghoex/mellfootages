@@ -267,8 +267,10 @@
             .auth-card { padding: 58px 20px 22px; }
         }
     </style>
+    <script src="/ui.js"></script>
+    <link rel="stylesheet" href="/ui.css">
 </head>
-<body>
+<body data-ui="auth">
 
     <select id="language-select" class="lang-select" aria-label="Language">
         <option value="ru">RU</option>
@@ -637,8 +639,12 @@
         function clearMsg() { document.getElementById('auth-msg').innerText = ''; }
 
         function showView(id) {
-            document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === id));
-            clearMsg();
+            const next = document.getElementById(id);
+            if (!next) return;
+            window.uiSwitchView('.view', next, () => {
+                document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === id));
+                clearMsg();
+            });
         }
 
         function showTab(tab) {
@@ -663,9 +669,7 @@
         }
 
         function backToRegisterStep1() {
-            document.getElementById('register-confirm-form').classList.remove('active');
-            document.getElementById('register-form').classList.add('active');
-            clearMsg();
+            showView('register-form');
         }
 
         document.querySelectorAll('.tabs button').forEach(btn => {

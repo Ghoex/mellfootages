@@ -294,7 +294,7 @@ function initStatsObserver() {
 
 // ================= INIT =================
 document.addEventListener('DOMContentLoaded', async () => {
-    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+    if (document.documentElement.dataset.uiTheme === 'dark') document.body.classList.add('dark-theme');
 
     // Скрываем TG-баннер если уже закрыт
     if (localStorage.getItem('tg_banner_closed') === '1') {
@@ -837,20 +837,24 @@ function showToast(msg, type = 'info', duration = 3000) {
 
 // ================= NAVIGATION =================
 function navigateTo(page) {
-    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-    const pageEl = document.getElementById(page + '-page');
-    if (pageEl) pageEl.classList.add('active');
+    const next = document.getElementById(page + '-page');
+    if (!next) return;
+    window.uiSwitchView('.page-section', next, () => {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        const pageEl = document.getElementById(page + '-page');
+        if (pageEl) pageEl.classList.add('active');
 
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
-    if (navItem) navItem.classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+        if (navItem) navItem.classList.add('active');
 
-    currentPageName = page;
+        currentPageName = page;
 
-    if (page === 'profile')     loadProfile();
-    if (page === 'news')        loadNews();
-    if (page === 'collections') loadCollections();
-    if (page === 'settings')    renderSettingsPage();
+        if (page === 'profile')     loadProfile();
+        if (page === 'news')        loadNews();
+        if (page === 'collections') loadCollections();
+        if (page === 'settings')    renderSettingsPage();
+    });
 }
 
 // ================= AUTH =================
@@ -1325,7 +1329,7 @@ function renderGrid() {
                 ${isCurrentUserAdmin() ? `
                     <div class="admin-video-actions">
                         <button type="button" class="action-btn edit-video-btn" onclick="renameVideo('${escapeJs(encoded)}', event)">✎ ${t('editVideo')}</button>
-                        <button type="button" class="action-btn delete-video-btn" onclick="deleteVideo('${escapeJs(encoded)}', event)">🗑 ${t('deleteVideo')}</button>
+                        <button type="button" class="action-btn delete-video-btn" onclick="deleteVideo('${escapeJs(encoded)}', event)">${t('deleteVideo')}</button>
                     </div>` : ''}
             </div>`;
 
@@ -1753,7 +1757,7 @@ function renderProfileCollections(cols) {
         const desc  = String(c.description || '').trim();
         return `
             <div class="collection-item">
-                <div class="icon">${pub ? '🌐' : '🔒'}</div>
+                <div class="icon">${pub ? '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg>' : '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>'}</div>
                 <div class="collection-info">
                     <div class="collection-name">${escapeHtml(String(c.name || ''))}
                         <span class="col-vis-badge ${pub ? 'public' : 'private'}">${escapeHtml(pub ? pt('colPublic') : pt('colPrivate'))}</span>
@@ -1880,10 +1884,10 @@ async function loadCollections() {
         if (!collections || collections.length === 0) { content.innerHTML = `<p class="status-message">${t('noCollections')}</p>`; return; }
         content.innerHTML = collections.map(c => `
             <div class="collection-item">
-                <div class="icon">📁</div>
+                <div class="icon"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3z"/></svg></div>
                 <div class="collection-info">
                     <div class="collection-name">${escapeHtml(c.name)}</div>
-                    <div class="collection-meta">${(c.items ? c.items.length : 0)} · ${c.is_public ? '🌐' : '🔒'}</div>
+                    <div class="collection-meta">${(c.items ? c.items.length : 0)} · ${c.is_public ? pt('colPublic') : pt('colPrivate')}</div>
                 </div>
                 <a href="/collection/${c.id}" class="btn" style="padding:6px 14px; font-size:0.85rem;">Open</a>
             </div>`).join('');

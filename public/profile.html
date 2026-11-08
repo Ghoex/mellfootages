@@ -526,15 +526,17 @@
             .sub-name { width: 100%; flex-basis: 100%; }
         }
     </style>
+    <script src="/ui.js"></script>
+    <link rel="stylesheet" href="/ui.css">
 </head>
 
-<body>
+<body data-ui="account">
 
     <nav class="topnav">
         <a href="/" class="logo">Mell Footage</a>
         <div class="spacer"></div>
         <a href="/" class="nav-link" id="backLink">← Back</a>
-        <button id="settings-btn" onclick="openSettings()">⚙ Settings</button>
+        <button id="settings-btn" onclick="openSettings()">Settings</button>
         <button class="theme-btn" onclick="toggleTheme()" aria-label="Theme">
             <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -558,7 +560,7 @@
         <div class="modal">
 
             <div class="modal-header">
-                <h3 id="modal-title-settings">⚙ Settings</h3>
+                <h3 id="modal-title-settings">Settings</h3>
                 <button class="modal-close" onclick="closeSettings()">✕</button>
             </div>
 
@@ -567,7 +569,7 @@
                 <div class="modal-section-title" id="ms-avatar">Avatar</div>
                 <div style="display:flex; align-items:center; gap:14px;">
                     <div class="avatar" id="modal-avatar-preview" style="width:64px;height:64px;font-size:1.6rem;flex:0 0 64px;cursor:default;"></div>
-                    <button class="btn-save" onclick="document.getElementById('avatar-file-input').click()" id="btn-change-avatar">📷 Change photo</button>
+                    <button class="btn-save" onclick="document.getElementById('avatar-file-input').click()" id="btn-change-avatar">Change photo</button>
                     <button class="btn-save" id="btn-remove-avatar" onclick="removeAvatar()" style="background:#e53935;">Remove</button>
                 </div>
                 <div id="avatar-upload-status" style="font-size:.82rem; color:var(--muted);"></div>
@@ -660,17 +662,17 @@
 
             ru: {
                 back: '← Назад',
-                settings: '⚙ Настройки',
+                settings: 'Настройки',
                 loading: 'Загрузка...',
                 loginRequiredTitle: 'Вы не вошли в аккаунт',
                 loginRequiredText: 'Чтобы видеть профиль, нужно авторизоваться.',
                 login: 'Войти / Зарегистрироваться',
                 logout: 'Выйти',
-                linkTelegram: '🔗 Привязать Telegram',
+                linkTelegram: 'Привязать Telegram',
                 yourCode: 'Твой код:',
                 telegramBot: 'Отправь его нашему Telegram-боту:',
                 codeExpires: '⏰ Код действует 10 минут.',
-                collections: '📁 Коллекции',
+                collections: 'Коллекции',
                 createCollection: 'Создать новую коллекцию',
                 collectionName: 'Название коллекции...',
                 collectionDescription: 'Описание (необязательно)...',
@@ -682,13 +684,13 @@
                 open: 'Открыть',
                 copyLink: 'Копировать ссылку',
                 delete: 'Удалить',
-                submissions: '📤 Мои отправки',
+                submissions: 'Мои отправки',
                 sendFootage: '+ Отправить футаж',
                 noSubmissions: 'Ты ещё ничего не отправлял.',
                 pending: '⏳ На проверке',
-                approved: '✅ Одобрен',
-                rejected: '❌ Отклонён',
-                likedVideos: '♥ Понравившиеся видео',
+                approved: 'Одобрен',
+                rejected: 'Отклонён',
+                likedVideos: 'Понравившиеся видео',
                 noLikedVideos: 'Вы ещё ничего не лайкнули.',
                 download: '⬇ Скачать',
                 pieces: 'шт.',
@@ -701,17 +703,17 @@
                 loginError: 'Нужно войти в аккаунт',
                 telegramError: 'Ошибка Telegram',
                 // settings modal
-                modalSettings: '⚙ Настройки',
+                modalSettings: 'Настройки',
                 msAvatar: 'Аватар',
                 msPrivacy: 'Приватность',
                 msNickname: 'Никнейм',
                 msPassword: 'Пароль',
-                changePhoto: '📷 Сменить фото',
+                changePhoto: 'Сменить фото',
                 removeAvatar: 'Удалить',
                 tglActivityTitle: 'Показывать активность',
                 tglActivityDesc: 'Другие пользователи видят, когда вы онлайн',
-                activityOn: '🟢 Активность видна',
-                activityOff: '⚫ Активность скрыта',
+                activityOn: 'Активность видна',
+                activityOff: 'Активность скрыта',
                 lblNewNick: 'Новый никнейм',
                 inputNickPlaceholder: 'Введите новый никнейм',
                 btnSaveNick: 'Сохранить никнейм',
@@ -732,17 +734,17 @@
 
             uk: {
                 back: '← Назад',
-                settings: '⚙ Налаштування',
+                settings: 'Налаштування',
                 loading: 'Завантаження...',
                 loginRequiredTitle: 'Ви не увійшли в акаунт',
                 loginRequiredText: 'Щоб переглядати профіль, потрібно авторизуватися.',
                 login: 'Увійти / Зареєструватися',
                 logout: 'Вийти',
-                linkTelegram: '🔗 Прив’язати Telegram',
+                linkTelegram: 'Прив’язати Telegram',
                 yourCode: 'Твій код:',
                 telegramBot: 'Відправ його нашому Telegram-боту:',
                 codeExpires: '⏰ Код діє 10 хвилин.',
-                collections: '📁 Колекції',
+                collections: 'Колекції',
                 createCollection: 'Створити нову колекцію',
                 collectionName: 'Назва колекції...',
                 collectionDescription: 'Опис (необов’язково)...',
@@ -754,13 +756,13 @@
                 open: 'Відкрити',
                 copyLink: 'Копіювати посилання',
                 delete: 'Видалити',
-                submissions: '📤 Мої відправки',
+                submissions: 'Мої відправки',
                 sendFootage: '+ Відправити футаж',
                 noSubmissions: 'Ти ще нічого не відправляв.',
                 pending: '⏳ На перевірці',
-                approved: '✅ Схвалено',
-                rejected: '❌ Відхилено',
-                likedVideos: '♥ Вподобані відео',
+                approved: 'Схвалено',
+                rejected: 'Відхилено',
+                likedVideos: 'Вподобані відео',
                 noLikedVideos: 'Ти ще нічого не вподобав.',
                 download: '⬇ Завантажити',
                 pieces: 'шт.',
@@ -772,17 +774,17 @@
                 error: 'Помилка',
                 loginError: 'Потрібно увійти в акаунт',
                 telegramError: 'Помилка Telegram',
-                modalSettings: '⚙ Налаштування',
+                modalSettings: 'Налаштування',
                 msAvatar: 'Аватар',
                 msPrivacy: 'Приватність',
                 msNickname: 'Нікнейм',
                 msPassword: 'Пароль',
-                changePhoto: '📷 Змінити фото',
+                changePhoto: 'Змінити фото',
                 removeAvatar: 'Видалити',
                 tglActivityTitle: 'Показувати активність',
                 tglActivityDesc: 'Інші користувачі бачать, коли ви онлайн',
-                activityOn: '🟢 Активність видна',
-                activityOff: '⚫ Активність прихована',
+                activityOn: 'Активність видна',
+                activityOff: 'Активність прихована',
                 lblNewNick: 'Новий нікнейм',
                 inputNickPlaceholder: 'Введіть новий нікнейм',
                 btnSaveNick: 'Зберегти нікнейм',
@@ -803,17 +805,17 @@
 
             en: {
                 back: '← Back',
-                settings: '⚙ Settings',
+                settings: 'Settings',
                 loading: 'Loading...',
                 loginRequiredTitle: 'You are not logged in',
                 loginRequiredText: 'You need to log in to view your profile.',
                 login: 'Login / Register',
                 logout: 'Logout',
-                linkTelegram: '🔗 Link Telegram',
+                linkTelegram: 'Link Telegram',
                 yourCode: 'Your code:',
                 telegramBot: 'Send it to our Telegram bot:',
                 codeExpires: '⏰ Code is valid for 10 minutes.',
-                collections: '📁 Collections',
+                collections: 'Collections',
                 createCollection: 'Create a new collection',
                 collectionName: 'Collection name...',
                 collectionDescription: 'Description (optional)...',
@@ -825,13 +827,13 @@
                 open: 'Open',
                 copyLink: 'Copy link',
                 delete: 'Delete',
-                submissions: '📤 My submissions',
+                submissions: 'My submissions',
                 sendFootage: '+ Submit footage',
                 noSubmissions: 'You have not submitted anything yet.',
                 pending: '⏳ Pending',
-                approved: '✅ Approved',
-                rejected: '❌ Rejected',
-                likedVideos: '♥ Liked videos',
+                approved: 'Approved',
+                rejected: 'Rejected',
+                likedVideos: 'Liked videos',
                 noLikedVideos: 'You have not liked anything yet.',
                 download: '⬇ Download',
                 pieces: 'pcs.',
@@ -843,17 +845,17 @@
                 error: 'Error',
                 loginError: 'Login required',
                 telegramError: 'Telegram error',
-                modalSettings: '⚙ Settings',
+                modalSettings: 'Settings',
                 msAvatar: 'Avatar',
                 msPrivacy: 'Privacy',
                 msNickname: 'Nickname',
                 msPassword: 'Password',
-                changePhoto: '📷 Change photo',
+                changePhoto: 'Change photo',
                 removeAvatar: 'Remove',
                 tglActivityTitle: 'Show activity',
                 tglActivityDesc: 'Other users can see when you are online',
-                activityOn: '🟢 Activity visible',
-                activityOff: '⚫ Activity hidden',
+                activityOn: 'Activity visible',
+                activityOff: 'Activity hidden',
                 lblNewNick: 'New nickname',
                 inputNickPlaceholder: 'Enter new nickname',
                 btnSaveNick: 'Save nickname',
@@ -895,7 +897,7 @@
                 .replaceAll("'", '&#039;');
         }
 
-        if (localStorage.getItem('theme') === 'dark' || localStorage.getItem('darkTheme') === 'true') {
+        if (document.documentElement.dataset.uiTheme === 'dark') {
             document.body.classList.add('dark-theme');
         }
 
@@ -966,7 +968,7 @@
 
                         <div class="avatar" id="prof-avatar" onclick="document.getElementById('avatar-file-input').click()" title="${t('changePhoto')}">
                             <span id="prof-avatar-letter"></span>
-                            <div class="avatar-overlay">📷</div>
+                            <div class="avatar-overlay"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="4"/></svg></div>
                         </div>
 
                         <div class="profile-info">
@@ -1375,7 +1377,7 @@
                 item.className = 'collection-item';
                 item.id = `col-item-${c.id}`;
 
-                const icon = document.createElement('div'); icon.className = 'col-icon'; icon.textContent = c.is_public ? '🌐' : '🔒';
+                const icon = document.createElement('div'); icon.className = 'col-icon'; icon.innerHTML = c.is_public ? '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg>' : '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>';
                 const info = document.createElement('div'); info.className = 'col-info';
                 const name = document.createElement('div'); name.className = 'col-name'; name.textContent = c.name;
                 const meta = document.createElement('div'); meta.className = 'col-meta'; meta.textContent = c.is_public ? t('public') : t('privateCollection');
