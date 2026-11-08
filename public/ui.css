@@ -49,13 +49,30 @@ body[data-ui] :is(h1, h2, h3) { letter-spacing: -.035em; line-height: 1.2; }
 body[data-ui] :is(h1, h2, h3, p) { overflow-wrap: anywhere; }
 
 /* Main catalog and its news, upload, collections, profile and settings views. */
-body[data-ui="catalog"] { --border: var(--ui-border); --text-dark: #202b24; }
+body[data-ui="catalog"] {
+    --ui-bg: color-mix(in srgb, var(--primary) 7%, #f8faf7);
+    --ui-surface: color-mix(in srgb, var(--primary) 4%, #fff);
+    --ui-soft: color-mix(in srgb, var(--primary) 12%, #f0f3ef);
+    --ui-border: color-mix(in srgb, var(--primary) 18%, #dce3da);
+    --ui-accent: color-mix(in srgb, var(--primary) 65%, #202620);
+    --ui-button: color-mix(in srgb, var(--primary) 50%, #152218);
+    --border: var(--ui-border);
+    --text-dark: #202b24;
+}
+html[data-ui-theme="dark"] body[data-ui="catalog"],
+body[data-ui="catalog"].dark-theme {
+    --ui-bg: color-mix(in srgb, var(--primary) 7%, #0e1110);
+    --ui-surface: color-mix(in srgb, var(--primary) 12%, #171b19);
+    --ui-soft: color-mix(in srgb, var(--primary) 20%, #222823);
+    --ui-border: color-mix(in srgb, var(--primary) 25%, #303832);
+    --ui-accent: color-mix(in srgb, var(--primary) 65%, #f3f6f3);
+}
 body[data-ui="catalog"]:not(.bg-flat):not(.bg-oled) {
-    background: radial-gradient(ellipse at 90% 0, #e8efe5 0, transparent 45%), var(--ui-bg);
+    background: radial-gradient(ellipse at 90% 0, color-mix(in srgb, var(--primary) 16%, var(--ui-bg)) 0, transparent 45%), var(--ui-bg);
     background-attachment: fixed;
 }
 body[data-ui="catalog"].dark-theme:not(.bg-flat):not(.bg-oled) {
-    background: radial-gradient(ellipse at 90% 0, #1b2a20 0, transparent 45%), var(--ui-bg);
+    background: radial-gradient(ellipse at 90% 0, color-mix(in srgb, var(--primary) 16%, var(--ui-bg)) 0, transparent 45%), var(--ui-bg);
 }
 body[data-ui="catalog"] .top-bar {
     background: var(--ui-surface);
@@ -84,7 +101,7 @@ body[data-ui="catalog"] .search-container:focus-within {
 body[data-ui="catalog"] .search-container input { color: var(--ui-text); font-size: .9rem; }
 body[data-ui="catalog"] .search-container svg { stroke: var(--ui-muted); }
 body[data-ui="catalog"] .search-container input::placeholder { color: var(--ui-muted); }
-body[data-ui="catalog"] .icon-btn svg { stroke: var(--ui-muted); }
+body[data-ui="catalog"] .icon-btn svg { stroke: var(--ui-accent); }
 body[data-ui="catalog"] .icon-btn:hover { background: var(--ui-soft); }
 body[data-ui="catalog"] .main-content { padding-top: 28px; }
 body[data-ui="catalog"] .filter-bar { gap: 16px; margin-bottom: 12px; }
@@ -156,7 +173,7 @@ body[data-ui="catalog"] .bottom-nav {
     border-top: 1px solid var(--ui-border);
     box-shadow: 0 -4px 24px rgb(29 48 33 / 4%);
 }
-body[data-ui="catalog"] .nav-item { color: var(--ui-muted); }
+body[data-ui="catalog"] .nav-item { color: color-mix(in srgb, var(--ui-accent) 50%, var(--ui-muted)); }
 body[data-ui="catalog"] .nav-item.active,
 body[data-ui="catalog"] .nav-item:hover { background: var(--ui-soft); color: var(--ui-accent); }
 body[data-ui="catalog"] .nav-item-label { text-transform: none; font-size: .75rem; letter-spacing: 0; }
@@ -335,8 +352,9 @@ body[data-ui] .stat-icon .ui-icon { width: 25px; height: 25px; }
 /* Custom controls share the same geometry, contrast and focus treatment. */
 html[data-ui-theme="dark"] { color-scheme: dark; background: #111713; }
 html[data-ui-theme="light"] { color-scheme: light; background: #f5f6f3; }
+/* Also cover links, labels, SVG children and clickable color swatches. */
+body[data-ui], body[data-ui] * { -webkit-tap-highlight-color: transparent; }
 body[data-ui] :is(button, .btn, .action-btn, .auth-link) {
-    -webkit-tap-highlight-color: transparent;
     transition: background-color var(--anim-speed, .18s), border-color var(--anim-speed, .18s), color var(--anim-speed, .18s), box-shadow var(--anim-speed, .18s), transform var(--anim-speed, .18s);
 }
 body[data-ui] button:not([class]) {
@@ -444,3 +462,7 @@ body[data-ui="news"] .news-card .news-date { color: var(--ui-muted); }
 
 body[data-ui] .ui-file-field:has(input:disabled) { opacity: .5; }
 body[data-ui] .ui-file-field input:disabled { cursor: not-allowed; }
+
+@media (hover: none) {
+    body[data-ui] :is(button, a, [role="button"]):focus:not(:focus-visible) { outline: none; }
+}
