@@ -526,6 +526,7 @@
             .sub-name { width: 100%; flex-basis: 100%; }
         }
     </style>
+    <script src="/ui.js"></script>
     <link rel="stylesheet" href="/ui.css">
 </head>
 
@@ -896,7 +897,7 @@
                 .replaceAll("'", '&#039;');
         }
 
-        if (localStorage.getItem('theme') === 'dark' || localStorage.getItem('darkTheme') === 'true') {
+        if (document.documentElement.dataset.uiTheme === 'dark') {
             document.body.classList.add('dark-theme');
         }
 

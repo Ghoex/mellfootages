@@ -736,6 +736,7 @@
             }
         }
     </style>
+    <script src="/ui.js"></script>
     <link rel="stylesheet" href="/ui.css">
 </head>
 
@@ -1080,7 +1081,7 @@
             status.style.display = 'block';
             status.style.backgroundColor = 'rgba(52, 152, 219, 0.15)';
             status.style.color = '#f5f7fa';
-            status.textContent = '⏳ Загрузка...';
+            status.textContent = 'Загрузка...';
 
             try {
                 const response = await fetch('/admin/upload', {

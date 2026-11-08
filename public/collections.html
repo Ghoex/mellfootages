@@ -120,6 +120,7 @@ h5{font-family:Georgia,serif;font-style:italic;color:var(--text-sidebar);font-si
     .page-head h1{font-size:1.7rem}
 }
 </style>
+    <script src="/ui.js"></script>
     <link rel="stylesheet" href="/ui.css">
 </head>
 <body data-ui="library">
@@ -250,7 +251,7 @@ let currentLang = localStorage.getItem('app_lang') || 'en';
 let collections = [];
 let collectionSort = 'new';
 
-if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+if (document.documentElement.dataset.uiTheme === 'dark') document.body.classList.add('dark-theme');
 
 function t(key){ return translations[currentLang]?.[key] || translations.en[key] || key; }
 

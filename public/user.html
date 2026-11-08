@@ -625,6 +625,7 @@
             }
         }
     </style>
+    <script src="/ui.js"></script>
     <link rel="stylesheet" href="/ui.css">
 </head>
 
@@ -762,7 +763,7 @@
         /* =========================================================
            THEME & TOAST
            ========================================================= */
-        if (localStorage.getItem('theme') === 'dark' || localStorage.getItem('darkTheme') === 'true') {
+        if (document.documentElement.dataset.uiTheme === 'dark') {
             document.body.classList.add('dark-theme');
         }
 

@@ -294,7 +294,7 @@ function initStatsObserver() {
 
 // ================= INIT =================
 document.addEventListener('DOMContentLoaded', async () => {
-    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme');
+    if (document.documentElement.dataset.uiTheme === 'dark') document.body.classList.add('dark-theme');
 
     // Скрываем TG-баннер если уже закрыт
     if (localStorage.getItem('tg_banner_closed') === '1') {
@@ -837,20 +837,24 @@ function showToast(msg, type = 'info', duration = 3000) {
 
 // ================= NAVIGATION =================
 function navigateTo(page) {
-    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
-    const pageEl = document.getElementById(page + '-page');
-    if (pageEl) pageEl.classList.add('active');
+    const next = document.getElementById(page + '-page');
+    if (!next) return;
+    window.uiSwitchView('.page-section', next, () => {
+        document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+        const pageEl = document.getElementById(page + '-page');
+        if (pageEl) pageEl.classList.add('active');
 
-    document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-    const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
-    if (navItem) navItem.classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+        if (navItem) navItem.classList.add('active');
 
-    currentPageName = page;
+        currentPageName = page;
 
-    if (page === 'profile')     loadProfile();
-    if (page === 'news')        loadNews();
-    if (page === 'collections') loadCollections();
-    if (page === 'settings')    renderSettingsPage();
+        if (page === 'profile')     loadProfile();
+        if (page === 'news')        loadNews();
+        if (page === 'collections') loadCollections();
+        if (page === 'settings')    renderSettingsPage();
+    });
 }
 
 // ================= AUTH =================
