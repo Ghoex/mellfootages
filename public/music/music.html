@@ -1240,7 +1240,7 @@ function openAuthScreen(mode, opts){
     `}
     <div class="auth-msg hidden" id="auMsg"></div>
     <div class="note">${reg
-      ? 'Код подтверждения придёт на почту. Новый аккаунт всегда получает роль <b>слушатель</b> — музыканта и другие роли выдаёт только администратор в базе данных.'
+      ? 'Код подтверждения придёт на почту.'
       : 'Вход по логину и паролю от основного сайта.'}</div>
   `, [
     {label:'Закрыть', kind:'ghost', fn:() => closeModal()},
@@ -1386,9 +1386,7 @@ function renderProfile(){
           <button class="pill" onclick="openAuth('login')">Войти</button>
           <button class="ghost" onclick="openAuth('register')">Регистрация</button>
         </div>
-      </div>
-      <div class="note">Новый аккаунт всегда получает роль <b>слушатель</b>. Музыканта и другие роли
-        выдаёт администратор в базе данных — в интерфейсе роли не меняются.</div>`;
+      </div>`;
     mountIcons(box);
     return;
   }
@@ -1408,33 +1406,20 @@ function renderProfile(){
         <button class="${can ? 'pill' : 'ghost'}" onclick="openCollectionForm()"><span data-icon="folder-plus" data-size="15"></span>Сборник</button>
         <button class="ghost" onclick="logout()"><span data-icon="log-out" data-size="15"></span>Выйти</button>
       </div>
-      ${can ? '' : '<div class="note">Роль «слушатель»: только прослушивание. Загружать песни может музыкант и выше.</div>'}
       ${canModerate() ? '<div class="note"><b>Модерация:</b> вы можете удалять любые треки и любые сборники.</div>' : ''}
     </div>
-    <div id="rolesBox"></div>`;
+  `;
   mountIcons(box);
   renderModeBanner();
-  renderRoleHint();
 }
 
-function renderRoleHint(){
-  const box = $('#rolesBox');
-  if (!box) return;
-  box.innerHTML = `<div class="note">
-      <b>Роли меняются только в базе данных.</b><br>
-      Слушатель → музыкант: <code>UPDATE users SET is_musician = 1 WHERE username = 'ник';</code><br>
-      Музыкант → слушатель: <code>UPDATE users SET is_musician = 0 WHERE username = 'ник';</code><br>
-      Персонал (по необходимости): <code>UPDATE users SET role = 'senior_moderator' WHERE username = 'ник';</code><br>
-      В интерфейсе роли не выдаются и не снимаются — это сделано намеренно.
-    </div>`;
-}
 
 
 
 
 /* ------------------------------- сборники ------------------------------- */
 function openCollectionForm(){
-  if (!requireRole(ROLES.musician.rank, 'Создавать сборники может музыкант — роль выдаётся только в базе данных')) return;
+  if (!requireRole(ROLES.musician.rank, 'Создавать сборники может музыкант')) return;
   openModal('Новый сборник', `
     <div class="fld"><label>Название</label><input type="text" id="colTitle" placeholder="Night Drive Vol. 1"></div>
     <div class="fld"><label>Описание</label><textarea id="colDesc" placeholder="Коротко о сборнике"></textarea></div>
@@ -1602,7 +1587,7 @@ function pickCollection(t){
 
 /* ------------------------------- загрузка ------------------------------- */
 function openUploadForm(collectionId){
-  if (!requireRole(ROLES.musician.rank, 'Загружать песни может музыкант — роль выдаётся только в базе данных')) return;
+  if (!requireRole(ROLES.musician.rank, 'Загружать песни может музыкант')) return;
   const opts = ['<option value="">Без сборника — попадёт во «Все треки»</option>']
     .concat(S.collections.map(c => `<option value="${esc(c.id)}" ${String(c.id) === String(collectionId || '') ? 'selected' : ''}>${esc(c.title)}</option>`))
     .join('');
