@@ -514,3 +514,10 @@ body[data-ui="catalog"] .nav-item[data-page="player"]:hover,
 body[data-ui="catalog"] .nav-item[data-page="music"]:hover { background: var(--ui-soft); }
 /* пункты, скрытые настройкой дока */
 body[data-ui="catalog"] .bottom-nav .nav-item.dock-hidden { display: none !important; }
+/* кнопка плеера в шапке главной */
+body[data-ui="catalog"] #top-player-btn { display: inline-flex; align-items: center; justify-content: center; }
+body[data-ui="catalog"] #top-player-btn svg { width: 20px; height: 20px; }
+body[data-ui="catalog"] #top-player-btn:hover { color: var(--ui-accent); }
+/* перетаскивание в настройке «Пункты в доке» */
+#dock-items-list > div.dragging { opacity: .5; }
+#dock-items-list > div.drag-over { border-color: #7ec384 !important; background: rgba(126,195,132,.12); }

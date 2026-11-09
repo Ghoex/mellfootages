@@ -736,9 +736,40 @@ function renderDockItemsList() {
         down.title = 'Ниже'; down.disabled = i === order.length - 1;
         down.onclick = () => moveDockItem(page, 1);
 
-        row.append(cb, name, up, down);
+        // перетаскивание строки мышью/пальцем (плюс остаются стрелки)
+        const handle = document.createElement('span');
+        handle.textContent = '⋮⋮';
+        handle.title = 'Перетащи, чтобы изменить порядок';
+        handle.style.cssText = 'cursor:grab;color:#8a9a8f;user-select:none;';
+        row.draggable = true;
+        row.addEventListener('dragstart', (e) => {
+            row.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', page);
+        });
+        row.addEventListener('dragend', () => row.classList.remove('dragging'));
+        row.addEventListener('dragover', (e) => { e.preventDefault(); row.classList.add('drag-over'); });
+        row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+        row.addEventListener('drop', (e) => {
+            e.preventDefault();
+            row.classList.remove('drag-over');
+            const dragged = e.dataTransfer.getData('text/plain');
+            if (!dragged || dragged === page) return;
+            reorderDockItem(dragged, page);
+        });
+
+        row.append(handle, cb, name, up, down);
         box.appendChild(row);
     });
+}
+
+function reorderDockItem(dragged, target) {
+    const order = currentDockOrder().filter(p => p !== dragged);
+    const idx = order.indexOf(target);
+    if (idx < 0) return;
+    order.splice(idx, 0, dragged);
+    appSettings.dockOrder = order;
+    localStorage.setItem('dockOrder', JSON.stringify(order));
+    applyAllSettings();
 }
 
 function onDockItemTogglePage(page, visible) {
