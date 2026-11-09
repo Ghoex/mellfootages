@@ -512,3 +512,5 @@ body[data-ui="catalog"].dock-mode.dock-labels .nav-item svg { margin: 0 auto; }
 body[data-ui="catalog"] #player-nav-item svg polygon { opacity: .95; }
 body[data-ui="catalog"] .nav-item[data-page="player"]:hover,
 body[data-ui="catalog"] .nav-item[data-page="music"]:hover { background: var(--ui-soft); }
+/* пункты, скрытые настройкой дока */
+body[data-ui="catalog"] .bottom-nav .nav-item.dock-hidden { display: none !important; }

@@ -455,6 +455,48 @@
                     </div>
                 </div>
 
+                <div class="setting-row" id="dock-items-row" style="display:none; flex-direction:column; align-items:stretch; gap:10px;">
+                    <div class="setting-label">
+                        <span data-i18n="dockItems">Пункты в доке</span>
+                        <small data-i18n="dockItemsHint">Какие кнопки показывать в нижнем меню</small>
+                    </div>
+                    <div id="dock-items-list" style="display:flex;flex-wrap:wrap;gap:8px;">
+                        <label style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #dce3da;border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" data-dock-page="footages" onchange="onDockItemToggle(this)">
+                            <span>Главная</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #dce3da;border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" data-dock-page="upload" onchange="onDockItemToggle(this)">
+                            <span>Загрузить</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #dce3da;border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" data-dock-page="news" onchange="onDockItemToggle(this)">
+                            <span>Новости</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #dce3da;border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" data-dock-page="collections" onchange="onDockItemToggle(this)">
+                            <span>Коллекции</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #dce3da;border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" data-dock-page="profile" onchange="onDockItemToggle(this)">
+                            <span>Профиль</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #dce3da;border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" data-dock-page="rooms" onchange="onDockItemToggle(this)">
+                            <span>Комнаты</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #dce3da;border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" data-dock-page="player" onchange="onDockItemToggle(this)">
+                            <span>Плеер Mell</span>
+                        </label>
+                        <label style="display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid #dce3da;border-radius:10px;cursor:pointer;">
+                            <input type="checkbox" data-dock-page="admin" onchange="onDockItemToggle(this)">
+                            <span>Админ</span>
+                        </label>
+                    </div>
+                    <button class="btn btn-small btn-outline" onclick="resetDockItems()" style="align-self:flex-start;" data-i18n="dockShowAll">Показать все</button>
+                </div>
+
                 <div class="setting-row" id="dock-label-row" style="display:none;">
                     <div class="setting-label">
                         <span data-i18n="settingDockLabels">Show captions</span>
@@ -611,21 +653,12 @@
             </svg>
             <span class="nav-item-label" data-i18n="navProfile">Profile</span>
         </a>
-        <a href="/music.html" class="nav-item" id="player-nav-item" data-page="player" title="Mell Player">
+        <a href="/music" class="nav-item" id="player-nav-item" data-page="player" title="Плеер Mell">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="9"></circle>
                 <polygon points="10 8.5 16 12 10 15.5" fill="currentColor" stroke="none"></polygon>
             </svg>
             <span class="nav-item-label" data-i18n="navPlayer">Плеер Mell</span>
-        </a>
-
-        <a href="/music" class="nav-item" id="music-nav-item" data-page="music" title="MusicFlow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="6.5" cy="18" r="3"></circle>
-                <circle cx="18" cy="15.5" r="3"></circle>
-                <path d="M9.5 18V6l11.5-2.5v12"></path>
-            </svg>
-            <span class="nav-item-label" data-i18n="navMusic">Музыка</span>
         </a>
 
         <a href="/rooms" class="nav-item" id="rooms-nav-item" data-page="rooms">

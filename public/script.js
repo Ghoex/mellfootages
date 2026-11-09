@@ -28,7 +28,7 @@ const translations = {
         settingsBeta: "Beta functions", settingDockMode: "Dock-style navigation",
         settingDockModeHint: "Floating bottom menu, like on macOS", settingDockShape: "Button shape",
         settingDockShapeHint: "Round or square icons for the dock", settingDockRound: "Round",
-        settingDockSquare: "Square", settingDockSize: "Icon size", settingDockSizeHint: "How big the dock buttons are", settingDockSizeS: "Small", settingDockSizeM: "Medium", settingDockSizeL: "Large", settingDockPos: "Dock position", settingDockPosHint: "Where the floating menu sticks", settingDockPosCenter: "Center", settingDockPosRight: "Bottom right", settingDockLabels: "Show captions", settingDockLabelsHint: "Text under the dock icons", settingsDev: "Dev functions", settingPhoneMode: "Phone mode",
+        settingDockSquare: "Square", settingDockSize: "Icon size", settingDockSizeHint: "How big the dock buttons are", settingDockSizeS: "Small", settingDockSizeM: "Medium", settingDockSizeL: "Large", settingDockPos: "Dock position", settingDockPosHint: "Where the floating menu sticks", settingDockPosCenter: "Center", settingDockPosRight: "Bottom right", settingDockLabels: "Show captions", settingDockLabelsHint: "Text under the dock icons", dockItems: "Dock items", dockItemsHint: "Which buttons to show in the bottom menu", dockShowAll: "Show all", settingsDev: "Dev functions", settingPhoneMode: "Phone mode",
         settingPhoneModeHint: "Frames the app like a phone screen, for testing", settingPhoneModeToggle: "Toggle",
         sortTitle: "Sort", sortNewest: "Newest", sortPopular: "Popular", sortLikes: "Most liked",
         sortDownloads: "Most downloaded", editVideo: "Edit name", deleteVideo: "Delete",
@@ -88,7 +88,7 @@ const translations = {
         settingsBeta: "Бета-функції", settingDockMode: "Меню у стилі Dock",
         settingDockModeHint: "Плаваюче нижнє меню, як на macOS", settingDockShape: "Форма кнопок",
         settingDockShapeHint: "Круглі або квадратні іконки для dock", settingDockRound: "Круглі",
-        settingDockSquare: "Квадратні", settingDockSize: "Розмір іконок", settingDockSizeHint: "Наскільки великі кнопки в доку", settingDockSizeS: "Малі", settingDockSizeM: "Середні", settingDockSizeL: "Великі", settingDockPos: "Позиція доку", settingDockPosHint: "Де закріплене плаваюче меню", settingDockPosCenter: "По центру", settingDockPosRight: "Справа знизу", settingDockLabels: "Показувати підписи", settingDockLabelsHint: "Текст під іконками доку", settingsDev: "Dev-функції", settingPhoneMode: "Режим телефону",
+        settingDockSquare: "Квадратні", settingDockSize: "Розмір іконок", settingDockSizeHint: "Наскільки великі кнопки в доку", settingDockSizeS: "Малі", settingDockSizeM: "Середні", settingDockSizeL: "Великі", settingDockPos: "Позиція доку", settingDockPosHint: "Де закріплене плаваюче меню", settingDockPosCenter: "По центру", settingDockPosRight: "Справа знизу", settingDockLabels: "Показувати підписи", settingDockLabelsHint: "Текст під іконками доку", dockItems: "Пункти в доку", dockItemsHint: "Які кнопки показувати в нижньому меню", dockShowAll: "Показати всі", settingsDev: "Dev-функції", settingPhoneMode: "Режим телефону",
         settingPhoneModeHint: "Обрамлює застосунок як екран телефону, для тестування",
         settingPhoneModeToggle: "Перемкнути",
         sortTitle: "Сортування", sortNewest: "Нові", sortPopular: "Популярні", sortLikes: "За лайками",
@@ -149,7 +149,7 @@ const translations = {
         settingsBeta: "Beta функции", settingDockMode: "Меню в стиле Dock",
         settingDockModeHint: "Плавающее нижнее меню, как на macOS", settingDockShape: "Форма кнопок",
         settingDockShapeHint: "Круглые или квадратные иконки для dock", settingDockRound: "Круглые",
-        settingDockSquare: "Квадратные", settingDockSize: "Размер иконок", settingDockSizeHint: "Насколько крупные кнопки в доке", settingDockSizeS: "Маленькие", settingDockSizeM: "Средние", settingDockSizeL: "Крупные", settingDockPos: "Положение дока", settingDockPosHint: "Где закреплено плавающее меню", settingDockPosCenter: "По центру", settingDockPosRight: "Справа снизу", settingDockLabels: "Показывать подписи", settingDockLabelsHint: "Текст под иконками дока", settingsDev: "Dev функции", settingPhoneMode: "Режим телефона",
+        settingDockSquare: "Квадратные", settingDockSize: "Размер иконок", settingDockSizeHint: "Насколько крупные кнопки в доке", settingDockSizeS: "Маленькие", settingDockSizeM: "Средние", settingDockSizeL: "Крупные", settingDockPos: "Положение дока", settingDockPosHint: "Где закреплено плавающее меню", settingDockPosCenter: "По центру", settingDockPosRight: "Справа снизу", settingDockLabels: "Показывать подписи", settingDockLabelsHint: "Текст под иконками дока", dockItems: "Пункты в доке", dockItemsHint: "Какие кнопки показывать в нижнем меню", dockShowAll: "Показать все", settingsDev: "Dev функции", settingPhoneMode: "Режим телефона",
         settingPhoneModeHint: "Обрамляет приложение как экран телефона, для тестирования",
         settingPhoneModeToggle: "Переключить",
         sortTitle: "Сортировка", sortNewest: "Новые", sortPopular: "Популярные", sortLikes: "По лайкам",
@@ -215,6 +215,7 @@ let appSettings = {
     dockSize: localStorage.getItem('dockSize') || 'm',
     dockPosition: localStorage.getItem('dockPosition') || 'center',
     dockLabels: localStorage.getItem('dockLabels') === '1',
+    dockHidden: (() => { try { return JSON.parse(localStorage.getItem('dockHidden') || '[]'); } catch { return []; } })(),
     phoneMode: localStorage.getItem('phoneMode') === '1',
     bgStyle: localStorage.getItem('bgStyle') || 'gradient',
     cornerRadius: localStorage.getItem('cornerRadius') || 'medium',
@@ -651,6 +652,11 @@ function updateSettingUIButtons() {
     highlight('dock-size-l-btn', appSettings.dockSize === 'l');
     highlight('dock-pos-center-btn', appSettings.dockPosition === 'center');
     highlight('dock-pos-right-btn',  appSettings.dockPosition === 'right');
+    const dockItemsRow = document.getElementById('dock-items-row');
+    if (dockItemsRow) dockItemsRow.style.display = appSettings.dockMode ? 'flex' : 'none';
+    document.querySelectorAll('[data-dock-page]').forEach(cb => {
+        cb.checked = !appSettings.dockHidden.includes(cb.dataset.dockPage);
+    });
     const dockLabelsToggle = document.getElementById('dock-labels-toggle');
     if (dockLabelsToggle) dockLabelsToggle.checked = appSettings.dockLabels;
 
@@ -682,6 +688,19 @@ function onDockShapeChange(shape) { appSettings.dockShape = shape; localStorage.
 function onDockSizeChange(size) { appSettings.dockSize = size; localStorage.setItem('dockSize', size); applyAllSettings(); }
 function onDockPositionChange(pos) { appSettings.dockPosition = pos; localStorage.setItem('dockPosition', pos); applyAllSettings(); }
 function onDockLabelsToggle(checked) { appSettings.dockLabels = checked; localStorage.setItem('dockLabels', checked ? '1' : '0'); applyAllSettings(); }
+function onDockItemToggle(cb) {
+    const page = cb.dataset.dockPage;
+    const set = new Set(appSettings.dockHidden);
+    if (cb.checked) set.delete(page); else set.add(page);
+    appSettings.dockHidden = [...set];
+    localStorage.setItem('dockHidden', JSON.stringify(appSettings.dockHidden));
+    applyAllSettings();
+}
+function resetDockItems() {
+    appSettings.dockHidden = [];
+    localStorage.setItem('dockHidden', '[]');
+    applyAllSettings();
+}
 function onPhoneModeToggle() { appSettings.phoneMode = !appSettings.phoneMode; localStorage.setItem('phoneMode', appSettings.phoneMode ? '1' : '0'); applyAllSettings(); }
 
 function onDataSaverToggle(checked) {
@@ -752,6 +771,11 @@ function applyAllSettings() {
     document.body.classList.add('dock-size-' + appSettings.dockSize);
     document.body.classList.toggle('dock-right', appSettings.dockPosition === 'right');
     document.body.classList.toggle('dock-labels', appSettings.dockLabels);
+    // какие пункты меню скрыты (настраивается в доке)
+    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+        const page = item.dataset.page;
+        item.classList.toggle('dock-hidden', !!page && appSettings.dockHidden.includes(page));
+    });
     document.body.classList.toggle('phone-mode', appSettings.phoneMode);
 
     document.body.classList.remove('toast-bottom-center', 'toast-top-right');

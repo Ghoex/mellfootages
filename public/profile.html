@@ -997,6 +997,27 @@
 
                    </div>
 
+                   <!-- POINTS / SECRET CODE / EMOJI SHOP -->
+                   <div class="section" id="points-section">
+                        <div class="section-header">
+                            <h3>Очки</h3>
+                            <span id="points-value">—</span>
+                        </div>
+
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+                            <input type="text" id="secret-code-input" maxlength="64" placeholder="Секретный код"
+                                   style="flex:1;min-width:180px;padding:10px 12px;border-radius:10px;border:1px solid #dce3da;font:inherit;">
+                            <button class="btn-save" onclick="redeemSecretCode()" style="white-space:nowrap;">Активировать</button>
+                        </div>
+                        <p id="secret-code-msg" style="margin:0;font-size:.86rem;color:var(--muted);"></p>
+
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+                            <h4 style="margin:0;font-size:1rem;">Эмодзи для комнат</h4>
+                            <span id="emoji-owned" style="font-size:.82rem;color:var(--muted);"></span>
+                        </div>
+                        <div id="emoji-shop" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                   </div>
+
                    <!-- COLLECTIONS -->
                    <div class="section">
                         <div class="section-header">
@@ -1094,6 +1115,7 @@
                 console.error('Profile loading error:', error);
                 page.innerHTML = `<div class="not-logged"><h2>${t('error')}</h2><p>${t('loginError')}</p></div>`;
             }
+            loadPoints();
         }
 
         /* =========================================================
@@ -1497,6 +1519,89 @@
            LOGOUT
            ========================================================= */
 
+        async function loadPoints() {
+            try {
+                const r = await fetch('/api/emoji/shop', { credentials: 'same-origin' });
+                if (!r.ok) return;
+                const data = await r.json();
+                renderPoints(data);
+            } catch (e) { /* ignore */ }
+        }
+
+        function renderPoints(data) {
+            const val = document.getElementById('points-value');
+            if (val) val.textContent = data.points + ' очков';
+            const owned = document.getElementById('emoji-owned');
+            const ownedCount = (data.items || []).filter(i => i.owned).length;
+            if (owned) owned.textContent = ownedCount ? ownedCount + ' из ' + data.items.length + ' куплено' : '';
+            const shop = document.getElementById('emoji-shop');
+            if (!shop) return;
+            shop.innerHTML = '';
+            (data.items || []).forEach(item => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn-save';
+                btn.style.cssText = 'padding:8px 12px;font-size:1.1rem;' + (item.owned ? 'opacity:.55;cursor:default;' : '');
+                btn.textContent = item.emoji + ' ' + (item.owned ? 'куплен' : item.price);
+                btn.title = item.owned ? 'Уже куплен' : 'Купить за ' + item.price + ' очков';
+                if (item.owned) {
+                    btn.onclick = () => selectEmoji(item.emoji);
+                } else {
+                    btn.onclick = () => buyEmoji(item.emoji);
+                }
+                shop.appendChild(btn);
+            });
+        }
+
+        async function redeemSecretCode() {
+            const input = document.getElementById('secret-code-input');
+            const msg = document.getElementById('secret-code-msg');
+            const code = (input.value || '').trim();
+            if (!code) { msg.textContent = 'Введи код'; msg.style.color = '#c0392b'; return; }
+            try {
+                const r = await fetch('/api/me/code', {
+                    method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const data = await r.json();
+                if (!r.ok) { msg.textContent = data.error || 'Не получилось'; msg.style.color = '#c0392b'; return; }
+                msg.textContent = '+' + data.points + ' очков, всего ' + data.total;
+                msg.style.color = '#2f7d4f';
+                input.value = '';
+                loadPoints();
+            } catch (e) { msg.textContent = 'Ошибка сети'; msg.style.color = '#c0392b'; }
+        }
+
+        async function buyEmoji(emoji) {
+            const msg = document.getElementById('secret-code-msg');
+            try {
+                const r = await fetch('/api/emoji/buy', {
+                    method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ emoji })
+                });
+                const data = await r.json();
+                if (!r.ok) { msg.textContent = data.error || 'Не получилось'; msg.style.color = '#c0392b'; return; }
+                msg.textContent = emoji + ' куплен, осталось ' + data.total + ' очков';
+                msg.style.color = '#2f7d4f';
+                loadPoints();
+            } catch (e) { msg.textContent = 'Ошибка сети'; msg.style.color = '#c0392b'; }
+        }
+
+        async function selectEmoji(emoji) {
+            const msg = document.getElementById('secret-code-msg');
+            try {
+                await fetch('/api/emoji/select', {
+                    method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ emoji })
+                });
+                msg.textContent = emoji + ' теперь показывается в комнатах';
+                msg.style.color = '#2f7d4f';
+            } catch (e) { msg.textContent = 'Ошибка сети'; msg.style.color = '#c0392b'; }
+        }
+
         async function logout() {
             try { await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' }); } catch (e) { }
             location.href = '/';
@@ -1515,6 +1620,7 @@
             document.getElementById('loadingText').textContent = t('loading');
             updateSettingsModalText();
             loadProfile();
+            loadPoints();
         });
 
     </script>
