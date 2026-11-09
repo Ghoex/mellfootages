@@ -121,12 +121,14 @@
   .m-post { background: var(--post); }
   .m-patch { background: var(--patch); }
   .m-delete { background: var(--delete); }
+  .m-all { background: #6b7280; }
   .auth-badge {
     font-size: .72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
     border: 1px solid var(--border); color: var(--muted); background: #fff; white-space: nowrap;
   }
   .auth-badge.req { color: #b35900; border-color: #f0c88a; background: #fdf6ea; }
   .auth-badge.open { color: var(--green-dark); border-color: #b7dcb9; background: #f0f8f0; }
+  .auth-badge.role { color: #5b4394; border-color: #cfc2ea; background: #f6f2ff; }
   .ep-body { padding: 14px 18px 16px; }
   .ep-desc { font-size: .88rem; margin-bottom: 10px; color: var(--text); }
   .ep-desc small { color: var(--muted); }
@@ -185,10 +187,8 @@
     .main { padding: 22px 16px 70px; }
   }
 </style>
-    <script src="/ui.js"></script>
-    <link rel="stylesheet" href="/ui.css">
 </head>
-<body data-ui="docs">
+<body>
 <div class="layout">
 
 <!-- ======================= SIDEBAR ======================= -->
@@ -247,6 +247,7 @@
     <button class="f-btn" data-filter="post">POST</button>
     <button class="f-btn" data-filter="patch">PATCH</button>
     <button class="f-btn" data-filter="delete">DELETE</button>
+    <button class="f-btn" id="f-music" title="Перейти к эндпоинтам музыки">Музыка</button>
     <span class="count-chip" id="count-chip"></span>
   </div>
 
@@ -335,7 +336,7 @@
     "avatar_url": "/uploads/avatars/1_x.png",
     "activity_visible": true,
     "last_seen": "2026-10-01T12:00:00.000Z",
-    "tags": [{ "id": 1, "name": "OG", "color": "#7ec384", "icon": "" }]
+    "tags": [{ "id": 1, "name": "OG", "color": "#7ec384", "icon": "👑" }]
   }
 }</pre></div></div>
         <div class="note"><b>uploader: null</b> — если видео добавлено админом напрямую, а не через заявку.</div>
@@ -388,6 +389,134 @@
       <div class="ep-head"><span class="m m-get">GET</span><code>/api/stream/:filename</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
       <div class="ep-body">
         <p class="ep-desc">Стриминг аудио с поддержкой <code>Range</code> (206). Content-Type по расширению, защита от path traversal. Исключён из общего rate-лимитера.</p>
+      </div>
+    </div>
+
+    <p class="sec-note" style="margin-top:26px">Загрузка треков, сборники треков и роль «музыкант» — модуль <code>music-ext.js</code>
+    (<code>mountMusicExt</code> + <code>initMusicExt</code>). Таблицы <code>music_tracks</code>, <code>music_collections</code>
+    и колонка <code>users.is_musician</code> создаются автоматически при старте.</p>
+
+    <div class="ep" data-method="get" data-path="GET /api/music/me — права текущей сессии: музыкант / модерация / роли">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/music/me</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">права текущей сессии: музыкант / модерация / роли</p><div class="cols"><div class="col"><h5>Ответ</h5>
+<pre>{
+  "success": true,
+  "loggedIn": true,
+  "user": { "id": 1, "username": "nick", "role": "user" },
+  "is_musician": true,     // users.is_musician
+  "can_upload": true,      // музыкант или персонал
+  "can_moderate": false,   // senior_moderator и выше
+  "can_manage_roles": false // admin
+}</pre></div></div>
+        <div class="note">Гость: <code>{ "loggedIn": false, "can_upload": false, ... }</code>. Флаги читаются из БД на каждый запрос — выданная роль действует без перезахода.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/music/tracks — треки с метаданными (сборник, автор, артист)">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/music/tracks</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">треки с метаданными (сборник, автор, артист)</p><div class="cols"><div class="col"><h5>Ответ</h5>
+<pre>{
+  "success": true,
+  "count": 1,
+  "tracks": [{
+    "id": "track", "name": "track", "filename": "track.mp3",
+    "url": "/api/stream/track.mp3", "ext": ".mp3", "size": 4294967,
+    "artist": "nick", "collectionId": 2, "uploadedBy": 1,
+    "createdAt": "2026-11-09T10:34:59.842Z"
+  }]
+}</pre></div></div>
+        <div class="note">Читает ту же папку <code>sounds/</code>, что и <code>GET /api/tracks</code>: файлы без записи в <code>music_tracks</code> тоже попадают в список (<code>collectionId: null</code>).</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/tracks — загрузка трека (multipart)">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/tracks</code><span class="spacer"></span><span class="auth-badge role">музыкант+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">загрузка трека (multipart)</p><div class="cols">
+          <div class="col"><h5>Поля multipart/form-data</h5>
+<pre>audioFile      файл, обязателен
+               mp3, wav, ogg, m4a, flac, aac
+               ≤ MUSIC_MAX_MB (по умолчанию 25)
+name           название (≤ 100), по умолч. имя файла
+artist         исполнитель (≤ 60), по умолч. ник
+collectionId   id сборника (опционально)</pre></div>
+          <div class="col"><h5>Ответ</h5>
+<pre>{ "success": true, "track": { ...как в /api/music/tracks } }</pre></div>
+        </div>
+        <div class="note">Файл кладётся в <code>sounds/</code> под санитизированным именем (при совпадении — <code>-1</code>, <code>-2</code>), запись — в <code>music_tracks</code>. Трек с <code>collectionId</code> в «Общий список» не показывается.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="patch" data-path="PATCH /api/music/tracks/:filename — переместить трек в сборник / из сборника">
+      <div class="ep-head"><span class="m m-patch">PATCH</span><code>/api/music/tracks/:filename</code><span class="spacer"></span><span class="auth-badge role">автор / senior+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">переместить трек в сборник / из сборника</p><div class="cols">
+          <div class="col"><h5>Тело</h5><pre>{ "collectionId": 3 }   // null — убрать из сборника</pre></div>
+          <div class="col"><h5>Права</h5><pre>автор трека или senior_moderator/admin</pre></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/music/tracks/:filename — удалить трек">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/music/tracks/:filename</code><span class="spacer"></span><span class="auth-badge role">автор / senior+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">удалить трек</p><div class="note">Удаляет запись из <code>music_tracks</code> и файл из <code>sounds/</code>. Автор — свои треки; <code>senior_moderator</code> и <code>admin</code> — любые. Иначе <code>403</code>. Принимается и <code>PATCH|DELETE /api/tracks/:filename</code>.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="get" data-path="GET /api/music/collections — список сборников треков">
+      <div class="ep-head"><span class="m m-get">GET</span><code>/api/music/collections</code><span class="spacer"></span><span class="auth-badge open">публичный</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">список сборников треков</p><div class="cols"><div class="col"><h5>Ответ</h5>
+<pre>{
+  "success": true, "count": 1,
+  "collections": [{
+    "id": 2, "title": "Ночной драйв", "name": "Ночной драйв",
+    "description": "тест", "cover": "/uploads/music-covers/cover-xxx.png",
+    "is_public": 1, "createdBy": 1, "authorName": "nick",
+    "createdAt": "2026-11-09T10:34:59.795Z", "trackCount": 1
+  }]
+}</pre></div></div>
+        <div class="note">Отдаются только публичные сборники (<code>is_public = 1</code>).</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="post" data-path="POST /api/music/collections — создать сборник треков">
+      <div class="ep-head"><span class="m m-post">POST</span><code>/api/music/collections</code><span class="spacer"></span><span class="auth-badge role">музыкант+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">создать сборник треков</p><div class="cols">
+          <div class="col"><h5>Тело</h5>
+<pre>name | title    название, обязательно, ≤ 60
+description  ≤ 300, опционально
+cover        data:image/(png|jpeg|webp);base64,…  ≤ 2 МБ
+is_public    0 | 1, по умолчанию 1</pre></div>
+          <div class="col"><h5>Ответ</h5>
+<pre>{ "success": true, "id": 2, "collection": { ... } }</pre></div>
+        </div>
+        <div class="note">Лимит <code>MUSIC_COLLECTIONS_PER_USER</code> (по умолчанию 20) на пользователя, <code>400</code> при превышении. Обложка сохраняется в <code>public/uploads/music-covers/</code>.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="delete" data-path="DELETE /api/music/collections/:id — удалить сборник (?withTracks=1)">
+      <div class="ep-head"><span class="m m-delete">DELETE</span><code>/api/music/collections/:id</code><span class="spacer"></span><span class="auth-badge role">автор / senior+</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">удалить сборник (?withTracks=1)</p><div class="cols">
+          <div class="col"><h5>Query</h5><pre>?withTracks=1   удалить вместе с треками</pre></div>
+          <div class="col"><h5>Права</h5><pre>автор сборника, senior_moderator, admin</pre></div>
+        </div>
+        <div class="note">Без <code>withTracks=1</code> треки остаются и возвращаются в общий список. С ним — удаляются записи и файлы.</div>
+      </div>
+    </div>
+
+    <div class="ep" data-method="all" data-path="ALL /api/admin/users/:id/musician | /api/music/musicians — смена роли музыканта — отключена">
+      <div class="ep-head"><span class="m m-all">ALL</span><code>/api/admin/users/:id/musician | /api/music/musicians</code><span class="spacer"></span><span class="auth-badge role">403</span></div>
+      <div class="ep-body">
+        <p class="ep-desc">смена роли музыканта — отключена</p><div class="note"><b>Роли через API не меняются</b> — только SQL по базе:
+        <code>UPDATE users SET is_musician = 1 WHERE username = 'ник';</code>,
+        <code>UPDATE users SET role = 'senior_moderator' WHERE username = 'ник';</code>.
+        Оба эндпоинта всегда отвечают <code>403 {"error":"Роли меняются только в базе данных"}</code>, чтобы не было «дыры» на смену роли из браузера.</div>
       </div>
     </div>
   </section>
@@ -459,7 +588,7 @@
   "public_collections": [{ "id": 1, "name": "Мои",
       "description": null, "is_public": 1 }],
   "likes_count": 7,
-  "tags": [{ "id": 2, "name": "OG", "color": "#e74c3c", "icon": "" }]
+  "tags": [{ "id": 2, "name": "OG", "color": "#e74c3c", "icon": "🔥" }]
 }</pre></div></div>
         <div class="note">Показываются <b>только публичные</b> коллекции. 404 — пользователь не найден.</div>
       </div>
@@ -1030,13 +1159,15 @@
         <tr><td><code>tags</code> · <code>user_tags</code></td><td>теги и выдачи</td><td>name UNIQUE, color, icon; PK(user_id, tag_id), assigned_by</td></tr>
         <tr><td><code>reports</code></td><td>жалобы</td><td>reporter_id, reported_username, status</td></tr>
         <tr><td><code>bot_notifications</code></td><td>очередь уведомлений для Telegram-бота</td><td>type, target_user_id, target_chat_id, processed</td></tr>
+        <tr><td><code>music_tracks</code> *</td><td>метаданные треков из <code>sounds/</code></td><td>filename PK, display_name, artist, ext, size, collection_id, uploaded_by, created_at</td></tr>
+        <tr><td><code>music_collections</code> *</td><td>сборники треков</td><td>user_id, name, description, cover, is_public, created_at</td></tr>
       </table>
-      <p style="font-size:.8rem; color:var(--muted); margin-top:8px;">* колонки email и комнаты добавляются миграциями модулей mail-auth.js / rooms.js. БД: <code>database.db</code>, режим WAL, busy_timeout 5000 мс. Сессии: <code>sessions.db</code>.</p>
+      <p style="font-size:.8rem; color:var(--muted); margin-top:8px;">* таблицы/колонки <code>music_tracks</code>, <code>music_collections</code>, <code>users.is_musician</code> добавляются миграцией модуля music-ext.js; колонки email и комнаты — миграциями модулей mail-auth.js / rooms.js. БД: <code>database.db</code>, режим WAL, busy_timeout 5000 мс. Сессии: <code>sessions.db</code>.</p>
     </div>
   </section>
 
   <footer class="doc-footer">
-    Документация сгенерирована по исходному коду <code>server.js</code> (Mell Footage, 2026-10). Эндпоинты модулей <code>rooms.js</code> и <code>mail-auth.js</code> описаны в их собственных файлах.
+    Документация сгенерирована по исходному коду <code>server.js</code> (Mell Footage, 2026-10). Эндпоинты модулей <code>rooms.js</code>, <code>mail-auth.js</code> и <code>music-ext.js</code> (раздел «Музыка») описаны в их собственных файлах.
   </footer>
 </main>
 </div>
@@ -1069,7 +1200,15 @@
   }
 
   document.getElementById('search').addEventListener('input', applyFilters);
-  document.querySelectorAll('.f-btn').forEach(btn => {
+
+  // «Музыка» — быстрый переход к секции 04
+  const fMusic = document.getElementById('f-music');
+  if (fMusic) fMusic.addEventListener('click', (e) => {
+    e.preventDefault(); e.stopPropagation();
+    document.getElementById('music').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+  // #f-music — только переход к секции, в фильтрацию методов не вмешивается
+  document.querySelectorAll('.f-btn:not(#f-music)').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');

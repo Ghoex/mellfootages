@@ -1,4 +1,7 @@
-
+// MusicFlow Service Worker — кеш скачанных треков (IndexedDB).
+// SW_VERSION нужен, чтобы браузеры обновили воркер после деплоя:
+// при каждом релизе меняйте дату ниже.
+const SW_VERSION = '2026-11-09-music-ext';
 const DB_NAME = 'musicflow';
 const STORE = 'tracks';
 
