@@ -445,12 +445,167 @@
             font-size: 0.8rem;
             color: var(--text-sidebar);
         }
+
+        /* ===== MellPlayer: новые блоки (сборники, загрузка, аккаунт) ===== */
+        .tabs {
+            display: flex; gap: 8px; margin-bottom: 12px;
+        }
+        .tab-btn {
+            flex: 1; padding: 9px 10px; border-radius: 10px; cursor: pointer;
+            border: 1px solid var(--border-color); background: var(--bg-sidebar);
+            color: var(--text-sidebar); font-weight: 700; font-size: 0.82rem;
+            font-family: inherit; transition: all 0.2s ease;
+        }
+        .tab-btn.active { background: var(--player-accent); color: #fff; border-color: var(--player-accent); }
+
+        .collection-list { max-height: 240px; overflow-y: auto; scrollbar-width: thin; }
+        .collection-card {
+            display: flex; align-items: center; gap: 10px; padding: 9px 10px;
+            background: var(--bg-card); border-radius: 8px; margin-bottom: 6px;
+            cursor: pointer; color: var(--text-dark); transition: all 0.2s ease;
+        }
+        .collection-card:hover { background: var(--bg-card-hover); }
+        .collection-card.active { outline: 2px solid var(--player-accent); }
+        .collection-cover {
+            width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--player-accent-light), var(--player-accent));
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            color: #2d3b2c; font-weight: 800; font-size: 15px;
+        }
+        .collection-meta { min-width: 0; flex: 1; }
+        .collection-title { font-weight: 700; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .collection-sub { font-size: 0.72rem; color: var(--text-sidebar); }
+
+        .player-actions { display: flex; gap: 8px; margin-bottom: 16px; }
+        .player-actions button {
+            flex: 1; padding: 9px 10px; border-radius: 10px; cursor: pointer;
+            border: 1px solid var(--border-color); background: var(--bg-sidebar);
+            color: var(--text-dark); font-weight: 700; font-size: 0.8rem;
+            font-family: inherit; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .player-actions button:hover { background: var(--bg-card-hover); }
+        .player-actions .primary { background: var(--player-accent); color: #fff; border-color: var(--player-accent); }
+        .player-actions .hidden, .hidden { display: none !important; }
+
+        .playlist-item { display: flex; align-items: center; gap: 8px; }
+        .playlist-item .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .playlist-item .sub { font-size: 0.7rem; color: var(--text-sidebar); font-weight: 600; }
+        .playlist-item .row-btn {
+            border: 0; background: transparent; cursor: pointer; font-size: 14px;
+            color: var(--btn-download); padding: 4px 5px; border-radius: 6px; line-height: 1;
+        }
+        .playlist-item .row-btn:hover { background: var(--bg-sidebar); color: #b3403a; }
+        .playlist-empty { padding: 14px 10px; text-align: center; font-size: 0.8rem; color: var(--text-sidebar); }
+
+        .account-box {
+            display: flex; flex-direction: column; gap: 8px;
+            background: var(--bg-card); border-radius: 10px; padding: 10px 12px;
+            font-size: 0.8rem; color: var(--text-dark);
+        }
+        .account-box .who { font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .account-box .role-chip {
+            font-size: 0.66rem; text-transform: uppercase; letter-spacing: .4px;
+            padding: 2px 7px; border-radius: 999px; background: var(--player-accent); color: #fff;
+        }
+        .account-box .role-chip.user { background: var(--btn-download); }
+        .account-box .who-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+        .account-box button {
+            padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border-color);
+            background: var(--bg-sidebar); color: var(--text-dark); cursor: pointer;
+            font-family: inherit; font-size: 0.76rem; font-weight: 700;
+        }
+        .account-box button.primary { background: var(--player-accent); color: #fff; border-color: var(--player-accent); }
+        .account-box input {
+            width: 100%; padding: 8px 10px; border-radius: 8px; font-family: inherit;
+            border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary);
+        }
+        .account-hint { font-size: 0.7rem; color: var(--text-sidebar); line-height: 1.35; }
+
+        /* модальное окно загрузки / сборника (родной стиль) */
+        .modal-backdrop {
+            position: fixed; inset: 0; background: rgba(20, 28, 20, 0.6);
+            display: none; align-items: center; justify-content: center; padding: 16px; z-index: 60;
+        }
+        .modal-backdrop.open { display: flex; }
+        .modal-card {
+            background: var(--bg-card); color: var(--text-dark); border-radius: 18px;
+            padding: 20px; width: 100%; max-width: 420px; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+        .modal-card h3 { font-size: 1rem; margin: 0 0 12px; }
+        .modal-card label { display: block; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .4px; margin: 10px 0 4px; color: var(--text-sidebar); }
+        .modal-card input[type=text], .modal-card input[type=file], .modal-card select, .modal-card textarea {
+            width: 100%; padding: 9px 11px; border-radius: 10px; font-family: inherit; font-size: 0.85rem;
+            border: 1px solid var(--border-color); background: var(--bg-body); color: var(--text-primary);
+        }
+        .modal-card .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+        .modal-card .modal-actions button {
+            flex: 1; padding: 10px; border-radius: 10px; cursor: pointer; font-family: inherit;
+            font-weight: 700; font-size: 0.84rem; border: 1px solid var(--border-color);
+            background: var(--bg-sidebar); color: var(--text-dark);
+        }
+        .modal-card .modal-actions .primary { background: var(--player-accent); color: #fff; border-color: var(--player-accent); }
+        .modal-progress { height: 6px; border-radius: 3px; background: var(--bg-sidebar); overflow: hidden; margin-top: 12px; display: none; }
+        .modal-progress.on { display: block; }
+        .modal-progress > div { height: 100%; width: 0; background: var(--player-accent); transition: width 0.2s; }
+        .modal-msg { font-size: 0.78rem; margin-top: 10px; color: #b3403a; line-height: 1.4; }
+        .modal-msg.ok { color: #3b6b3a; }
+
+        .toast {
+            position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(20px);
+            background: var(--text-dark); color: #fff; padding: 10px 16px; border-radius: 999px;
+            font-size: 0.8rem; font-weight: 600; opacity: 0; pointer-events: none; transition: all 0.25s ease;
+            z-index: 80; max-width: calc(100% - 32px); text-align: center;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        body.dark-theme .toast { background: #4e4f50; color: #fff; }
+
+        /* ===== Адаптив ===== */
+        @media (max-width: 860px) {
+            .layout { overflow-x: hidden; }
+            .sidebar {
+                position: fixed; top: 0; left: 0; bottom: 0; z-index: 50;
+                width: min(280px, 82vw); margin-left: 0; overflow-y: auto;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+                padding-top: calc(25px + env(safe-area-inset-top));
+            }
+            .sidebar.collapsed { margin-left: 0; transform: translateX(-100%); box-shadow: none; }
+            .main-content { padding: 16px 14px calc(20px + env(safe-area-inset-bottom)); gap: 16px; }
+            .player-container { max-width: 100%; margin-top: 0; }
+            .player-card { padding: 22px 16px; border-radius: 18px; }
+            .album-art { width: min(220px, 62vw); height: min(220px, 62vw); margin-bottom: 18px; }
+            .page-header-title { font-size: 1rem; }
+            .playlist { max-height: 46vh; }
+            .collection-list { max-height: 46vh; }
+            .controls { gap: 14px; }
+            .control-btn { width: 46px; height: 46px; }
+            .sidebar-backdrop {
+                position: fixed; inset: 0; background: rgba(20, 28, 20, 0.45);
+                z-index: 45; display: none;
+            }
+            .sidebar-backdrop.on { display: block; }
+        }
+        @media (max-width: 420px) {
+            .main-content { padding: 12px 10px calc(16px + env(safe-area-inset-bottom)); }
+            .top-bar { gap: 8px; }
+            .icon-btn { padding: 8px; }
+            .album-art { width: 54vw; height: 54vw; }
+            .track-name { font-size: 1rem; }
+            .tab-btn { font-size: 0.76rem; padding: 8px 6px; }
+            .player-actions button { font-size: 0.74rem; padding: 8px 6px; }
+        }
+        @media (hover: none) {
+            .playlist-item, .collection-card, .control-btn, .tab-btn, .nav-btn { -webkit-tap-highlight-color: transparent; }
+            .playlist-item { padding-top: 12px; padding-bottom: 12px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="layout">
 
+        <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
         <aside class="sidebar collapsed" id="sidebar">
             <div class="logo" data-i18n="logo">
                 Mell<br>Player
@@ -462,6 +617,8 @@
 
             <button class="nav-btn"><a href="/" data-i18n="home">Footage</a></button>
             <button class="nav-btn"><a href="/news" data-i18n="news">News</a></button>
+
+            <div class="account-box" id="accountBox"></div>
 
             <a href="https://t.me/ghoex_channel" target="_blank" class="telegram-btn">
                 <svg viewBox="0 0 16 16">
@@ -487,6 +644,8 @@
 
                 <div class="page-header-title">MellPlayer</div>
 
+                <button class="icon-btn" id="topAuth" onclick="topAuthClick()" title="Войти"
+                        style="width:auto;padding:0 14px;font-weight:700;font-size:0.8rem;gap:6px">Войти</button>
                 <button class="icon-btn" onclick="toggleTheme()" title="Toggle Theme">
                                   <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
                                       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
@@ -531,17 +690,32 @@
                                   </div>
 
                                   <div class="controls">
-                                      <button id="downloadBtn" class="control-btn" title="Скачать">⬇</button>
-                                      <button class="control-btn" id="prevBtn">⏮</button>
-                                      <button class="control-btn play-btn" id="playBtn">▶</button>
-                                      <button class="control-btn" id="nextBtn">⏭</button>
+<button id="downloadBtn" class="control-btn" title="Скачать" aria-label="Скачать"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="M7 12l5 5 5-5"/><path d="M5 20h14"/></svg></button>
+        <button class="control-btn" id="prevBtn" aria-label="Предыдущий трек"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M6 5h2v14H6zM20 5v14L9 12z"/></svg></button>
+        <button class="control-btn play-btn" id="playBtn" aria-label="Воспроизведение"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></button>
+        <button class="control-btn" id="nextBtn" aria-label="Следующий трек"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M16 5h2v14h-2zM4 5v14l11-7z"/></svg></button>
                                   </div>
 
-                                  <div class="playlist-section">
+                                  <div class="player-actions">
+                                      <button id="uploadBtn" class="hidden" onclick="openUploadForm()">＋ <span data-i18n="uploadTrack">Загрузить трек</span></button>
+                                      <button id="newCollectionBtn" class="hidden" onclick="openCollectionForm()">▤ <span data-i18n="newCollection">Новый сборник</span></button>
+                                  </div>
+
+                                  <div class="tabs">
+                                      <button class="tab-btn active" id="tabTracks" onclick="setShelf('tracks')">Все треки</button>
+                                      <button class="tab-btn" id="tabCollections" onclick="setShelf('collections')">Сборники</button>
+                                  </div>
+
+                                  <div class="playlist-section" id="playlistSection">
                                       <h2 class="playlist-title" id="playlistTitle">Playlist</h2>
                                       <div class="playlist" id="playlistContainer">
                                           <div class="loading">Loading tracks...</div>
                                       </div>
+                                  </div>
+
+                                  <div class="playlist-section hidden" id="collectionSection">
+                                      <h2 class="playlist-title" id="collectionTitle">Сборники</h2>
+                                      <div class="collection-list" id="collectionList"></div>
                                   </div>
 
                                   <div class="info-panel">
@@ -553,6 +727,20 @@
                       </main>
 
                   </div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal-card">
+        <h3 id="modalTitle">Загрузка</h3>
+        <div id="modalBody"></div>
+        <div class="modal-progress" id="modalProgress"><div></div></div>
+        <div class="modal-msg" id="modalMsg"></div>
+        <div class="modal-actions">
+            <button onclick="closeModal()">Отмена</button>
+            <button class="primary" id="modalOk">ОК</button>
+        </div>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
 
 <script>
     const translations = {
@@ -578,6 +766,27 @@
             serverConnecting: 'Connecting to server...',
             donate_button: "support the project",
             tech: "technical work"
+            ,
+            uploadTrack: 'Upload track',
+            newCollection: 'New collection',
+            trackNameLbl: 'Track title',
+            trackArtistLbl: 'Artist',
+            trackFileLbl: 'Audio file',
+            collectionLbl: 'Collection (optional)',
+            colNameLbl: 'Collection name',
+            colDescLbl: 'Description',
+            colCoverLbl: 'Cover (optional)',
+            save: 'Save', uploading: 'Uploading…', creating: 'Creating…',
+            nothingToPlay: 'Nothing to play',
+            emptyCollection: 'No tracks in this collection yet',
+            emptyCollections: 'No collections yet',
+            deleteQ: 'Delete', deleteTrackQ: 'Delete this track?', deleteColQ: 'Delete this collection?',
+            deleteWithTracks: 'Delete collection and its tracks',
+            login: 'Log in', logout: 'Log out', roleUser: 'listener', roleMusician: 'musician', roleSenate: 'senior moderator', roleAdmin: 'admin',
+            noPermission: 'Only a musician can do this — the role is set in the database',
+            pickFile: 'Choose an audio file',
+            loginPrompt: 'Log in to upload tracks and create collections',
+            accLogin: 'Log in to the site', accCantLogin: 'Log in on the main site' 
 
         },
         ru: {
@@ -602,6 +811,27 @@
             serverConnecting: 'Подключение к серверу...',
             donate_button: "поддержать проект",
             tech: "технические роботы"
+            ,
+            uploadTrack: 'Загрузить трек',
+            newCollection: 'Новый сборник',
+            trackNameLbl: 'Название трека',
+            trackArtistLbl: 'Исполнитель',
+            trackFileLbl: 'Аудиофайл',
+            collectionLbl: 'Сборник (необязательно)',
+            colNameLbl: 'Название сборника',
+            colDescLbl: 'Описание',
+            colCoverLbl: 'Обложка (необязательно)',
+            save: 'Сохранить', uploading: 'Загружаем…', creating: 'Создаём…',
+            nothingToPlay: 'Нечего воспроизвести',
+            emptyCollection: 'В этом сборнике пока нет треков',
+            emptyCollections: 'Сборников пока нет',
+            deleteQ: 'Удалить', deleteTrackQ: 'Удалить этот трек?', deleteColQ: 'Удалить этот сборник?',
+            deleteWithTracks: 'Удалить сборник вместе с треками',
+            login: 'Войти', logout: 'Выйти', roleUser: 'слушатель', roleMusician: 'музыкант', roleSenate: 'ст. модератор', roleAdmin: 'админ',
+            noPermission: 'Это может только музыкант — роль выдаётся в базе данных',
+            pickFile: 'Выберите аудиофайл',
+            loginPrompt: 'Войдите, чтобы загружать треки и создавать сборники',
+            accLogin: 'Войти на сайт', accCantLogin: 'Вход на основном сайте' 
         },
         uk: {
             pageTitle: "Плеєр Mell",
@@ -625,22 +855,73 @@
             serverConnecting: 'Підключение к серверу...',
             donate_button: "підтримати проект",
             tech: "технічні роботи"
+            ,
+            uploadTrack: 'Завантажити трек',
+            newCollection: 'Новий збірник',
+            trackNameLbl: 'Назва треку',
+            trackArtistLbl: 'Виконавець',
+            trackFileLbl: 'Аудіофайл',
+            collectionLbl: 'Збірник (необов’язково)',
+            colNameLbl: 'Назва збірника',
+            colDescLbl: 'Опис',
+            colCoverLbl: 'Обкладинка (необов’язково)',
+            save: 'Зберегти', uploading: 'Завантажуємо…', creating: 'Створюємо…',
+            nothingToPlay: 'Немає що відтворити',
+            emptyCollection: 'У цьому збірнику ще немає треків',
+            emptyCollections: 'Збірників поки немає',
+            deleteQ: 'Видалити', deleteTrackQ: 'Видалити цей трек?', deleteColQ: 'Видалити цей збірник?',
+            deleteWithTracks: 'Видалити збірник разом із треками',
+            login: 'Увійти', logout: 'Вийти', roleUser: 'слухач', roleMusician: 'музикант', roleSenate: 'ст. модератор', roleAdmin: 'адмін',
+            noPermission: 'Це може лише музикант — роль видається в базі даних',
+            pickFile: 'Оберіть аудіофайл',
+            loginPrompt: 'Увійдіть, щоб завантажувати треки та створювати збірники',
+            accLogin: 'Увійти на сайт', accCantLogin: 'Вхід на основному сайті' 
         }
     };
 
     let player;
 
-    if (localStorage.getItem('theme') === 'dark') {
+    // В iframe с sandbox="allow-scripts" (без allow-same-origin) localStorage бросает SecurityError.
+    // Плеер должен работать и там — доступ только через обёртки.
+    function lsGet(key, fallback) {
+        try { const v = window.localStorage.getItem(key); return v === null ? fallback : v; }
+        catch (e) { return fallback; }
+    }
+    function lsSet(key, value) {
+        try { window.localStorage.setItem(key, value); } catch (e) { /* приватный режим / песочница */ }
+    }
+
+    if (lsGet('theme', '') === 'dark') {
         document.body.classList.add('dark-theme');
     }
 
     function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('collapsed');
+        const sb = document.getElementById('sidebar');
+        const bd = document.getElementById('sidebarBackdrop');
+        const opened = sb.classList.toggle('collapsed') === false;
+        if (bd) bd.classList.toggle('on', opened);
+        document.body.style.overflow = opened && window.innerWidth <= 860 ? 'hidden' : '';
     }
+    // Esc закрывает меню, модалку и мобильное меню
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        const modal = document.getElementById('modalBackdrop');
+        if (modal && modal.classList.contains('open')) { closeModal(); return; }
+        const sb = document.getElementById('sidebar');
+        if (sb && window.innerWidth <= 860 && !sb.classList.contains('collapsed')) toggleSidebar();
+    });
+
+    // на телефоне меню закрывается после выбора пункта
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth > 860) return;
+        const sb = document.getElementById('sidebar');
+        if (!sb || sb.classList.contains('collapsed')) return;
+        if (e.target.closest('.nav-btn a') || e.target.closest('.telegram-btn') || e.target.closest('.donate-btn')) toggleSidebar();
+    });
 
     function toggleTheme() {
         const isDark = document.body.classList.toggle('dark-theme');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        lsSet('theme', isDark ? 'dark' : 'light');
     }
 
     function toggleLangMenu() {
@@ -650,7 +931,7 @@
     function selectLanguage(lang) {
         const targetLang = (lang === 'ua') ? 'uk' : lang;
 
-        localStorage.setItem('app_lang', targetLang);
+        lsSet('app_lang', targetLang);
         document.documentElement.lang = targetLang;
 
         document.querySelectorAll('.lang-option').forEach(btn => {
@@ -684,7 +965,7 @@
             this.currentTrackIndex = 0;
             this.isPlaying = false;
             this.audioElement = new Audio();
-            this.currentLang = localStorage.getItem('app_lang') || 'en';
+            this.currentLang = lsGet('app_lang', 'ru');
 
             this.initElements();
             this.attachListeners();
@@ -739,6 +1020,36 @@
             this.audioElement.addEventListener('play', () => this.onPlay());
             this.audioElement.addEventListener('pause', () => this.onPause());
             this.audioElement.addEventListener('error', () => this.onAudioError());
+
+            // кнопки модального окна
+            const okBtn = document.getElementById('modalOk');
+            if (okBtn) okBtn.addEventListener('click', () => { if (typeof MF !== 'undefined' && MF.pendingAction) MF.pendingAction(); });
+            const backdrop = document.getElementById('modalBackdrop');
+            if (backdrop) backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
+        }
+
+        // заменить список воспроизведения (треки приходят из MF, а не из loadTracks)
+        loadTracksInto(list) {
+            const prev = this.tracks[this.currentTrackIndex];
+            this.tracks = Array.isArray(list) ? list.slice() : [];
+            const keepIdx = prev ? this.tracks.findIndex(x => x.filename === prev.filename) : -1;
+            this.currentTrackIndex = keepIdx >= 0 ? keepIdx : 0;
+            if (!this.tracks.length) {
+                this.audioElement.pause();
+                this.audioElement.removeAttribute('src');
+                this.isPlaying = false;
+                if (this.playBtn) this.playBtn.innerHTML = svgIcons.play;
+                if (this.trackName) this.trackName.textContent = t('selectTrack', 'Выберите трек');
+                if (this.infoText) this.infoText.textContent = t('nothingToPlay', 'Нет треков');
+                this.resetProgress();
+                return;
+            }
+            if (keepIdx < 0) {
+                const track = this.tracks[0];
+                this.audioElement.src = track.url;
+                if (this.trackName) this.trackName.textContent = track.name;
+                this.resetProgress();
+            }
         }
 
         downloadCurrentTrack() {
@@ -759,38 +1070,26 @@
         }
 
         async loadTracks() {
-            const t = translations[this.currentLang];
-            try {
-                this.showLoading(t.loading);
-
-                const response = await fetch('/api/tracks');
-                if (!response.ok) {
-                    throw new Error(`HTTP Error: ${response.status}`);
-                }
-
-                const data = await response.json();
-                this.tracks = Array.isArray(data) ? data : (data.tracks || []);
-
-                if (this.tracks.length === 0) {
-                    if (this.infoText) this.infoText.textContent = t.noTracks;
-                    if (this.playlistContainer) this.playlistContainer.innerHTML = `<div class="error">${t.noTracksError}</div>`;
-                    return;
-                }
-
-                if (this.infoText) this.infoText.textContent = `${t.tracksLoaded} ${this.tracks.length}`;
-                this.updatePlaylist();
-                this.loadTrack(0);
-            } catch (error) {
+            const tr = translations[this.currentLang];
+            this.showLoading(tr.loading);
+            if (typeof MF === 'undefined') return;
+            const res = await loadLibrary();
+            if (!res.ok) {
+                const error = res.error || new Error('offline');
                 console.error('Ошибка при загрузке треков:', error);
-                if (this.infoText) this.infoText.textContent = `❌ Error: ${error.message}`;
+                const tl = translations[this.currentLang] || translations.ru;
+                if (this.infoText) this.infoText.textContent = `❌ ${tl.connectError || 'Ошибка подключения к серверу'}: ${error.message}`;
                 if (this.playlistContainer) {
                     this.playlistContainer.innerHTML = `<div class="error">
-                        <strong>${t.connectError}</strong><br>
-                        ${error.message}<br>
-                        <small>${t.serverEnsure}</small>
+                        <strong>${tl.connectError || 'Ошибка подключения к серверу'}</strong><br>
+                        ${esc(error.message)}<br>
+                        <small>${tl.serverEnsure || ''}</small>
                     </div>`;
                 }
+                return;
             }
+            renderLibrary();
+            this.loadTracksInto(visibleTracks());
         }
 
         showLoading(message) {
@@ -799,14 +1098,14 @@
         }
 
         updatePlaylist() {
-            const t = translations[this.currentLang];
+            // список рисует renderLibrary() — там же кнопки удаления и название сборника
+            if (typeof MF !== 'undefined') { renderLibrary(); return; }
+            const tr = translations[this.currentLang];
             if (!this.playlistContainer) return;
-
             if (this.tracks.length === 0) {
-                this.playlistContainer.innerHTML = `<div class="error">${t.noTracksError}</div>`;
+                this.playlistContainer.innerHTML = `<div class="error">${tr.noTracksError}</div>`;
                 return;
             }
-
             this.playlistContainer.innerHTML = this.tracks
                 .map((track, index) => `
                     <div class="playlist-item ${index === this.currentTrackIndex ? 'active' : ''}"
@@ -823,8 +1122,9 @@
         loadTrack(index) {
             if (this.tracks.length === 0) return;
 
-            this.currentTrackIndex = Math.min(index, this.tracks.length - 1);
+            this.currentTrackIndex = Math.max(0, Math.min(index, this.tracks.length - 1));
             const track = this.tracks[this.currentTrackIndex];
+            if (!track) return;
 
             this.audioElement.src = track.url;
             if (this.trackName) this.trackName.textContent = track.name;
@@ -897,19 +1197,19 @@
 
         onPlay() {
             this.isPlaying = true;
-            if (this.playBtn) this.playBtn.textContent = '⏸';
+            if (this.playBtn) this.playBtn.innerHTML = svgIcons.pause;
             if (this.albumArt) this.albumArt.style.animation = 'float 3s ease-in-out infinite';
         }
 
         onPause() {
             this.isPlaying = false;
-            if (this.playBtn) this.playBtn.textContent = '▶';
+            if (this.playBtn) this.playBtn.innerHTML = svgIcons.play;
             if (this.albumArt) this.albumArt.style.animation = 'none';
         }
 
         onAudioError() {
             this.isPlaying = false;
-            if (this.playBtn) this.playBtn.textContent = '▶';
+            if (this.playBtn) this.playBtn.innerHTML = svgIcons.play;
             if (this.infoText) this.infoText.textContent = translations[this.currentLang].playError;
             console.error('Audio Error:', this.audioElement.error);
         }
@@ -928,6 +1228,493 @@
         }
     }
 
+
+    /* ===================== MellPlayer: новый API (music-ext.js) ===================== */
+    const EP = {
+        musicMe: '/api/music/me',
+        musicTracks: '/api/music/tracks',
+        tracksFallback: '/api/tracks',
+        collections: '/api/music/collections',
+        upload: '/api/tracks',
+        login: '/api/login',
+        logout: '/api/logout',
+        me: '/api/me'
+    };
+
+    const svgIcons = {
+        play: '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+        pause: '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>'
+    };
+
+    const MF = {
+        user: null,
+        isMusician: false,
+        canModerate: false,
+        tracks: [],       // все треки с метаданными
+        collections: [],
+        shelf: 'tracks',  // tracks | collections
+        openCollection: null,
+        pendingAction: null
+    };
+
+    function t(key, fallback) {
+        const lang = (typeof player !== 'undefined' && player && player.currentLang) || lsGet('app_lang', 'ru');
+        const dict = translations[lang] || translations.ru || {};
+        return dict[key] || fallback || key;
+    }
+    function esc(v) {
+        return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    async function apiCall(path, opts) {
+        const o = opts || {};
+        const init = { method: o.method || 'GET', credentials: 'include', headers: {} };
+        if (o.json !== undefined) { init.headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(o.json); }
+        if (o.body) init.body = o.body;
+        let res;
+        try { res = await fetch(path, init); }
+        catch (e) { const err = new Error('Нет связи с сервером'); err.offline = true; throw err; }
+        let data = {};
+        try { data = await res.json(); } catch (e) {}
+        if (!res.ok) { const err = new Error(data.error || ('Ошибка ' + res.status)); err.status = res.status; throw err; }
+        return data;
+    }
+    function toast(msg) {
+        const el = document.getElementById('toast');
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.add('show');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => el.classList.remove('show'), 2600);
+    }
+
+    /* ---------- права ---------- */
+    async function loadMe() {
+        try {
+            const d = await apiCall(EP.musicMe);
+            MF.user = d.loggedIn ? d.user : null;
+            MF.isMusician = !!(d.loggedIn && d.can_upload);
+            MF.canModerate = !!(d.loggedIn && d.can_moderate);
+        } catch (e) {
+            // сервер недоступен или модуль не задеплоен: пробуем только /api/me, без прав
+            try {
+                const d2 = await apiCall(EP.me);
+                MF.user = d2.loggedIn ? d2.user : null;
+            } catch (e2) { MF.user = null; }
+            MF.isMusician = false;
+            MF.canModerate = false;
+        }
+        renderAccount();
+        renderActions();
+    }
+    function roleLabel(role) {
+        if (role === 'admin') return t('roleAdmin', 'админ');
+        if (role === 'senior_moderator') return t('roleSenate', 'ст. модератор');
+        if (role === 'moderator' || role === 'junior_moderator') return 'модератор';
+        return MF.isMusician ? t('roleMusician', 'музыкант') : t('roleUser', 'слушатель');
+    }
+    function canDeleteTrack(track) {
+        if (!MF.user) return false;
+        if (MF.canModerate) return true;
+        return !!track && track.uploadedBy === MF.user.id;
+    }
+    function canDeleteCollection(col) {
+        if (!MF.user) return false;
+        if (MF.canModerate) return true;
+        return !!col && col.createdBy === MF.user.id;
+    }
+
+    function renderAccount() {
+        const box = document.getElementById('accountBox');
+        if (!box) return;
+        if (!MF.user) {
+            box.innerHTML = `<div class="account-hint">${esc(t('loginPrompt', 'Войдите, чтобы загружать треки и создавать сборники'))}</div>
+                <div class="who-btns"><button onclick="openLoginForm()">${esc(t('login', 'Войти'))}</button></div>`;
+            return;
+        }
+        box.innerHTML = `
+            <div class="who">${esc(MF.user.username)}
+                <span class="role-chip ${MF.isMusician ? '' : 'user'}">${esc(roleLabel(MF.user.role))}</span>
+            </div>
+            <div class="who-btns">
+                <button onclick="logout()">${esc(t('logout', 'Выйти'))}</button>
+            </div>`;
+    }
+
+    function topAuthClick() {
+        if (!MF.user) openLoginForm();
+        else toggleSidebar();
+    }
+
+    function renderActions() {
+        const top = document.getElementById('topAuth');
+        if (top) top.textContent = MF.user ? MF.user.username : t('login', 'Войти');
+        const up = document.getElementById('uploadBtn');
+        const nc = document.getElementById('newCollectionBtn');
+        if (up) up.classList.toggle('hidden', !MF.isMusician);
+        if (nc) nc.classList.toggle('hidden', !MF.isMusician);
+    }
+
+    /* ---------- данные ---------- */
+    async function loadLibrary() {
+        const t = translations[(typeof player !== 'undefined' && player && player.currentLang) || 'ru'];
+        try {
+            let data;
+            try {
+                data = await apiCall(EP.musicTracks);
+            } catch (e) {
+                if (e.status === 404) data = await apiCall(EP.tracksFallback);  // модуль не задеплоен
+                else throw e;
+            }
+            MF.tracks = (data.tracks || []).map((tr, i) => ({
+                id: tr.id != null ? tr.id : i,
+                name: tr.name || tr.filename,
+                filename: tr.filename,
+                url: tr.url,
+                ext: tr.ext || '',
+                artist: tr.artist || '',
+                collectionId: tr.collectionId != null ? tr.collectionId : null,
+                uploadedBy: tr.uploadedBy != null ? tr.uploadedBy : null
+            }));
+            try {
+                const c = await apiCall(EP.collections);
+                MF.collections = c.collections || [];
+            } catch (e) { MF.collections = []; }
+            return { ok: true };
+        } catch (e) {
+            return { ok: false, error: e };
+        }
+    }
+
+    function visibleTracks() {
+        if (MF.openCollection != null) return MF.tracks.filter(tr => tr.collectionId === MF.openCollection);
+        return MF.tracks.filter(tr => tr.collectionId == null);
+    }
+    function collectionOf(track) {
+        return MF.collections.find(c => c.id === track.collectionId) || null;
+    }
+
+    /* ---------- отрисовка ---------- */
+    function renderShelf() {
+        const tTracks = document.getElementById('tabTracks');
+        const tCols = document.getElementById('tabCollections');
+        const secList = document.getElementById('playlistSection');
+        const secCols = document.getElementById('collectionSection');
+        if (tTracks) tTracks.classList.toggle('active', MF.shelf === 'tracks');
+        if (tCols) tCols.classList.toggle('active', MF.shelf === 'collections');
+        if (secList) secList.classList.toggle('hidden', MF.shelf !== 'tracks');
+        if (secCols) secCols.classList.toggle('hidden', MF.shelf !== 'collections');
+    }
+
+    function setShelf(which) {
+        MF.shelf = which === 'collections' ? 'collections' : 'tracks';
+        if (MF.shelf === 'tracks' && MF.openCollection != null) MF.openCollection = null;
+        renderShelf();
+        renderLibrary();
+    }
+
+    function openCollection(id) {
+        MF.openCollection = id;
+        MF.shelf = 'tracks';
+        renderShelf();
+        renderLibrary();
+        const col = MF.collections.find(c => c.id === id);
+        if (col && player) player.loadTracksInto(visibleTracks());
+    }
+
+    function closeCollectionView() {
+        MF.openCollection = null;
+        renderLibrary();
+        if (player) player.loadTracksInto(visibleTracks());
+    }
+
+    function renderLibrary() {
+        renderShelf();
+        const listEl = document.getElementById('playlistContainer');
+        const titleEl = document.getElementById('playlistTitle');
+        const colEl = document.getElementById('collectionList');
+        const colTitleEl = document.getElementById('collectionTitle');
+        const col = MF.openCollection != null ? MF.collections.find(c => c.id === MF.openCollection) : null;
+
+        if (titleEl) titleEl.textContent = col ? col.title : t('playlist', 'Плейлист');
+        if (listEl) {
+            const list = visibleTracks();
+            if (!list.length) {
+                listEl.innerHTML = `<div class="playlist-empty">${esc(col ? t('emptyCollection', 'В этом сборнике пока нет треков') : t('nothingToPlay', 'Нет треков'))}</div>`;
+            } else {
+                listEl.innerHTML = list.map((track, i) => {
+                    const isCur = player && player.tracks && player.tracks[player.currentTrackIndex] &&
+                        player.tracks[player.currentTrackIndex].filename === track.filename;
+                    const del = canDeleteTrack(track)
+                        ? `<button class="row-btn" title="${esc(t('deleteQ', 'Удалить'))}" onclick="event.stopPropagation(); deleteTrack('${esc(track.filename).replace(/'/g, "\\'")}')">✕</button>`
+                        : '';
+                    const sub = [track.artist, col ? '' : (collectionOf(track) ? collectionOf(track).title : '')]
+                        .filter(Boolean).join(' · ');
+                    return `<div class="playlist-item ${isCur ? 'active' : ''}" data-filename="${esc(track.filename)}"
+                                 onclick="playFromShelf('${esc(track.filename).replace(/'/g, "\\'")}')"
+                                 title="${esc(track.name)}">
+                                <span class="icon">♪</span>
+                                <span class="name">${esc(track.name)}<span class="sub">${esc(sub)}</span></span>
+                                ${del}
+                            </div>`;
+                }).join('');
+            }
+            if (col) {
+                const delCol = canDeleteCollection(col)
+                    ? `<button class="row-btn" title="${esc(t('deleteColQ', 'Удалить сборник'))}" onclick="deleteCollection(${col.id})">🗑</button>` : '';
+                listEl.insertAdjacentHTML('afterbegin',
+                    `<div class="playlist-item" style="background:transparent;cursor:default">
+                        <button class="row-btn" onclick="closeCollectionView()" title="Назад">←</button>
+                        <span class="name">${esc(col.title)}<span class="sub">${col.trackCount || 0} трек(ов)</span></span>
+                        ${delCol}
+                    </div>`);
+            }
+        }
+
+        if (colTitleEl) colTitleEl.textContent = t('collectionsTitle', 'Сборники');
+        if (colEl) {
+            if (!MF.collections.length) {
+                const hint = MF.isMusician
+                    ? `<div class="playlist-empty">${esc(t('emptyCollections', 'Сборников пока нет'))} — «${esc(t('newCollection', 'Новый сборник'))}»</div>`
+                    : `<div class="playlist-empty">${esc(t('emptyCollections', 'Сборников пока нет'))}</div>`;
+                colEl.innerHTML = hint;
+            } else {
+                colEl.innerHTML = MF.collections.map(c => `
+                    <div class="collection-card" onclick="openCollection(${c.id})">
+                        <div class="collection-cover" ${c.cover ? `style="background-image:url('${esc(c.cover)}')"` : ''}>${c.cover ? '' : esc((c.title || '?')[0].toUpperCase())}</div>
+                        <div class="collection-meta">
+                            <div class="collection-title">${esc(c.title)}</div>
+                            <div class="collection-sub">${c.trackCount || 0} · ${esc(c.authorName || '')}</div>
+                        </div>
+                        ${canDeleteCollection(c) ? `<button class="row-btn" onclick="event.stopPropagation(); deleteCollection(${c.id})" title="${esc(t('deleteQ', 'Удалить'))}">✕</button>` : ''}
+                    </div>`).join('');
+            }
+        }
+        // подписи под плеером
+        if (player && player.infoText) {
+            const n = MF.tracks.length;
+            const tl = translations[player.currentLang] || translations.ru;
+            player.infoText.textContent = n ? `${tl.tracksLoaded || 'Загружено треков:'} ${n}` : (tl.noTracksError || 'Нет треков');
+        }
+    }
+
+    function playFromShelf(filename) {
+        if (!player) return;
+        const list = visibleTracks();
+        const idx = list.findIndex(tr => tr.filename === filename);
+        if (idx < 0) return;
+        player.loadTracksInto(list);
+        player.loadTrack(idx);
+        player.togglePlay();
+    }
+
+    /* ---------- загрузка трека ---------- */
+    function openLoginForm(email_hint) {
+        openModal(t('login', 'Войти'), `
+            <label>${esc('Логин')}</label>
+            <input type="text" id="mfUser" autocomplete="username">
+            <label>${esc('Пароль')}</label>
+            <input type="password" id="mfPass" autocomplete="current-password">
+            <div class="account-hint" style="margin-top:8px">${esc('Вход по логину и паролю от основного сайта. Новые аккаунты всегда получают роль «слушатель».')}</div>
+        `, async () => {
+            const username = (document.getElementById('mfUser') || {}).value || '';
+            const password = (document.getElementById('mfPass') || {}).value || '';
+            if (!username || !password) return modalMsg('Введите логин и пароль');
+            try {
+                await apiCall(EP.login, { method: 'POST', json: { username, password } });
+                await loadMe();
+                closeModal();
+                toast(t('accLogin', 'Вы вошли'));
+                await refreshAll();
+            } catch (e) {
+                modalMsg(e.message || 'Неверный логин или пароль');
+            }
+        }, t('login', 'Войти'));
+    }
+
+    async function logout() {
+        try { await apiCall(EP.logout, { method: 'POST' }); } catch (e) {}
+        MF.user = null; MF.isMusician = false; MF.canModerate = false;
+        renderAccount(); renderActions(); renderLibrary();
+        toast(t('logout', 'Вы вышли'));
+    }
+
+    function openUploadForm() {
+        if (!MF.isMusician) return toast(t('noPermission', 'Нужна роль музыканта'));
+        const opts = MF.collections.map(c => `<option value="${c.id}" ${MF.openCollection === c.id ? 'selected' : ''}>${esc(c.title)}</option>`).join('');
+        openModal(t('uploadTrack', 'Загрузить трек'), `
+            <label>${esc(t('trackFileLbl', 'Аудиофайл'))}</label>
+            <input type="file" id="mfFile" accept=".mp3,.wav,.ogg,.m4a,.flac,.aac,audio/*">
+            <label>${esc(t('trackNameLbl', 'Название трека'))}</label>
+            <input type="text" id="mfName" placeholder="${esc('по умолчанию — имя файла')}">
+            <label>${esc(t('trackArtistLbl', 'Исполнитель'))}</label>
+            <input type="text" id="mfArtist" placeholder="${esc(MF.user ? MF.user.username : '')}">
+            <label>${esc(t('collectionLbl', 'Сборник (необязательно)'))}</label>
+            <select id="mfCollection"><option value="">${esc('— без сборника —')}</option>${opts}</select>
+        `, async () => {
+            const file = (document.getElementById('mfFile') || {}).files || [];
+            if (!file[0]) return modalMsg(t('pickFile', 'Выберите аудиофайл'));
+            const fd = new FormData();
+            fd.append('audioFile', file[0]);
+            fd.append('name', (document.getElementById('mfName') || {}).value || '');
+            fd.append('artist', (document.getElementById('mfArtist') || {}).value || '');
+            const cid = (document.getElementById('mfCollection') || {}).value;
+            if (cid) fd.append('collectionId', cid);
+            setModalBusy(true, t('uploading', 'Загружаем…'));
+            try {
+                const r = await uploadWithProgress(fd);
+                if (r && r.track) {
+                    closeModal();
+                    toast('Добавлено: ' + r.track.name);
+                    await refreshAll();
+                } else {
+                    setModalBusy(false);
+                    modalMsg('Сервер не подтвердил загрузку');
+                }
+            } catch (e) {
+                setModalBusy(false);
+                modalMsg(e.message || 'Не удалось загрузить трек');
+            }
+        }, t('save', 'Сохранить'));
+    }
+
+    function uploadWithProgress(formData) {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            const barWrap = document.getElementById('modalProgress');
+            const bar = barWrap ? barWrap.firstElementChild : null;
+            if (barWrap) barWrap.classList.add('on');
+            xhr.open('POST', EP.upload, true);
+            xhr.withCredentials = true;
+            xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable && bar) bar.style.width = Math.round((e.loaded / e.total) * 100) + '%';
+            };
+            xhr.onload = () => {
+                let data = {};
+                try { data = JSON.parse(xhr.responseText); } catch (e) {}
+                if (xhr.status >= 200 && xhr.status < 300) resolve(data);
+                else { const err = new Error(data.error || ('Ошибка ' + xhr.status)); err.status = xhr.status; reject(err); }
+            };
+            xhr.onerror = () => reject(new Error('Нет связи с сервером'));
+            xhr.send(formData);
+        });
+    }
+
+    /* ---------- создание сборника ---------- */
+    function openCollectionForm() {
+        if (!MF.isMusician) return toast(t('noPermission', 'Нужна роль музыканта'));
+        openModal(t('newCollection', 'Новый сборник'), `
+            <label>${esc(t('colNameLbl', 'Название сборника'))}</label>
+            <input type="text" id="mfColName" maxlength="60">
+            <label>${esc(t('colDescLbl', 'Описание'))}</label>
+            <textarea id="mfColDesc" rows="2" maxlength="300"></textarea>
+            <label>${esc(t('colCoverLbl', 'Обложка (обязательно)'))}</label>
+            <input type="file" id="mfColCover" accept="image/*">
+        `, async () => {
+            const name = ((document.getElementById('mfColName') || {}).value || '').trim();
+            if (!name) return modalMsg('Введите название сборника');
+            const desc = ((document.getElementById('mfColDesc') || {}).value || '').trim();
+            const coverInput = document.getElementById('mfColCover');
+            let cover = null;
+            if (coverInput && coverInput.files && coverInput.files[0]) {
+                try { cover = await shrinkImage(coverInput.files[0]); } catch (e) {}
+            }
+            setModalBusy(true, t('creating', 'Создаём…'));
+            try {
+                await apiCall(EP.collections, { method: 'POST', json: { name, description: desc, cover } });
+                closeModal();
+                toast('Сборник создан: ' + name);
+                await refreshAll();
+            } catch (e) {
+                setModalBusy(false);
+                modalMsg(e.message || 'Не удалось создать сборник');
+            }
+        }, t('save', 'Сохранить'));
+    }
+
+    function shrinkImage(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = new Image();
+                img.onload = () => {
+                    const max = 600;
+                    const scale = Math.min(1, max / Math.max(img.width, img.height));
+                    const canvas = document.createElement('canvas');
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.86));
+                };
+                img.onerror = () => reject(new Error('bad image'));
+                img.src = reader.result;
+            };
+            reader.onerror = () => reject(new Error('read error'));
+            reader.readAsDataURL(file);
+        });
+    }
+
+    /* ---------- удаление ---------- */
+    async function deleteTrack(filename) {
+        const tr = MF.tracks.find(x => x.filename === filename);
+        if (!tr || !canDeleteTrack(tr)) return toast(t('noPermission', 'Нет прав'));
+        if (!confirm(t('deleteTrackQ', 'Удалить этот трек?'))) return;
+        try {
+            await apiCall('/api/music/tracks/' + encodeURIComponent(filename), { method: 'DELETE' });
+            toast('Удалено: ' + tr.name);
+            await refreshAll();
+        } catch (e) { toast(e.message || 'Не удалось удалить'); }
+    }
+
+    async function deleteCollection(id) {
+        const col = MF.collections.find(c => c.id === id);
+        if (!col || !canDeleteCollection(col)) return toast(t('noPermission', 'Нет прав'));
+        const withTracks = confirm(t('deleteWithTracks', 'Удалить сборник вместе с треками?') + '\n\nОК — вместе с треками, Отмена — только сборник');
+        try {
+            await apiCall(EP.collections + '/' + id + (withTracks ? '?withTracks=1' : ''), { method: 'DELETE' });
+            if (MF.openCollection === id) MF.openCollection = null;
+            toast('Сборник удалён: ' + col.title);
+            await refreshAll();
+        } catch (e) { toast(e.message || 'Не удалось удалить сборник'); }
+    }
+
+    /* ---------- модальное окно ---------- */
+    function openModal(title, bodyHtml, onOk, okLabel) {
+        document.getElementById('modalTitle').textContent = title;
+        document.getElementById('modalBody').innerHTML = bodyHtml;
+        document.getElementById('modalMsg').textContent = '';
+        document.getElementById('modalMsg').className = 'modal-msg';
+        const bar = document.getElementById('modalProgress');
+        bar.classList.remove('on'); bar.firstElementChild.style.width = '0';
+        const ok = document.getElementById('modalOk');
+        ok.textContent = okLabel || t('save', 'Сохранить');
+        ok.disabled = false;
+        MF.pendingAction = onOk;
+        document.getElementById('modalBackdrop').classList.add('open');
+    }
+    function closeModal() {
+        document.getElementById('modalBackdrop').classList.remove('open');
+        MF.pendingAction = null;
+    }
+    function modalMsg(text, kind) {
+        const el = document.getElementById('modalMsg');
+        el.textContent = text;
+        el.className = 'modal-msg' + (kind === 'ok' ? ' ok' : '');
+    }
+    function setModalBusy(busy, label) {
+        const ok = document.getElementById('modalOk');
+        ok.disabled = !!busy;
+        if (label) ok.textContent = busy ? label : t('save', 'Сохранить');
+        if (!busy) { const bar = document.getElementById('modalProgress'); bar.classList.remove('on'); }
+    }
+
+    async function refreshAll() {
+        await loadLibrary();
+        renderLibrary();
+        if (player) {
+            player.loadTracksInto(visibleTracks());
+        }
+    }
+
     document.addEventListener('click', (e) => {
         const dropdown = document.querySelector('.lang-dropdown-wrapper');
         if (dropdown && !dropdown.contains(e.target)) {
@@ -936,13 +1723,20 @@
         }
     });
 
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
         if (document.getElementById('playlistContainer')) {
             player = new MusicPlayer();
         }
 
-        const savedLang = localStorage.getItem('app_lang') || 'en';
+        const savedLang = lsGet('app_lang', 'ru');
         selectLanguage(savedLang);
+
+        // новые блоки: роль, вкладки, сборники
+        await loadMe();
+        renderShelf();
+        await refreshAll();
+        // роль могли выдать в БД только что — подтягиваем раз в 15 секунд
+        setInterval(loadMe, 15000);
     });
 </script>
 </body>

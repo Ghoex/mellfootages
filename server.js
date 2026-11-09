@@ -17,6 +17,7 @@ const { spawn } = require('child_process');
 const { mountRooms, initRooms } = require('./rooms');
 const { mountMailAuth, initMailAuth } = require('./mail-auth');
 const { mountFeatures, initFeatures, markUploaded, getVideoExtras, renameVideoExtras, deleteVideoExtras } = require('./features');
+const { mountMusicExt, initMusicExt } = require('./music-ext');
 
 let ffmpegPath = null;
 try {
@@ -195,6 +196,21 @@ app.use(session({
         maxAge: 7 * 24 * 60 * 60 * 1000
     }
 }));
+
+// ============================================================
+// МУЗЫКА: загрузка треков, сборники, роль «музыкант» (music-ext.js)
+// Роуты монтируем здесь; таблицы создаются в startServer() через initMusicExt(db).
+// getUserId берём из сессии — ниже пробуем несколько вариантов ключа.
+// ============================================================
+mountMusicExt(app, {
+    getUser: (req) => {
+        const sess = req.session || {};
+        if (sess.user && typeof sess.user === 'object') return sess.user;
+        const id = sess.userId || sess.user_id;
+        if (id) return { id };
+        return null;
+    }
+});
 
 // ============================================================
 // СТАТИКА (до лимитера и роутов)
@@ -382,7 +398,7 @@ const pub = (file) => (req, res) => res.sendFile(path.join(__dirname, 'public', 
 
 app.get('/', pub('index.html'));
 // ПРИМЕЧАНИЕ: в первом документе /music было закрыто (503), во втором — открыто. Оставлено открытым.
-app.get('/music', pub('music/music.html'));
+app.get(['/music', '/music/'], pub('music/music.html'));
 app.get('/news', pub('news.html'));
 app.get('/auth', pub('auth.html'));
 app.get('/admin', requireModerator, pub('admin.html'));
@@ -2205,6 +2221,10 @@ async function startServer() {
         await initRooms(db); // таблицы комнат, жалоб и мута
         await initMailAuth(db); // колонки email и уникальный индекс
         await initFeatures(db, { videosDir: VIDEOS_DIR, allowedExtensions: ALLOWED_UPLOAD_EXTENSIONS });
+        await initMusicExt(db, {
+            soundsDir: SOUNDS_DIR,
+            coversDir: path.join(UPLOADS_DIR, 'music-covers')
+        }); // музыка: users.is_musician + таблицы сборников
 
         console.log('✅ БД подключена!');
 
