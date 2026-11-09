@@ -216,6 +216,7 @@ let appSettings = {
     dockPosition: localStorage.getItem('dockPosition') || 'center',
     dockLabels: localStorage.getItem('dockLabels') === '1',
     dockHidden: (() => { try { return JSON.parse(localStorage.getItem('dockHidden') || '[]'); } catch { return []; } })(),
+    dockOrder: (() => { try { return JSON.parse(localStorage.getItem('dockOrder') || '[]'); } catch { return []; } })(),
     phoneMode: localStorage.getItem('phoneMode') === '1',
     bgStyle: localStorage.getItem('bgStyle') || 'gradient',
     cornerRadius: localStorage.getItem('cornerRadius') || 'medium',
@@ -654,9 +655,7 @@ function updateSettingUIButtons() {
     highlight('dock-pos-right-btn',  appSettings.dockPosition === 'right');
     const dockItemsRow = document.getElementById('dock-items-row');
     if (dockItemsRow) dockItemsRow.style.display = appSettings.dockMode ? 'flex' : 'none';
-    document.querySelectorAll('[data-dock-page]').forEach(cb => {
-        cb.checked = !appSettings.dockHidden.includes(cb.dataset.dockPage);
-    });
+    renderDockItemsList();
     const dockLabelsToggle = document.getElementById('dock-labels-toggle');
     if (dockLabelsToggle) dockLabelsToggle.checked = appSettings.dockLabels;
 
@@ -688,19 +687,88 @@ function onDockShapeChange(shape) { appSettings.dockShape = shape; localStorage.
 function onDockSizeChange(size) { appSettings.dockSize = size; localStorage.setItem('dockSize', size); applyAllSettings(); }
 function onDockPositionChange(pos) { appSettings.dockPosition = pos; localStorage.setItem('dockPosition', pos); applyAllSettings(); }
 function onDockLabelsToggle(checked) { appSettings.dockLabels = checked; localStorage.setItem('dockLabels', checked ? '1' : '0'); applyAllSettings(); }
-function onDockItemToggle(cb) {
-    const page = cb.dataset.dockPage;
+// Пункты дока: порядок и видимость
+const DOCK_PAGES = [
+    { page: 'footages',    label: 'Главная' },
+    { page: 'upload',      label: 'Загрузить' },
+    { page: 'news',        label: 'Новости' },
+    { page: 'collections', label: 'Коллекции' },
+    { page: 'profile',     label: 'Профиль' },
+    { page: 'rooms',       label: 'Комнаты' },
+    { page: 'player',      label: 'Плеер Mell' },
+    { page: 'admin',       label: 'Админ' },
+];
+
+function currentDockOrder() {
+    // сохранённый порядок + всё, что появилось нового, в конец
+    const known = DOCK_PAGES.map(p => p.page);
+    const saved = appSettings.dockOrder.filter(p => known.includes(p));
+    const rest = known.filter(p => !saved.includes(p));
+    return saved.concat(rest);
+}
+
+function renderDockItemsList() {
+    const box = document.getElementById('dock-items-list');
+    if (!box) return;
+    const order = currentDockOrder();
+    box.innerHTML = '';
+    order.forEach((page, i) => {
+        const meta = DOCK_PAGES.find(p => p.page === page) || { label: page };
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid #dce3da;border-radius:10px;';
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !appSettings.dockHidden.includes(page);
+        cb.onchange = () => onDockItemTogglePage(page, cb.checked);
+
+        const name = document.createElement('span');
+        name.textContent = meta.label;
+        name.style.flex = '1';
+
+        const up = document.createElement('button');
+        up.type = 'button'; up.className = 'btn btn-small btn-outline'; up.textContent = '↑';
+        up.title = 'Выше'; up.disabled = i === 0;
+        up.onclick = () => moveDockItem(page, -1);
+
+        const down = document.createElement('button');
+        down.type = 'button'; down.className = 'btn btn-small btn-outline'; down.textContent = '↓';
+        down.title = 'Ниже'; down.disabled = i === order.length - 1;
+        down.onclick = () => moveDockItem(page, 1);
+
+        row.append(cb, name, up, down);
+        box.appendChild(row);
+    });
+}
+
+function onDockItemTogglePage(page, visible) {
     const set = new Set(appSettings.dockHidden);
-    if (cb.checked) set.delete(page); else set.add(page);
+    if (visible) set.delete(page); else set.add(page);
     appSettings.dockHidden = [...set];
     localStorage.setItem('dockHidden', JSON.stringify(appSettings.dockHidden));
     applyAllSettings();
 }
-function resetDockItems() {
-    appSettings.dockHidden = [];
-    localStorage.setItem('dockHidden', '[]');
+
+function moveDockItem(page, delta) {
+    const order = currentDockOrder();
+    const i = order.indexOf(page);
+    const j = i + delta;
+    if (i < 0 || j < 0 || j >= order.length) return;
+    [order[i], order[j]] = [order[j], order[i]];
+    appSettings.dockOrder = order;
+    localStorage.setItem('dockOrder', JSON.stringify(order));
     applyAllSettings();
 }
+
+function resetDockItems() {
+    appSettings.dockHidden = [];
+    appSettings.dockOrder = [];
+    localStorage.setItem('dockHidden', '[]');
+    localStorage.setItem('dockOrder', '[]');
+    applyAllSettings();
+}
+
+
 function onPhoneModeToggle() { appSettings.phoneMode = !appSettings.phoneMode; localStorage.setItem('phoneMode', appSettings.phoneMode ? '1' : '0'); applyAllSettings(); }
 
 function onDataSaverToggle(checked) {
@@ -772,10 +840,23 @@ function applyAllSettings() {
     document.body.classList.toggle('dock-right', appSettings.dockPosition === 'right');
     document.body.classList.toggle('dock-labels', appSettings.dockLabels);
     // какие пункты меню скрыты (настраивается в доке)
-    document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
-        const page = item.dataset.page;
-        item.classList.toggle('dock-hidden', !!page && appSettings.dockHidden.includes(page));
-    });
+    // порядок пунктов и какие скрыты (настраивается в доке)
+    const navBox = document.querySelector('.bottom-nav');
+    if (navBox) {
+        const order = currentDockOrder();
+        const items = [...navBox.querySelectorAll('.nav-item')];
+        items.forEach(item => {
+            const page = item.dataset.page;
+            item.classList.toggle('dock-hidden', !!page && appSettings.dockHidden.includes(page));
+        });
+        // сортируем по сохранённому порядку; неизвестные пункты остаются в конце
+        const sorted = items.slice().sort((a, b) => {
+            const ia = order.indexOf(a.dataset.page);
+            const ib = order.indexOf(b.dataset.page);
+            return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+        });
+        sorted.forEach(item => navBox.appendChild(item));
+    }
     document.body.classList.toggle('phone-mode', appSettings.phoneMode);
 
     document.body.classList.remove('toast-bottom-center', 'toast-top-right');
