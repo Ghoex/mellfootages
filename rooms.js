@@ -382,7 +382,8 @@ const MSG_SELECT = `
            (SELECT t.name FROM user_tags ut JOIN tags t ON t.id = ut.tag_id
              WHERE ut.user_id = u.id ORDER BY ut.assigned_at LIMIT 1) AS tag_name,
            (SELECT t.color FROM user_tags ut JOIN tags t ON t.id = ut.tag_id
-             WHERE ut.user_id = u.id ORDER BY ut.assigned_at LIMIT 1) AS tag_color
+             WHERE ut.user_id = u.id ORDER BY ut.assigned_at LIMIT 1) AS tag_color,
+           (SELECT ue.emoji FROM user_emoji ue WHERE ue.user_id = u.id ORDER BY ue.bought_at DESC LIMIT 1) AS emoji
     FROM room_messages m
     LEFT JOIN users u ON u.id = m.user_id
     WHERE m.deleted_at IS NULL`;
@@ -408,11 +409,93 @@ function serializeMessage(r) {
         mentions: parseJson(r.mentions),   // ники, которых отметили
         footages: parseJson(r.footages),   // [{token, title, url}] — футажи, на которые сослались
         effect: r.effect || null,          // эффект текста, например 'shimmer'
+        emoji: r.emoji || null,            // купленный эмодзи, который показывается у ника
     };
 }
 
 async function fetchMessage(id) {
     return db().get(MSG_SELECT + ' AND m.id = ?', [id]);
+}
+
+// ---------- Очки, секретные коды, эмодзи ----------
+
+// Скупка эмодзи за очки. Цена статичная, покупается навсегда.
+const EMOJI_SHOP = [
+    { emoji: '🚀', price: 30 },
+    { emoji: '🔥', price: 20 },
+    { emoji: '💎', price: 80 },
+    { emoji: '👑', price: 150 },
+    { emoji: '🎧', price: 40 },
+    { emoji: '🐸', price: 25 },
+    { emoji: '⚡', price: 35 },
+    { emoji: '🌈', price: 45 },
+    { emoji: '🍀', price: 55 },
+    { emoji: '🦊', price: 60 },
+];
+const EMOJI_PRICE = new Map(EMOJI_SHOP.map(e => [e.emoji, e.price]));
+
+// Секретные коды: активируются один раз на аккаунт, начисляют очки.
+// Пополнить/добавить можно SQL-ом в таблицу secret_codes.
+const SECRET_CODES = {
+    MELL2026:   { points: 50,  maxUses: null, note: 'стартовый бонус' },
+    FOOTAGE100: { points: 100, maxUses: null, note: 'за футажи' },
+    NIGHTDRIVE: { points: 25,  maxUses: 500,  note: 'акция' },
+    MELLSTROY:  { points: 75,  maxUses: 100,  note: 'мем' },
+    DOCKMASTER: { points: 120, maxUses: null, note: 'для тех, кто нашёл настройки дока' },
+};
+
+async function ensureSecretCodes() {
+    for (const [code, meta] of Object.entries(SECRET_CODES)) {
+        await db().run(
+            'INSERT INTO secret_codes (code, points, max_uses, uses, active, note) VALUES (?, ?, ?, 0, 1, ?) ' +
+            'ON CONFLICT(code) DO UPDATE SET points = excluded.points, max_uses = excluded.max_uses, note = excluded.note',
+            [code, meta.points, meta.maxUses, meta.note || null]
+        );
+    }
+}
+
+async function getPoints(userId) {
+    const row = await db().get('SELECT points FROM user_points WHERE user_id = ?', [userId]);
+    return row?.points || 0;
+}
+
+async function addPoints(userId, amount) {
+    await db().run(
+        'INSERT INTO user_points (user_id, points) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET points = points + ?',
+        [userId, amount, amount]
+    );
+    return getPoints(userId);
+}
+
+async function redeemSecretCode(userId, raw) {
+    const code = String(raw || '').trim().toUpperCase();
+    if (!code || code.length > 64) throw new HttpError(400, 'Пустой код');
+    const row = await db().get('SELECT * FROM secret_codes WHERE code = ?', [code]);
+    if (!row || !row.active) throw new HttpError(404, 'Такого кода нет');
+    if (row.max_uses && row.uses >= row.max_uses) throw new HttpError(409, 'Код больше не действует');
+    const used = await db().get('SELECT 1 AS x FROM secret_code_uses WHERE code = ? AND user_id = ?', [code, userId]);
+    if (used) throw new HttpError(409, 'Этот код уже активирован');
+    await db().run('INSERT INTO secret_code_uses (code, user_id, used_at) VALUES (?, ?, ?)', [code, userId, nowIso()]);
+    await db().run('UPDATE secret_codes SET uses = uses + 1 WHERE code = ?', [code]);
+    const total = await addPoints(userId, row.points);
+    return { code, points: row.points, total };
+}
+
+async function buyEmoji(userId, emoji) {
+    const price = EMOJI_PRICE.get(String(emoji || ''));
+    if (!price) throw new HttpError(400, 'Такого эмодзи нет в магазине');
+    const owned = await db().get('SELECT 1 AS x FROM user_emoji WHERE user_id = ? AND emoji = ?', [userId, emoji]);
+    if (owned) throw new HttpError(409, 'Эмодзи уже куплен');
+    const have = await getPoints(userId);
+    if (have < price) throw new HttpError(402, `Не хватает очков: нужно ${price}, у тебя ${have}`);
+    await addPoints(userId, -price);
+    await db().run('INSERT INTO user_emoji (user_id, emoji, bought_at) VALUES (?, ?, ?)', [userId, emoji, nowIso()]);
+    return { emoji, price, total: await getPoints(userId) };
+}
+
+async function listShop(userId) {
+    const owned = new Set((await db().all('SELECT emoji FROM user_emoji WHERE user_id = ?', [userId])).map(r => r.emoji));
+    return { points: await getPoints(userId), items: EMOJI_SHOP.map(i => ({ ...i, owned: owned.has(i.emoji) })) };
 }
 
 function broadcast(roomId, event, payload) {
@@ -763,6 +846,34 @@ function mountRooms(app, getDb) {
     app.get('/api/rooms/reports', wrap(listReports));
     app.post('/api/rooms/reports/:reportId/resolve', wrap(resolveReport));
 
+    // Очки из секретных кодов и магазин эмодзи
+    app.get('/api/me/points', wrap(async (req, res) => {
+        const me = await requireUser(req);
+        res.json({ points: await getPoints(me.id) });
+    }));
+    app.post('/api/me/code', wrap(async (req, res) => {
+        const me = await requireUser(req);
+        res.json(await redeemSecretCode(me.id, (req.body || {}).code));
+    }));
+    app.get('/api/emoji/shop', wrap(async (req, res) => {
+        const me = await requireUser(req);
+        res.json(await listShop(me.id));
+    }));
+    app.post('/api/emoji/buy', wrap(async (req, res) => {
+        const me = await requireUser(req);
+        res.json(await buyEmoji(me.id, (req.body || {}).emoji));
+    }));
+    app.post('/api/emoji/select', wrap(async (req, res) => {
+        const me = await requireUser(req);
+        const emoji = String((req.body || {}).emoji || '');
+        if (emoji) {
+            const owned = await db().get('SELECT 1 AS x FROM user_emoji WHERE user_id = ? AND emoji = ?', [me.id, emoji]);
+            if (!owned) throw new HttpError(403, 'Эмодзи не куплен');
+            await db().run('UPDATE user_emoji SET bought_at = ? WHERE user_id = ? AND emoji = ?', [nowIso(), me.id, emoji]);
+        }
+        res.json({ ok: true, emoji: emoji || null });
+    }));
+
     app.get('/api/rooms', wrap(listRooms));
     app.post('/api/rooms', wrap(createRoom));
     app.get('/api/rooms/:id', wrap(getRoom));
@@ -834,6 +945,26 @@ async function initRooms(database) {
             UNIQUE (message_id, reporter_id)
         );
         CREATE INDEX IF NOT EXISTS idx_room_reports_status ON room_reports(status, id);
+        CREATE TABLE IF NOT EXISTS user_emoji (
+            user_id INTEGER NOT NULL,
+            emoji TEXT NOT NULL,
+            bought_at TEXT NOT NULL,
+            PRIMARY KEY (user_id, emoji)
+        );
+        CREATE TABLE IF NOT EXISTS secret_codes (
+            code TEXT PRIMARY KEY,
+            points INTEGER NOT NULL,
+            max_uses INTEGER,
+            uses INTEGER DEFAULT 0,
+            active INTEGER DEFAULT 1,
+            note TEXT
+        );
+        CREATE TABLE IF NOT EXISTS secret_code_uses (
+            code TEXT NOT NULL,
+            user_id INTEGER NOT NULL,
+            used_at TEXT NOT NULL,
+            PRIMARY KEY (code, user_id)
+        );
         CREATE TABLE IF NOT EXISTS notifications (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL REFERENCES users(id),
@@ -854,6 +985,7 @@ async function initRooms(database) {
     await addColumnIfMissing(database, 'room_messages', 'footages', 'TEXT');
     await addColumnIfMissing(database, 'room_messages', 'effect', 'TEXT');
     await initGames(database);
+    await ensureSecretCodes();
 }
 
 module.exports = { mountRooms, initRooms };

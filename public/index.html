@@ -432,6 +432,49 @@
                     </label>
                 </div>
 
+                <div class="setting-row" id="dock-size-row" style="display:none;">
+                    <div class="setting-label">
+                        <span data-i18n="settingDockSize">Icon size</span>
+                        <small data-i18n="settingDockSizeHint">How big the dock buttons are</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="dock-size-s-btn" onclick="onDockSizeChange('s')" data-i18n="settingDockSizeS">Small</button>
+                        <button class="btn btn-small btn-outline" id="dock-size-m-btn" onclick="onDockSizeChange('m')" data-i18n="settingDockSizeM">Medium</button>
+                        <button class="btn btn-small btn-outline" id="dock-size-l-btn" onclick="onDockSizeChange('l')" data-i18n="settingDockSizeL">Large</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" id="dock-pos-row" style="display:none;">
+                    <div class="setting-label">
+                        <span data-i18n="settingDockPos">Dock position</span>
+                        <small data-i18n="settingDockPosHint">Where the floating menu sticks</small>
+                    </div>
+                    <div class="setting-control" style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn btn-small btn-outline" id="dock-pos-center-btn" onclick="onDockPositionChange('center')" data-i18n="settingDockPosCenter">Center</button>
+                        <button class="btn btn-small btn-outline" id="dock-pos-right-btn" onclick="onDockPositionChange('right')" data-i18n="settingDockPosRight">Bottom right</button>
+                    </div>
+                </div>
+
+                <div class="setting-row" id="dock-items-row" style="display:none; flex-direction:column; align-items:stretch; gap:10px;">
+                    <div class="setting-label">
+                        <span data-i18n="dockItems">Пункты в доке</span>
+                        <small data-i18n="dockItemsHint">Порядок — стрелками, галочка — показывать кнопку</small>
+                    </div>
+                    <div id="dock-items-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+                    <button class="btn btn-small btn-outline" onclick="resetDockItems()" style="align-self:flex-start;" data-i18n="dockShowAll">Показать все</button>
+                </div>
+
+                <div class="setting-row" id="dock-label-row" style="display:none;">
+                    <div class="setting-label">
+                        <span data-i18n="settingDockLabels">Show captions</span>
+                        <small data-i18n="settingDockLabelsHint">Text under the dock icons</small>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="dock-labels-toggle" onchange="onDockLabelsToggle(this.checked)">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+
                 <div class="setting-row" id="dock-shape-row" style="display:none;">
                     <div class="setting-label">
                         <span data-i18n="settingDockShape">Button shape</span>
@@ -577,6 +620,14 @@
             </svg>
             <span class="nav-item-label" data-i18n="navProfile">Profile</span>
         </a>
+        <a href="/music" class="nav-item" id="player-nav-item" data-page="player" title="Плеер Mell">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"></circle>
+                <polygon points="10 8.5 16 12 10 15.5" fill="currentColor" stroke="none"></polygon>
+            </svg>
+            <span class="nav-item-label" data-i18n="navPlayer">Плеер Mell</span>
+        </a>
+
         <a href="/rooms" class="nav-item" id="rooms-nav-item" data-page="rooms">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11l4 4V5z"></path>

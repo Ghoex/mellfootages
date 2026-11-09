@@ -466,3 +466,51 @@ body[data-ui] .ui-file-field input:disabled { cursor: not-allowed; }
 @media (hover: none) {
     body[data-ui] :is(button, a, [role="button"]):focus:not(:focus-visible) { outline: none; }
 }
+
+/* ===== DOCK: размеры, позиция, подписи (настройки главной) ===== */
+body[data-ui="catalog"].dock-mode .nav-item { transition: transform .18s ease, background .18s ease; }
+body[data-ui="catalog"].dock-mode .nav-item:active { transform: scale(.94); }
+
+/* размер иконок */
+body[data-ui="catalog"].dock-mode.dock-size-s .nav-item { min-width: 40px; min-height: 40px; padding: 8px; }
+body[data-ui="catalog"].dock-mode.dock-size-s .nav-item svg { width: 18px; height: 18px; }
+body[data-ui="catalog"].dock-mode.dock-size-m .nav-item { min-width: 48px; min-height: 48px; padding: 10px; }
+body[data-ui="catalog"].dock-mode.dock-size-m .nav-item svg { width: 22px; height: 22px; }
+body[data-ui="catalog"].dock-mode.dock-size-l .nav-item { min-width: 58px; min-height: 58px; padding: 13px; }
+body[data-ui="catalog"].dock-mode.dock-size-l .nav-item svg { width: 26px; height: 26px; }
+
+/* позиция дока */
+body[data-ui="catalog"].dock-mode .bottom-nav { justify-content: center; }
+body[data-ui="catalog"].dock-mode.dock-right .bottom-nav { justify-content: flex-end; padding-right: 14px; }
+
+/* подписи под иконками (в доке по умолчанию скрыты) */
+body[data-ui="catalog"].dock-mode.dock-labels .nav-item-label {
+    display: block; margin-top: 2px; font-size: .62rem; line-height: 1.1; text-align: center;
+}
+body[data-ui="catalog"].dock-mode.dock-labels .nav-item {
+    flex-direction: column; gap: 2px; min-width: 56px; max-width: 92px; padding-block: 8px;
+}
+/* 9 пунктов не влезают в ряд на телефоне — док скроллится по горизонтали, а не ломается */
+body[data-ui="catalog"].dock-mode .bottom-nav {
+    flex-wrap: nowrap;
+    overflow-x: auto; overflow-y: hidden;
+    max-width: calc(100vw - 16px);
+    padding-inline: 8px;
+    scrollbar-width: none; -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+}
+body[data-ui="catalog"].dock-mode .bottom-nav::-webkit-scrollbar { display: none; }
+body[data-ui="catalog"].dock-mode .nav-item { flex: 0 0 auto; scroll-snap-align: center; }
+@media (max-width: 520px) {
+    body[data-ui="catalog"].dock-mode.dock-labels .nav-item-label { font-size: .56rem; }
+    body[data-ui="catalog"].dock-mode.dock-labels .nav-item { min-width: 50px; padding-block: 6px; }
+}
+body[data-ui="catalog"].dock-mode.dock-labels .nav-item svg { margin: 0 auto; }
+
+/* новые пункты: плеер и музыка */
+body[data-ui="catalog"] #player-nav-item svg polygon { opacity: .95; }
+body[data-ui="catalog"] .nav-item[data-page="player"]:hover,
+body[data-ui="catalog"] .nav-item[data-page="music"]:hover { background: var(--ui-soft); }
+/* пункты, скрытые настройкой дока */
+body[data-ui="catalog"] .bottom-nav .nav-item.dock-hidden { display: none !important; }

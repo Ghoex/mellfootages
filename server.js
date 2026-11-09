@@ -940,6 +940,7 @@ app.get('/api/profile', async (req, res) => {
         avatar_url: userRow?.avatar_url || null,
         activity_visible: userRow?.activity_visible == null ? true : !!userRow.activity_visible,
         points: points?.points || 0,
+        emoji: (await db.get('SELECT emoji FROM user_emoji WHERE user_id = ? ORDER BY bought_at DESC LIMIT 1', [userId]))?.emoji || null,
         liked_videos: likes.map(l => l.video_name),
         collections
     });

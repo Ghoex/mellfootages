@@ -372,7 +372,7 @@
     const nick = document.createElement('a');
     nick.className = 'nick';
     nick.href = '/user/' + encodeURIComponent(m.username || '');
-    nick.textContent = m.username || 'удалён';
+    nick.textContent = (m.emoji ? m.emoji + ' ' : '') + (m.username || 'удалён');
     head.appendChild(nick);
 
     if (m.is_staff) head.appendChild(makeBadge('badge staff', ICON_STAFF, 'Модератор'));

@@ -6,7 +6,7 @@ const translations = {
         pageTitle: "Mell Footage", logo: "Mell Footage", searchPlaceholder: "Search footage...",
         loading: "Loading...", notFound: "Nothing found", loadMore: "Load more videos",
         navHome: "Home", navUpload: "Upload", navNews: "News", navCollections: "Collections",
-        navProfile: "Profile", navAdmin: "Admin", adminPublish: "Publish News (Admin)",
+        navProfile: "Profile", navPlayer: "Mell Player", navMusic: "Music", navRooms: "Rooms", navAdmin: "Admin", adminPublish: "Publish News (Admin)",
         fieldTitle: "Title", fieldContent: "Content", fieldImage: "Image", publishBtn: "Publish",
         fieldFile: "Select file", fieldDesc: "Description (optional)", descPlaceholder: "Describe your footage...",
         uploadBtn: "Upload", addToCollectionTitle: "Add to collection", createCollection: "+ Create new collection",
@@ -28,7 +28,7 @@ const translations = {
         settingsBeta: "Beta functions", settingDockMode: "Dock-style navigation",
         settingDockModeHint: "Floating bottom menu, like on macOS", settingDockShape: "Button shape",
         settingDockShapeHint: "Round or square icons for the dock", settingDockRound: "Round",
-        settingDockSquare: "Square", settingsDev: "Dev functions", settingPhoneMode: "Phone mode",
+        settingDockSquare: "Square", settingDockSize: "Icon size", settingDockSizeHint: "How big the dock buttons are", settingDockSizeS: "Small", settingDockSizeM: "Medium", settingDockSizeL: "Large", settingDockPos: "Dock position", settingDockPosHint: "Where the floating menu sticks", settingDockPosCenter: "Center", settingDockPosRight: "Bottom right", settingDockLabels: "Show captions", settingDockLabelsHint: "Text under the dock icons", dockItems: "Dock items", dockItemsHint: "Which buttons to show in the bottom menu", dockShowAll: "Show all", settingsDev: "Dev functions", settingPhoneMode: "Phone mode",
         settingPhoneModeHint: "Frames the app like a phone screen, for testing", settingPhoneModeToggle: "Toggle",
         sortTitle: "Sort", sortNewest: "Newest", sortPopular: "Popular", sortLikes: "Most liked",
         sortDownloads: "Most downloaded", editVideo: "Edit name", deleteVideo: "Delete",
@@ -64,7 +64,7 @@ const translations = {
         pageTitle: "Mell Футажі", logo: "Mell Футажі", searchPlaceholder: "Пошук футажів...",
         loading: "Завантаження...", notFound: "Нічого не знайдено", loadMore: "Завантажити ще відео",
         navHome: "Головна", navUpload: "Завантажити", navNews: "Новини", navCollections: "Колекції",
-        navProfile: "Профіль", navAdmin: "Адмін", adminPublish: "Опублікувати новину (Адмін)",
+        navProfile: "Профіль", navPlayer: "Плеєр Mell", navMusic: "Музика", navRooms: "Кімнати", navAdmin: "Адмін", adminPublish: "Опублікувати новину (Адмін)",
         fieldTitle: "Заголовок", fieldContent: "Текст", fieldImage: "Зображення", publishBtn: "Опублікувати",
         fieldFile: "Оберіть файл", fieldDesc: "Опис (необов'язково)", descPlaceholder: "Опишіть свій футаж...",
         uploadBtn: "Завантажити", addToCollectionTitle: "Додати до колекції",
@@ -88,7 +88,7 @@ const translations = {
         settingsBeta: "Бета-функції", settingDockMode: "Меню у стилі Dock",
         settingDockModeHint: "Плаваюче нижнє меню, як на macOS", settingDockShape: "Форма кнопок",
         settingDockShapeHint: "Круглі або квадратні іконки для dock", settingDockRound: "Круглі",
-        settingDockSquare: "Квадратні", settingsDev: "Dev-функції", settingPhoneMode: "Режим телефону",
+        settingDockSquare: "Квадратні", settingDockSize: "Розмір іконок", settingDockSizeHint: "Наскільки великі кнопки в доку", settingDockSizeS: "Малі", settingDockSizeM: "Середні", settingDockSizeL: "Великі", settingDockPos: "Позиція доку", settingDockPosHint: "Де закріплене плаваюче меню", settingDockPosCenter: "По центру", settingDockPosRight: "Справа знизу", settingDockLabels: "Показувати підписи", settingDockLabelsHint: "Текст під іконками доку", dockItems: "Пункти в доку", dockItemsHint: "Які кнопки показувати в нижньому меню", dockShowAll: "Показати всі", settingsDev: "Dev-функції", settingPhoneMode: "Режим телефону",
         settingPhoneModeHint: "Обрамлює застосунок як екран телефону, для тестування",
         settingPhoneModeToggle: "Перемкнути",
         sortTitle: "Сортування", sortNewest: "Нові", sortPopular: "Популярні", sortLikes: "За лайками",
@@ -125,7 +125,7 @@ const translations = {
         pageTitle: "Mell Футажи", logo: "Mell Футажи", searchPlaceholder: "Поиск футажей...",
         loading: "Загрузка...", notFound: "Ничего не найдено", loadMore: "Прогрузить больше видео",
         navHome: "Главная", navUpload: "Загрузить", navNews: "Новости", navCollections: "Коллекции",
-        navProfile: "Профиль", navAdmin: "Админ", adminPublish: "Опубликовать новость (Админ)",
+        navProfile: "Профиль", navPlayer: "Плеер Mell", navMusic: "Музыка", navRooms: "Комнаты", navAdmin: "Админ", adminPublish: "Опубликовать новость (Админ)",
         fieldTitle: "Заголовок", fieldContent: "Текст", fieldImage: "Изображение", publishBtn: "Опубликовать",
         fieldFile: "Выберите файл", fieldDesc: "Описание (необязательно)", descPlaceholder: "Опишите свой футаж...",
         uploadBtn: "Загрузить", addToCollectionTitle: "Добавить в коллекцию",
@@ -149,7 +149,7 @@ const translations = {
         settingsBeta: "Beta функции", settingDockMode: "Меню в стиле Dock",
         settingDockModeHint: "Плавающее нижнее меню, как на macOS", settingDockShape: "Форма кнопок",
         settingDockShapeHint: "Круглые или квадратные иконки для dock", settingDockRound: "Круглые",
-        settingDockSquare: "Квадратные", settingsDev: "Dev функции", settingPhoneMode: "Режим телефона",
+        settingDockSquare: "Квадратные", settingDockSize: "Размер иконок", settingDockSizeHint: "Насколько крупные кнопки в доке", settingDockSizeS: "Маленькие", settingDockSizeM: "Средние", settingDockSizeL: "Крупные", settingDockPos: "Положение дока", settingDockPosHint: "Где закреплено плавающее меню", settingDockPosCenter: "По центру", settingDockPosRight: "Справа снизу", settingDockLabels: "Показывать подписи", settingDockLabelsHint: "Текст под иконками дока", dockItems: "Пункты в доке", dockItemsHint: "Какие кнопки показывать в нижнем меню", dockShowAll: "Показать все", settingsDev: "Dev функции", settingPhoneMode: "Режим телефона",
         settingPhoneModeHint: "Обрамляет приложение как экран телефона, для тестирования",
         settingPhoneModeToggle: "Переключить",
         sortTitle: "Сортировка", sortNewest: "Новые", sortPopular: "Популярные", sortLikes: "По лайкам",
@@ -212,6 +212,11 @@ let appSettings = {
     safeMode: localStorage.getItem('safeMode') === '1',
     dockMode: localStorage.getItem('dockMode') === '1',
     dockShape: localStorage.getItem('dockShape') || 'round',
+    dockSize: localStorage.getItem('dockSize') || 'm',
+    dockPosition: localStorage.getItem('dockPosition') || 'center',
+    dockLabels: localStorage.getItem('dockLabels') === '1',
+    dockHidden: (() => { try { return JSON.parse(localStorage.getItem('dockHidden') || '[]'); } catch { return []; } })(),
+    dockOrder: (() => { try { return JSON.parse(localStorage.getItem('dockOrder') || '[]'); } catch { return []; } })(),
     phoneMode: localStorage.getItem('phoneMode') === '1',
     bgStyle: localStorage.getItem('bgStyle') || 'gradient',
     cornerRadius: localStorage.getItem('cornerRadius') || 'medium',
@@ -636,6 +641,24 @@ function updateSettingUIButtons() {
     const dockShapeRow = document.getElementById('dock-shape-row');
     if (dockShapeRow) dockShapeRow.style.display = appSettings.dockMode ? 'flex' : 'none';
 
+    const dockSizeRow = document.getElementById('dock-size-row');
+    if (dockSizeRow) dockSizeRow.style.display = appSettings.dockMode ? 'flex' : 'none';
+    const dockPosRow = document.getElementById('dock-pos-row');
+    if (dockPosRow) dockPosRow.style.display = appSettings.dockMode ? 'flex' : 'none';
+    const dockLabelRow = document.getElementById('dock-label-row');
+    if (dockLabelRow) dockLabelRow.style.display = appSettings.dockMode ? 'flex' : 'none';
+
+    highlight('dock-size-s-btn', appSettings.dockSize === 's');
+    highlight('dock-size-m-btn', appSettings.dockSize === 'm');
+    highlight('dock-size-l-btn', appSettings.dockSize === 'l');
+    highlight('dock-pos-center-btn', appSettings.dockPosition === 'center');
+    highlight('dock-pos-right-btn',  appSettings.dockPosition === 'right');
+    const dockItemsRow = document.getElementById('dock-items-row');
+    if (dockItemsRow) dockItemsRow.style.display = appSettings.dockMode ? 'flex' : 'none';
+    renderDockItemsList();
+    const dockLabelsToggle = document.getElementById('dock-labels-toggle');
+    if (dockLabelsToggle) dockLabelsToggle.checked = appSettings.dockLabels;
+
     const roundBtn  = document.getElementById('dock-shape-round-btn');
     const squareBtn = document.getElementById('dock-shape-square-btn');
     if (roundBtn)  roundBtn.classList.toggle('active',  appSettings.dockShape === 'round');
@@ -661,6 +684,91 @@ function onBlurToggle(checked) { appSettings.glassMode = checked; localStorage.s
 function onSafeModeToggle(checked) { appSettings.safeMode = checked; localStorage.setItem('safeMode', checked ? '1' : '0'); renderGrid(); }
 function onDockModeToggle(checked) { appSettings.dockMode = checked; localStorage.setItem('dockMode', checked ? '1' : '0'); applyAllSettings(); }
 function onDockShapeChange(shape) { appSettings.dockShape = shape; localStorage.setItem('dockShape', shape); applyAllSettings(); }
+function onDockSizeChange(size) { appSettings.dockSize = size; localStorage.setItem('dockSize', size); applyAllSettings(); }
+function onDockPositionChange(pos) { appSettings.dockPosition = pos; localStorage.setItem('dockPosition', pos); applyAllSettings(); }
+function onDockLabelsToggle(checked) { appSettings.dockLabels = checked; localStorage.setItem('dockLabels', checked ? '1' : '0'); applyAllSettings(); }
+// Пункты дока: порядок и видимость
+const DOCK_PAGES = [
+    { page: 'footages',    label: 'Главная' },
+    { page: 'upload',      label: 'Загрузить' },
+    { page: 'news',        label: 'Новости' },
+    { page: 'collections', label: 'Коллекции' },
+    { page: 'profile',     label: 'Профиль' },
+    { page: 'rooms',       label: 'Комнаты' },
+    { page: 'player',      label: 'Плеер Mell' },
+    { page: 'admin',       label: 'Админ' },
+];
+
+function currentDockOrder() {
+    // сохранённый порядок + всё, что появилось нового, в конец
+    const known = DOCK_PAGES.map(p => p.page);
+    const saved = appSettings.dockOrder.filter(p => known.includes(p));
+    const rest = known.filter(p => !saved.includes(p));
+    return saved.concat(rest);
+}
+
+function renderDockItemsList() {
+    const box = document.getElementById('dock-items-list');
+    if (!box) return;
+    const order = currentDockOrder();
+    box.innerHTML = '';
+    order.forEach((page, i) => {
+        const meta = DOCK_PAGES.find(p => p.page === page) || { label: page };
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid #dce3da;border-radius:10px;';
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !appSettings.dockHidden.includes(page);
+        cb.onchange = () => onDockItemTogglePage(page, cb.checked);
+
+        const name = document.createElement('span');
+        name.textContent = meta.label;
+        name.style.flex = '1';
+
+        const up = document.createElement('button');
+        up.type = 'button'; up.className = 'btn btn-small btn-outline'; up.textContent = '↑';
+        up.title = 'Выше'; up.disabled = i === 0;
+        up.onclick = () => moveDockItem(page, -1);
+
+        const down = document.createElement('button');
+        down.type = 'button'; down.className = 'btn btn-small btn-outline'; down.textContent = '↓';
+        down.title = 'Ниже'; down.disabled = i === order.length - 1;
+        down.onclick = () => moveDockItem(page, 1);
+
+        row.append(cb, name, up, down);
+        box.appendChild(row);
+    });
+}
+
+function onDockItemTogglePage(page, visible) {
+    const set = new Set(appSettings.dockHidden);
+    if (visible) set.delete(page); else set.add(page);
+    appSettings.dockHidden = [...set];
+    localStorage.setItem('dockHidden', JSON.stringify(appSettings.dockHidden));
+    applyAllSettings();
+}
+
+function moveDockItem(page, delta) {
+    const order = currentDockOrder();
+    const i = order.indexOf(page);
+    const j = i + delta;
+    if (i < 0 || j < 0 || j >= order.length) return;
+    [order[i], order[j]] = [order[j], order[i]];
+    appSettings.dockOrder = order;
+    localStorage.setItem('dockOrder', JSON.stringify(order));
+    applyAllSettings();
+}
+
+function resetDockItems() {
+    appSettings.dockHidden = [];
+    appSettings.dockOrder = [];
+    localStorage.setItem('dockHidden', '[]');
+    localStorage.setItem('dockOrder', '[]');
+    applyAllSettings();
+}
+
+
 function onPhoneModeToggle() { appSettings.phoneMode = !appSettings.phoneMode; localStorage.setItem('phoneMode', appSettings.phoneMode ? '1' : '0'); applyAllSettings(); }
 
 function onDataSaverToggle(checked) {
@@ -727,6 +835,28 @@ function applyAllSettings() {
     document.body.classList.toggle('dock-mode',    appSettings.dockMode);
     document.body.classList.remove('dock-shape-round', 'dock-shape-square');
     document.body.classList.add('dock-shape-' + appSettings.dockShape);
+    document.body.classList.remove('dock-size-s', 'dock-size-m', 'dock-size-l');
+    document.body.classList.add('dock-size-' + appSettings.dockSize);
+    document.body.classList.toggle('dock-right', appSettings.dockPosition === 'right');
+    document.body.classList.toggle('dock-labels', appSettings.dockLabels);
+    // какие пункты меню скрыты (настраивается в доке)
+    // порядок пунктов и какие скрыты (настраивается в доке)
+    const navBox = document.querySelector('.bottom-nav');
+    if (navBox) {
+        const order = currentDockOrder();
+        const items = [...navBox.querySelectorAll('.nav-item')];
+        items.forEach(item => {
+            const page = item.dataset.page;
+            item.classList.toggle('dock-hidden', !!page && appSettings.dockHidden.includes(page));
+        });
+        // сортируем по сохранённому порядку; неизвестные пункты остаются в конце
+        const sorted = items.slice().sort((a, b) => {
+            const ia = order.indexOf(a.dataset.page);
+            const ib = order.indexOf(b.dataset.page);
+            return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+        });
+        sorted.forEach(item => navBox.appendChild(item));
+    }
     document.body.classList.toggle('phone-mode', appSettings.phoneMode);
 
     document.body.classList.remove('toast-bottom-center', 'toast-top-right');
