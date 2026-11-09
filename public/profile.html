@@ -1016,6 +1016,7 @@
                             <span id="emoji-owned" style="font-size:.82rem;color:var(--muted);"></span>
                         </div>
                         <div id="emoji-shop" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                        <button class="btn-small" onclick="selectEmoji('')" style="align-self:flex-start;margin-top:8px;padding:8px 12px;border-radius:10px;border:1px solid #dce3da;background:transparent;cursor:pointer;">Убрать эмодзи из ника</button>
                    </div>
 
                    <!-- COLLECTIONS -->
@@ -1597,8 +1598,9 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ emoji })
                 });
-                msg.textContent = emoji + ' теперь показывается в комнатах';
+                msg.textContent = emoji ? emoji + ' теперь показывается в комнатах' : 'Эмодзи убран из ника';
                 msg.style.color = '#2f7d4f';
+                loadPoints();
             } catch (e) { msg.textContent = 'Ошибка сети'; msg.style.color = '#c0392b'; }
         }
 

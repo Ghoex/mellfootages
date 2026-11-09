@@ -383,7 +383,9 @@ const MSG_SELECT = `
              WHERE ut.user_id = u.id ORDER BY ut.assigned_at LIMIT 1) AS tag_name,
            (SELECT t.color FROM user_tags ut JOIN tags t ON t.id = ut.tag_id
              WHERE ut.user_id = u.id ORDER BY ut.assigned_at LIMIT 1) AS tag_color,
-           (SELECT ue.emoji FROM user_emoji ue WHERE ue.user_id = u.id ORDER BY ue.bought_at DESC LIMIT 1) AS emoji
+           (SELECT ue.emoji FROM user_emoji ue
+             WHERE ue.user_id = u.id AND ue.selected_at IS NOT NULL
+             ORDER BY ue.selected_at DESC LIMIT 1) AS emoji
     FROM room_messages m
     LEFT JOIN users u ON u.id = m.user_id
     WHERE m.deleted_at IS NULL`;
@@ -866,10 +868,11 @@ function mountRooms(app, getDb) {
     app.post('/api/emoji/select', wrap(async (req, res) => {
         const me = await requireUser(req);
         const emoji = String((req.body || {}).emoji || '');
+        await db().run('UPDATE user_emoji SET selected_at = NULL WHERE user_id = ?', [me.id]);
         if (emoji) {
             const owned = await db().get('SELECT 1 AS x FROM user_emoji WHERE user_id = ? AND emoji = ?', [me.id, emoji]);
             if (!owned) throw new HttpError(403, 'Эмодзи не куплен');
-            await db().run('UPDATE user_emoji SET bought_at = ? WHERE user_id = ? AND emoji = ?', [nowIso(), me.id, emoji]);
+            await db().run('UPDATE user_emoji SET selected_at = ? WHERE user_id = ? AND emoji = ?', [nowIso(), me.id, emoji]);
         }
         res.json({ ok: true, emoji: emoji || null });
     }));
@@ -949,6 +952,7 @@ async function initRooms(database) {
             user_id INTEGER NOT NULL,
             emoji TEXT NOT NULL,
             bought_at TEXT NOT NULL,
+            selected_at TEXT,
             PRIMARY KEY (user_id, emoji)
         );
         CREATE TABLE IF NOT EXISTS secret_codes (
@@ -985,6 +989,11 @@ async function initRooms(database) {
     await addColumnIfMissing(database, 'room_messages', 'footages', 'TEXT');
     await addColumnIfMissing(database, 'room_messages', 'effect', 'TEXT');
     await initGames(database);
+    // миграция: колонка selected_at в user_emoji (для баз, созданных раньше)
+    const emojiCols = await database.all("PRAGMA table_info(user_emoji)");
+    if (emojiCols.length && !emojiCols.some(c => c.name === 'selected_at')) {
+        await database.exec('ALTER TABLE user_emoji ADD COLUMN selected_at TEXT');
+    }
     await ensureSecretCodes();
 }
 
