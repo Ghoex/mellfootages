@@ -208,7 +208,7 @@ const DEFAULT_ACCENT = '#7ec384';
 
 let appSettings = {
     accentColor: localStorage.getItem('accentColor') || DEFAULT_ACCENT,
-    glassMode: localStorage.getItem('glassMode') === '1',
+    glassMode: localStorage.getItem('glassMode') !== '0',
     safeMode: localStorage.getItem('safeMode') === '1',
     dockMode: localStorage.getItem('dockMode') === '1',
     dockShape: localStorage.getItem('dockShape') || 'round',
@@ -897,6 +897,24 @@ function applyAllSettings() {
     applyGridDensity();
     updateSettingUIButtons();
 }
+
+// Keep appearance settings current when another site tab changes them.
+function syncSavedAppearance() {
+    appSettings.accentColor = localStorage.getItem('accentColor') || DEFAULT_ACCENT;
+    appSettings.glassMode = localStorage.getItem('glassMode') !== '0';
+    appSettings.bgStyle = localStorage.getItem('bgStyle') || 'gradient';
+    appSettings.cornerRadius = localStorage.getItem('cornerRadius') || 'medium';
+    appSettings.fontFamily = localStorage.getItem('fontFamily') || 'system';
+    appSettings.animMode = localStorage.getItem('animMode') || 'normal';
+    appSettings.animSpeed = localStorage.getItem('animSpeed') || 'normal';
+    applyAllSettings();
+}
+window.addEventListener('storage', event => {
+    if (event.key === null || ['accentColor', 'glassMode', 'bgStyle', 'cornerRadius', 'fontFamily', 'animMode', 'animSpeed'].includes(event.key)) {
+        if (document.readyState !== 'loading') syncSavedAppearance();
+    }
+});
+window.addEventListener('pageshow', event => { if (event.persisted) syncSavedAppearance(); });
 
 function renderSettingsPage() { updateSettingUIButtons(); }
 

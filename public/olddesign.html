@@ -549,8 +549,10 @@
         }
 
     </style>
+    <script src="/ui.js"></script>
+    <link rel="stylesheet" href="/ui.css">
 </head>
-<body>
+<body data-ui="library">
 
     <div class="layout">
 
@@ -777,7 +779,7 @@
     const ITEMS_PER_PAGE = 12;
     let currentPage = 1;
 
-    if (localStorage.getItem('theme') === 'dark') {
+    if (document.documentElement.dataset.uiTheme === 'dark') {
         document.body.classList.add('dark-theme');
     }
 

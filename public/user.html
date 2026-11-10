@@ -749,7 +749,7 @@
         if (!translations[currentLang]) currentLang = 'en';
         // Keep the profile visually consistent with the user's saved site accent.
         (function applySavedAccent() {
-            const accent = localStorage.getItem('accent_color');
+            const accent = localStorage.getItem('accentColor') || localStorage.getItem('accent_color');
             if (accent && /^#[0-9a-fA-F]{6}$/.test(accent)) {
                 document.documentElement.style.setProperty('--primary', accent);
             }

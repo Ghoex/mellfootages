@@ -10,13 +10,37 @@
         if (saved === 'light' || saved === 'dark') return saved;
         return readPreference('darkTheme') === 'false' ? 'light' : 'dark';
     }
-    root.dataset.uiTheme = preferredTheme();
+    const appearanceKeys = new Set(['theme', 'darkTheme', 'accentColor', 'accent_color', 'glassMode', 'bgStyle', 'cornerRadius', 'fontFamily', 'animMode', 'animSpeed']);
+    function applyAppearance() {
+        root.dataset.uiTheme = preferredTheme();
+        const savedAccent = readPreference('accentColor') || readPreference('accent_color');
+        const accent = /^#[0-9a-f]{6}$/i.test(savedAccent || '') ? savedAccent : '#7ec384';
+        root.style.setProperty('--primary', accent);
+        const darker = '#' + [1, 3, 5].map(i => Math.round(parseInt(accent.slice(i, i + 2), 16) * .8).toString(16).padStart(2, '0')).join('');
+        root.style.setProperty('--primary-dark', darker);
+        const shape = readPreference('cornerRadius');
+        root.style.setProperty('--card-radius', shape === 'sharp' ? '0px' : shape === 'round' ? '20px' : '12px');
+        root.style.setProperty('--btn-radius', shape === 'sharp' ? '0px' : shape === 'round' ? '14px' : '8px');
+        const font = readPreference('fontFamily');
+        root.style.setProperty('--font-family', font === 'serif' ? 'Georgia, serif' : font === 'modern' ? '"Inter", "Segoe UI", sans-serif' : '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif');
+        const speed = readPreference('animSpeed');
+        root.style.setProperty('--anim-speed', speed === 'fast' ? '0.15s' : speed === 'slow' ? '0.5s' : '0.3s');
+        if (!document.body) return;
+        document.body.classList.toggle('dark-theme', root.dataset.uiTheme === 'dark');
+        document.body.classList.toggle('glass-mode', readPreference('glassMode') !== '0');
+        const background = readPreference('bgStyle');
+        document.body.classList.toggle('bg-flat', background === 'flat');
+        document.body.classList.toggle('bg-oled', background === 'oled');
+        document.body.classList.toggle('anim-none', readPreference('animMode') === 'none');
+        document.body.classList.toggle('anim-expressive', readPreference('animMode') === 'expressive');
+    }
+    applyAppearance();
 
     let bodyReady = false;
     function prepareBody() {
         if (!document.body || bodyReady) return;
         bodyReady = true;
-        document.body.classList.toggle('dark-theme', root.dataset.uiTheme === 'dark');
+        applyAppearance();
         new MutationObserver(() => {
             root.dataset.uiTheme = document.body.classList.contains('dark-theme') ? 'dark' : 'light';
         }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
@@ -28,11 +52,9 @@
     bodyObserver.observe(root, { childList: true });
     prepareBody();
     window.addEventListener('storage', event => {
-        if (event.key === 'theme' || event.key === 'darkTheme' || event.key === null) {
-            root.dataset.uiTheme = preferredTheme();
-            document.body?.classList.toggle('dark-theme', root.dataset.uiTheme === 'dark');
-        }
+        if (appearanceKeys.has(event.key) || event.key === null) applyAppearance();
     });
+    window.addEventListener('pageshow', applyAppearance);
 
     const transitions = new Map();
     window.uiSwitchView = (selector, next, update) => {
@@ -243,6 +265,13 @@
     }
     document.addEventListener('DOMContentLoaded', () => {
         prepareBody();
+        const header = document.querySelector('body[data-ui="catalog"] > .top-bar');
+        if (header) {
+            const updateHeaderHeight = () => root.style.setProperty('--ui-header-height', Math.ceil(header.getBoundingClientRect().height) + 'px');
+            updateHeaderHeight();
+            if ('ResizeObserver' in window) new ResizeObserver(updateHeaderHeight).observe(header);
+            else window.addEventListener('resize', updateHeaderHeight);
+        }
         enhance(document.body);
         new MutationObserver(records => {
             for (const record of records) for (const added of record.addedNodes) enhance(added);
