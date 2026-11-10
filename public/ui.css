@@ -607,3 +607,34 @@ body[data-ui="catalog"].dock-mode .bottom-nav { justify-content: flex-start; jus
 body[data-ui="catalog"].dock-mode.dock-right .bottom-nav { justify-content: flex-start; justify-content: safe flex-end; }
 body[data-ui="catalog"] .card-actions > .action-btn.like-btn { flex-grow: 1.5; }
 body[data-ui="catalog"] .card-actions .like-count { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* Fit the standard mobile navigation inside the viewport, including all items. */
+@media (max-width: 640px) {
+    body[data-ui="catalog"]:not(.dock-mode) .bottom-nav {
+        gap: clamp(0px, .8vw, 4px);
+        justify-content: space-between;
+        padding-left: max(8px, env(safe-area-inset-left, 0px));
+        padding-right: max(8px, env(safe-area-inset-right, 0px));
+    }
+    body[data-ui="catalog"]:not(.dock-mode) .bottom-nav .nav-item {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 64px;
+        padding-inline: 2px;
+    }
+}
+/* Floating buttons keep their selected size and scroll within inset edges. */
+body[data-ui="catalog"].dock-mode .bottom-nav {
+    left: max(8px, env(safe-area-inset-left, 0px));
+    right: max(8px, env(safe-area-inset-right, 0px));
+    width: auto;
+    max-width: none;
+    scroll-padding-inline: 8px;
+}
+body[data-ui="catalog"].phone-mode .bottom-nav { width: min(420px, 100%); }
+body[data-ui="catalog"].phone-mode.dock-mode .bottom-nav {
+    left: 50%;
+    right: auto;
+    width: calc(100% - 16px);
+    max-width: 404px;
+}
