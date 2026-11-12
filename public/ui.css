@@ -676,10 +676,28 @@ body[data-ui] .google-cancel { display: block; margin-top: 16px; text-align: cen
 body[data-ui] .google-notice { padding: 14px; margin: 16px auto; max-width: 1100px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); color: var(--ui-accent); }
 
 body[data-ui="auth"] .auth-card > .welcome[hidden] { display: none; }
-body[data-ui] :is(.google-account-block, .google-email-verify) button {
+body[data-ui] :is(.google-account-block, .google-email-verify, .google-danger-slot) button {
     appearance: none; min-height: 40px; padding: 10px 14px; font-size: .88rem;
     border: 1px solid var(--ui-border); border-radius: var(--btn-radius, 8px);
     background: var(--ui-soft); color: var(--ui-text); cursor: pointer;
 }
-body[data-ui] :is(.google-account-block, .google-email-verify) button:hover { border-color: var(--ui-accent); }
+body[data-ui] :is(.google-account-block, .google-email-verify, .google-danger-slot) button:hover { border-color: var(--ui-accent); }
 body[data-ui] .google-unlink-form button[type="submit"] { background: var(--ui-button); color: #fff; }
+
+/* Google account details and sensitive actions live in separate profile areas. */
+body[data-ui] .ps-danger-actions { --google-danger: #a43f3f; display: flex; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+body[data-ui] .google-danger-slot { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 10px; --google-danger: #a43f3f; }
+body[data-ui].dark-theme :is(.google-danger-slot, .ps-danger-actions) { --google-danger: #ef9a9a; }
+body[data-ui] .google-danger-slot > button,
+body[data-ui] .ps-danger-actions > #ps-delete-open {
+    appearance: none; min-height: 40px; padding: 10px 14px; font-size: .88rem;
+    border: 1px solid color-mix(in srgb, var(--google-danger) 45%, var(--ui-border));
+    border-radius: var(--btn-radius, 8px); background: transparent; color: var(--google-danger); cursor: pointer;
+}
+body[data-ui] .google-danger-slot > button:hover { background: color-mix(in srgb, var(--google-danger) 10%, transparent); }
+body[data-ui] .google-danger-slot:has(.google-unlink-form:not([hidden])) { flex-basis: 100%; }
+body[data-ui] .google-danger-slot :is(.google-unlink-form, .google-status) { flex: 1 1 100%; }
+body[data-ui] .google-danger-slot .google-unlink-form { margin-top: 0; }
+body[data-ui] .google-danger-section[hidden] { display: none; }
+body[data-ui] .profile-settings .google-account-block { background: var(--ui-bg); box-shadow: none; padding: 18px; }
+body[data-ui] .ps-danger-actions > #ps-delete-open { margin-top: 0; }

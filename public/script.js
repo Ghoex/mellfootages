@@ -1868,7 +1868,6 @@ async function loadProfile() {
                     </div>
                 </div>
             </div>
-            <div class="google-account-slot"></div>
             <div id="profile-collections"></div>
             <div id="profile-settings"></div>`;
 
@@ -2279,12 +2278,17 @@ function renderProfileSettings({ username, avatarUrl, activityOn, hasPassword = 
                 <button type="button" class="btn-outline ps-danger" id="ps-avatar-remove" ${avatarUrl ? '' : 'disabled'}>${escapeHtml(pt('removeAvatar'))}</button>
             </div>
 
+            <div class="google-account-slot"></div>
+
             <div class="ps-danger-zone">
                 <div class="ps-row-text">
                     <strong>${escapeHtml(pt('dangerTitle'))}</strong>
                     <small>${escapeHtml(pt('dangerText'))}</small>
                 </div>
-                <button type="button" class="btn-outline ps-danger" id="ps-delete-open">${escapeHtml(pt('deleteOpen'))}</button>
+                <div class="ps-danger-actions">
+                    <button type="button" class="btn-outline ps-danger" id="ps-delete-open">${escapeHtml(pt('deleteOpen'))}</button>
+                    <div class="google-danger-slot"></div>
+                </div>
                 <form class="ps-delete-form" id="ps-delete-form" hidden>
                     <label for="ps-delete-user">${escapeHtml(pt('deleteUserPrompt'))}</label>
                     <input type="text" id="ps-delete-user" autocomplete="off" placeholder="${escapeHtml(username)}">

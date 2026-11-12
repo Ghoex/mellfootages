@@ -527,8 +527,8 @@
         }
     </style>
     <script src="/ui.js?v=fec303e038e9"></script>
-    <link rel="stylesheet" href="/ui.css?v=fa2a3d8397a5">
-    <script src="/google-auth-client.js?v=e6c203dded5d" defer></script>
+    <link rel="stylesheet" href="/ui.css?v=33a1ec0884cf">
+    <script src="/google-auth-client.js?v=6aec83d3b8b3" defer></script>
 </head>
 
 <body data-ui="account">
@@ -648,6 +648,11 @@
                     </div>
                 </div>
                 <button class="btn-save" id="btn-save-pw" onclick="savePassword()">Change password</button>
+            </div>
+
+            <div class="modal-section google-danger-section" hidden>
+                <div class="modal-section-title" data-google-text="danger">Account connections</div>
+                <div class="google-danger-slot"></div>
             </div>
 
         </div>
@@ -1020,7 +1025,6 @@
                         <button class="btn-small" onclick="selectEmoji('')" style="align-self:flex-start;margin-top:8px;padding:8px 12px;border-radius:10px;border:1px solid #dce3da;background:transparent;cursor:pointer;">Убрать эмодзи из ника</button>
                    </div>
 
-                   <div class="google-account-slot"></div>
                    <!-- COLLECTIONS -->
                    <div class="section">
                         <div class="section-header">
@@ -1058,6 +1062,8 @@
                         </div>
                         <div id="liked-grid" class="liked-grid"></div>
                    </div>
+
+                   <div class="google-account-slot"></div>
                 `;
 
                 // fill data

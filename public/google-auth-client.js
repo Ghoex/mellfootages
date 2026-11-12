@@ -2,7 +2,7 @@
     'use strict';
     const messages = {
         ru: {
-            accept: 'Я принимаю', and: 'и', termsLink: 'Условия использования', privacyLink: 'Политику конфиденциальности', continue: 'Продолжить с Google', finish: 'Завершить регистрацию', title: 'Завершите создание аккаунта',
+            danger: 'Опасная зона', accept: 'Я принимаю', and: 'и', termsLink: 'Условия использования', privacyLink: 'Политику конфиденциальности', continue: 'Продолжить с Google', finish: 'Завершить регистрацию', title: 'Завершите создание аккаунта',
             username: 'Имя пользователя', password: 'Пароль (необязательно)', confirm: 'Повторите пароль',
             passwordHint: 'Можно входить только через Google. Пароль для входа по логину можно установить сейчас или позже в профиле.',
             avatar: 'Использовать фото Google', terms: 'Я принимаю условия использования и политику конфиденциальности',
@@ -22,13 +22,13 @@
             done: 'Google успешно привязан.', passwordDone: 'Пароль установлен. Теперь доступен и вход по логину.'
         },
         en: {
-            accept: 'I accept the', and: 'and', termsLink: 'Terms of Use', privacyLink: 'Privacy Policy', continue: 'Continue with Google', finish: 'Complete registration', title: 'Finish creating your account', username: 'Username', password: 'Password (optional)', confirm: 'Repeat password',
+            danger: 'Danger zone', accept: 'I accept the', and: 'and', termsLink: 'Terms of Use', privacyLink: 'Privacy Policy', continue: 'Continue with Google', finish: 'Complete registration', title: 'Finish creating your account', username: 'Username', password: 'Password (optional)', confirm: 'Repeat password',
             passwordHint: 'You can sign in with Google only. Add a password for username sign-in now or later in your profile.', avatar: 'Use Google profile photo', terms: 'I accept the terms of use and privacy policy', cancel: 'Use another sign-in method',
             verifyTitle: 'Verify your email', verifyHint: 'For email outside Gmail and Google Workspace, confirm ownership with an email code.', send: 'Send code', sent: 'Code sent. It expires in 5 minutes.', code: 'Email code', verify: 'Verify', verified: 'Email verified', mismatch: 'Passwords do not match.', generic: 'Could not complete the action. Please try again.',
             account: 'Google sign-in', linked: 'Google is connected', notLinked: 'Connect Google to sign in to this account more easily.', link: 'Connect Google', unlink: 'Disconnect Google', unlinkHint: 'Confirm with your site password', current: 'Current password', setPassword: 'Set password', changePassword: 'Change password', confirmGoogle: 'Confirm Google sign-in', noPassword: 'No password is set yet. Add one to sign in with your username or disconnect Google.', recent: 'You recently confirmed Google sign-in. You can set your first password without a current password.', reauth: 'Confirm Google sign-in before setting your first password.', unavailable: 'Google sign-in is currently unavailable.', cancelled: 'Google sign-in cancelled.', invalid_state: 'The sign-in session expired or could not be verified. Start again.', failed: 'Google sign-in failed. Please start again.', already_linked: 'This Google account or site profile is already connected to another account.', email_conflict: 'Multiple accounts use this email. Sign in with your password and connect Google in your profile.', banned: 'This account is blocked.', wrong_google_account: 'Choose the Google account already connected to this profile.', login_required: 'Please sign in first.', done: 'Google connected successfully.', passwordDone: 'Password set. You can now also sign in with your username.'
         },
         uk: {
-            accept: 'Я приймаю', and: 'та', termsLink: 'Умови використання', privacyLink: 'Політику конфіденційності', continue: 'Продовжити з Google', finish: 'Завершити реєстрацію', title: 'Завершіть створення акаунта', username: 'Ім’я користувача', password: 'Пароль (необов’язково)', confirm: 'Повторіть пароль', passwordHint: 'Можна входити лише через Google. Пароль для входу за логіном можна встановити зараз або пізніше у профілі.', avatar: 'Використовувати фото Google', terms: 'Я приймаю умови використання та політику конфіденційності', cancel: 'Інший спосіб входу', verifyTitle: 'Підтвердьте пошту', verifyHint: 'Для пошти поза Gmail і Google Workspace підтвердьте адресу кодом із листа.', send: 'Надіслати код', sent: 'Код надіслано. Він діє 5 хвилин.', code: 'Код із листа', verify: 'Підтвердити', verified: 'Пошту підтверджено', mismatch: 'Паролі не збігаються.', generic: 'Не вдалося виконати дію. Спробуйте ще раз.', account: 'Вхід через Google', linked: 'Google прив’язаний', notLinked: 'Підключіть Google для швидкого входу в цей акаунт.', link: 'Прив’язати Google', unlink: 'Відключити Google', unlinkHint: 'Підтвердьте відключення паролем сайту', current: 'Поточний пароль', setPassword: 'Встановити пароль', changePassword: 'Змінити пароль', confirmGoogle: 'Підтвердити вхід Google', noPassword: 'Пароль ще не встановлений. Він потрібен для входу за логіном і відключення Google.', recent: 'Ви нещодавно підтвердили вхід Google. Можна встановити перший пароль без поточного.', reauth: 'Перед встановленням першого пароля підтвердьте вхід Google.', unavailable: 'Вхід через Google зараз недоступний.', cancelled: 'Вхід Google скасований.', invalid_state: 'Сесія входу закінчилася або не пройшла перевірку. Почніть заново.', failed: 'Не вдалося ввійти через Google. Спробуйте заново.', already_linked: 'Google або профіль уже прив’язаний до іншого акаунта.', email_conflict: 'Кілька акаунтів використовують цю пошту. Увійдіть за паролем і прив’яжіть Google у профілі.', banned: 'Акаунт заблоковано.', wrong_google_account: 'Виберіть Google-акаунт, уже прив’язаний до профілю.', login_required: 'Спочатку увійдіть в акаунт.', done: 'Google успішно прив’язаний.', passwordDone: 'Пароль встановлено. Тепер доступний і вхід за логіном.'
+            danger: 'Небезпечна зона', accept: 'Я приймаю', and: 'та', termsLink: 'Умови використання', privacyLink: 'Політику конфіденційності', continue: 'Продовжити з Google', finish: 'Завершити реєстрацію', title: 'Завершіть створення акаунта', username: 'Ім’я користувача', password: 'Пароль (необов’язково)', confirm: 'Повторіть пароль', passwordHint: 'Можна входити лише через Google. Пароль для входу за логіном можна встановити зараз або пізніше у профілі.', avatar: 'Використовувати фото Google', terms: 'Я приймаю умови використання та політику конфіденційності', cancel: 'Інший спосіб входу', verifyTitle: 'Підтвердьте пошту', verifyHint: 'Для пошти поза Gmail і Google Workspace підтвердьте адресу кодом із листа.', send: 'Надіслати код', sent: 'Код надіслано. Він діє 5 хвилин.', code: 'Код із листа', verify: 'Підтвердити', verified: 'Пошту підтверджено', mismatch: 'Паролі не збігаються.', generic: 'Не вдалося виконати дію. Спробуйте ще раз.', account: 'Вхід через Google', linked: 'Google прив’язаний', notLinked: 'Підключіть Google для швидкого входу в цей акаунт.', link: 'Прив’язати Google', unlink: 'Відключити Google', unlinkHint: 'Підтвердьте відключення паролем сайту', current: 'Поточний пароль', setPassword: 'Встановити пароль', changePassword: 'Змінити пароль', confirmGoogle: 'Підтвердити вхід Google', noPassword: 'Пароль ще не встановлений. Він потрібен для входу за логіном і відключення Google.', recent: 'Ви нещодавно підтвердили вхід Google. Можна встановити перший пароль без поточного.', reauth: 'Перед встановленням першого пароля підтвердьте вхід Google.', unavailable: 'Вхід через Google зараз недоступний.', cancelled: 'Вхід Google скасований.', invalid_state: 'Сесія входу закінчилася або не пройшла перевірку. Почніть заново.', failed: 'Не вдалося ввійти через Google. Спробуйте заново.', already_linked: 'Google або профіль уже прив’язаний до іншого акаунта.', email_conflict: 'Кілька акаунтів використовують цю пошту. Увійдіть за паролем і прив’яжіть Google у профілі.', banned: 'Акаунт заблоковано.', wrong_google_account: 'Виберіть Google-акаунт, уже прив’язаний до профілю.', login_required: 'Спочатку увійдіть в акаунт.', done: 'Google успішно прив’язаний.', passwordDone: 'Пароль встановлено. Тепер доступний і вхід за логіном.'
         }
     };
     function t(key) {
@@ -94,6 +94,12 @@
     }
     const slots = new WeakMap();
     async function renderAccount(slot) {
+        const danger = slot.closest('.profile-settings')?.querySelector('.google-danger-slot') || document.querySelector('#settings-modal .google-danger-slot');
+        if (danger) {
+            danger.replaceChildren();
+            const section = danger.closest('.google-danger-section');
+            if (section) section.hidden = true;
+        }
         slot.textContent = '';
         const section = node('section', 'google-account-block');
         section.append(label('h3', 'account'));
@@ -124,9 +130,11 @@
                 });
                 section.append(set);
             }
-            if (info.linked && info.has_password) {
+            if (info.linked && info.has_password && danger) {
                 const reveal = label('button', 'unlink', 'btn btn-outline');
                 reveal.type = 'button';
+                const unlinkStatus = node('p', 'google-status');
+                unlinkStatus.setAttribute('role', 'status');
                 const form = node('form', 'google-unlink-form');
                 form.hidden = true;
                 const fieldLabel = label('label', 'unlinkHint');
@@ -142,9 +150,11 @@
                     busy(submit, async () => {
                         await api('/api/profile/google', 'DELETE', { current_password: password.value, csrf: info.csrf });
                         await renderAccount(slot);
-                    }, status);
+                    }, unlinkStatus);
                 });
-                section.append(reveal, form);
+                danger.append(reveal, form, unlinkStatus);
+                const dangerSection = danger.closest('.google-danger-section');
+                if (dangerSection) { dangerSection.hidden = false; translate(dangerSection); }
             }
         } catch (error) { status.textContent = error.message; }
     }
@@ -218,6 +228,7 @@
         window.showView('google-setup-form');
     }
     async function init() {
+        translate();
         const card = document.querySelector('.auth-card');
         const params = new URLSearchParams(location.search);
         if (card) {
