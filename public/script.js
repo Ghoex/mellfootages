@@ -1868,6 +1868,7 @@ async function loadProfile() {
                     </div>
                 </div>
             </div>
+            <div class="google-account-slot"></div>
             <div id="profile-collections"></div>
             <div id="profile-settings"></div>`;
 
@@ -1913,7 +1914,7 @@ async function loadProfile() {
                 : publicCollections
         );
 
-        renderProfileSettings({ username, avatarUrl, activityOn });
+        renderProfileSettings({ username, avatarUrl, activityOn, hasPassword: prof.has_password !== false });
     } catch (error) {
         console.error('Profile loading error:', error);
         content.innerHTML = `<p class="status-message">${t('connectionError')}</p>`;
@@ -2237,7 +2238,7 @@ async function readError(res) {
     catch { return pt('errGeneric'); }
 }
 
-function renderProfileSettings({ username, avatarUrl, activityOn }) {
+function renderProfileSettings({ username, avatarUrl, activityOn, hasPassword = true }) {
     const box = document.getElementById('profile-settings');
     if (!box) return;
 
@@ -2267,7 +2268,7 @@ function renderProfileSettings({ username, avatarUrl, activityOn }) {
 
             <form class="ps-form" id="ps-pass-form">
                 <h4>${escapeHtml(pt('passTitle'))}</h4>
-                <input type="password" id="ps-pass-cur" placeholder="${escapeHtml(pt('passCurrent'))}" autocomplete="current-password">
+                <input type="password" id="ps-pass-cur" ${hasPassword ? '' : 'hidden'} placeholder="${escapeHtml(pt('passCurrent'))}" autocomplete="current-password">
                 <input type="password" id="ps-pass-new" placeholder="${escapeHtml(pt('passNew'))}" minlength="6" autocomplete="new-password">
                 <input type="password" id="ps-pass-confirm" placeholder="${escapeHtml(pt('passConfirm'))}" minlength="6" autocomplete="new-password">
                 <button type="submit" class="btn">${escapeHtml(pt('save'))}</button>
@@ -2363,13 +2364,18 @@ function bindProfileSettings() {
         const cur     = document.getElementById('ps-pass-cur').value;
         const next    = document.getElementById('ps-pass-new').value;
         const confirm = document.getElementById('ps-pass-confirm').value;
-        if (!cur || !next || !confirm) return showToast(pt('errFill'), 'error');
+        if ((!cur && !document.getElementById('ps-pass-cur').hidden) || !next || !confirm) return showToast(pt('errFill'), 'error');
         if (next !== confirm)          return showToast(pt('errMatch'), 'error');
         try {
             const res = await profileFetch('/api/profile/password', 'PATCH', { current_password: cur, new_password: next });
-            if (!res.ok) return showToast(await readError(res), 'error');
+            if (!res.ok) {
+                const error = await res.json().catch(() => ({}));
+                if (error.code === 'google_reauth_required') window.dispatchEvent(new Event('account:google-reauth-required'));
+                return showToast(error.error || pt('errGeneric'), 'error');
+            }
             e.target.reset();
             showToast(pt('passChanged'), 'success');
+            window.dispatchEvent(new Event('account:password-changed'));
         } catch { showToast(pt('errGeneric'), 'error'); }
     });
 

@@ -528,6 +528,7 @@
     </style>
     <script src="/ui.js"></script>
     <link rel="stylesheet" href="/ui.css">
+    <script src="/google-auth-client.js" defer></script>
 </head>
 
 <body data-ui="account">
@@ -1019,6 +1020,7 @@
                         <button class="btn-small" onclick="selectEmoji('')" style="align-self:flex-start;margin-top:8px;padding:8px 12px;border-radius:10px;border:1px solid #dce3da;background:transparent;cursor:pointer;">Убрать эмодзи из ника</button>
                    </div>
 
+                   <div class="google-account-slot"></div>
                    <!-- COLLECTIONS -->
                    <div class="section">
                         <div class="section-header">
@@ -1351,10 +1353,13 @@
                 const data = await res.json();
                 if (res.ok) {
                     showToast(t('pwUpdated'));
+                    if (_profileData) _profileData.has_password = true;
+                    window.dispatchEvent(new Event('account:password-changed'));
                     document.getElementById('input-pw-current').value = '';
                     document.getElementById('input-pw-new').value = '';
                     document.getElementById('input-pw-confirm').value = '';
                 } else {
+                    if (data.code === 'google_reauth_required') window.dispatchEvent(new Event('account:google-reauth-required'));
                     showToast(data.error || t('error'), '#e53935');
                 }
             } catch (e) {

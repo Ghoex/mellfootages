@@ -638,3 +638,48 @@ body[data-ui="catalog"].phone-mode.dock-mode .bottom-nav {
     width: calc(100% - 16px);
     max-width: 404px;
 }
+
+/* Google sign-in shares the account controls and appearance settings. */
+body[data-ui] .google-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+    min-height: 44px; padding: 10px 16px; border: 1px solid var(--ui-border);
+    border-radius: var(--btn-radius, 8px); background: var(--ui-surface);
+    color: var(--ui-text); font-weight: 600; text-decoration: none;
+}
+body[data-ui] .google-button:hover { background: var(--ui-soft); border-color: var(--ui-accent); }
+body[data-ui] .google-mark { font: 700 21px/1 Arial, sans-serif; flex-shrink: 0; }
+body[data-ui] .google-auth-entry { margin-bottom: 20px; }
+body[data-ui] .google-auth-entry .google-button { width: 100%; }
+body[data-ui] :is(.google-auth-entry, .google-unlink-form, .google-email-verify, .google-register-fields, .google-avatar-choice)[hidden],
+body[data-ui="auth"] .tabs[hidden], body[data-ui] #ps-pass-cur[hidden],
+body[data-ui="account"] .field-group[hidden] { display: none; }
+body[data-ui] .google-account-block {
+    margin: 20px 0; padding: 24px; border: 1px solid var(--ui-border);
+    border-radius: var(--ui-radius); background: var(--ui-surface); box-shadow: var(--ui-shadow);
+}
+body[data-ui] .google-account-block h3 { margin: 0 0 14px; font-size: 1.1rem; }
+body[data-ui] .google-account-block > p { margin-block: 10px; }
+body[data-ui] .google-account-block > :is(button, a) { margin: 6px 8px 0 0; }
+body[data-ui] :is(.google-email, .google-status, .google-hint) { overflow-wrap: anywhere; }
+body[data-ui] .google-email { color: var(--ui-accent); font-size: .9rem; }
+body[data-ui] .google-hint { color: var(--ui-muted); font-size: .85rem; line-height: 1.55; margin-block: 10px 16px; }
+body[data-ui] .google-status { color: var(--ui-accent); font-size: .85rem; margin-block: 12px; }
+body[data-ui] .google-status:empty { display: none; }
+body[data-ui] .google-unlink-form { display: grid; gap: 10px; margin-top: 14px; max-width: 420px; }
+body[data-ui] .google-unlink-form input { width: 100%; }
+body[data-ui] .google-register-fields { border: 0; padding: 0; min-width: 0; }
+body[data-ui] .google-email-verify { margin: 18px 0; padding: 16px; border-radius: var(--ui-radius); border: 1px solid var(--ui-border); background: var(--ui-soft); }
+body[data-ui] .google-email-verify label { display: block; margin-top: 14px; }
+body[data-ui] .google-avatar-choice { display: flex; align-items: center; gap: 10px; margin: 14px 0 20px; font-size: .85rem; }
+body[data-ui] .google-avatar-choice img { width: 48px; height: 48px; object-fit: cover; border-radius: 50%; }
+body[data-ui] .google-cancel { display: block; margin-top: 16px; text-align: center; color: var(--ui-accent); font-size: .85rem; }
+body[data-ui] .google-notice { padding: 14px; margin: 16px auto; max-width: 1100px; border: 1px solid var(--ui-border); border-radius: var(--ui-radius); color: var(--ui-accent); }
+
+body[data-ui="auth"] .auth-card > .welcome[hidden] { display: none; }
+body[data-ui] :is(.google-account-block, .google-email-verify) button {
+    appearance: none; min-height: 40px; padding: 10px 14px; font-size: .88rem;
+    border: 1px solid var(--ui-border); border-radius: var(--btn-radius, 8px);
+    background: var(--ui-soft); color: var(--ui-text); cursor: pointer;
+}
+body[data-ui] :is(.google-account-block, .google-email-verify) button:hover { border-color: var(--ui-accent); }
+body[data-ui] .google-unlink-form button[type="submit"] { background: var(--ui-button); color: #fff; }

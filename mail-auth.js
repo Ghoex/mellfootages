@@ -242,7 +242,7 @@ function mountMailAuth(app, deps) {
 
         try {
             const hash = await bcrypt.hash(password, 10);
-            await db.run('UPDATE users SET password = ? WHERE id = ?', [hash, pending.userId]);
+            await db.run('UPDATE users SET password = ?, password_set = 1 WHERE id = ?', [hash, pending.userId]);
             delete req.session.pendingReset;
             await saveSession(req);
             res.json({ success: true, message: 'Пароль изменён. Теперь войдите с новым паролем.' });

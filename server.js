@@ -16,6 +16,7 @@ const SQLiteStore = require('connect-sqlite3')(session);
 const { spawn } = require('child_process');
 const { mountRooms, initRooms } = require('./rooms');
 const { mountMailAuth, initMailAuth } = require('./mail-auth');
+const { mountGoogleAuth, initGoogleAuth } = require('./google-auth');
 const { mountFeatures, initFeatures, markUploaded, getVideoExtras, renameVideoExtras, deleteVideoExtras } = require('./features');
 const { mountMusicExt, initMusicExt } = require('./music-ext');
 
@@ -390,6 +391,7 @@ mountFeatures(app); // теги футажей, пакетное скачива�
 
 // Регистрация и восстановление пароля по email (код через Resend)
 mountMailAuth(app, { getDb: () => db, bcrypt, authLimiter, USERNAME_REGEX, RESERVED_USERNAMES, TERMS_VERSION });
+mountGoogleAuth(app, { getDb: () => db, bcrypt, authLimiter, USERNAME_REGEX, RESERVED_USERNAMES, TERMS_VERSION });
 
 // ============================================================
 // СТРАНИЦЫ
@@ -927,7 +929,7 @@ app.get('/api/profile', async (req, res) => {
     if (!req.session.user) return res.status(401).json({ error: 'Нужно войти' });
 
     const userId = req.session.user.id;
-    const userRow = await db.get('SELECT avatar_url, activity_visible FROM users WHERE id = ?', [userId]);
+    const userRow = await db.get('SELECT avatar_url, activity_visible, google_sub, password_set FROM users WHERE id = ?', [userId]);
     const points = await db.get('SELECT points FROM user_points WHERE user_id = ?', [userId]);
     const likes = await db.all('SELECT video_name FROM video_likes WHERE user_id = ?', [userId]);
     const collections = await db.all('SELECT id, name, is_public FROM collections WHERE user_id = ?', [userId]);
@@ -938,6 +940,8 @@ app.get('/api/profile', async (req, res) => {
         is_verified: !!req.session.user.is_verified,
         telegram_linked: !!req.session.user.telegram_linked,
         avatar_url: userRow?.avatar_url || null,
+        has_password: userRow?.password_set !== 0,
+        google_linked: !!userRow?.google_sub,
         activity_visible: userRow?.activity_visible == null ? true : !!userRow.activity_visible,
         points: points?.points || 0,
         emoji: (await db.get('SELECT emoji FROM user_emoji WHERE user_id = ? AND selected_at IS NOT NULL ORDER BY selected_at DESC LIMIT 1', [userId]))?.emoji || null,
@@ -1044,29 +1048,6 @@ app.patch('/api/profile/nickname', async (req, res) => {
     }
 });
 
-app.patch('/api/profile/password', async (req, res) => {
-    const userId = getUserId(req, res);
-    if (!userId) return;
-    try {
-        const { current_password, new_password } = req.body;
-        if (!current_password || !new_password) return res.status(400).json({ error: 'Заполните все поля' });
-        if (new_password.length < 6) return res.status(400).json({ error: 'Пароль минимум 6 символов' });
-
-        const user = await db.get('SELECT password FROM users WHERE id = ?', [userId]);
-        if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
-
-        const ok = await bcrypt.compare(current_password, user.password);
-        if (!ok) return res.status(403).json({ error: 'Неверный текущий пароль' });
-
-        const hash = await bcrypt.hash(new_password, 10);
-        await db.run('UPDATE users SET password = ? WHERE id = ?', [hash, userId]);
-        res.json({ ok: true });
-    } catch (e) {
-        console.error(e);
-        res.status(500).json({ error: 'Ошибка сервера' });
-    }
-});
-
 // Удаление аккаунта (необратимо). Футажи остаются, автор отвязывается.
 app.delete('/api/profile/account', async (req, res) => {
     const userId = getUserId(req, res);
@@ -1077,7 +1058,7 @@ app.delete('/api/profile/account', async (req, res) => {
             return res.status(400).json({ error: 'Введите пароль и логин для подтверждения' });
         }
 
-        const user = await db.get('SELECT id, username, password, role, avatar_url FROM users WHERE id = ?', [userId]);
+        const user = await db.get('SELECT id, username, password, password_set, role, avatar_url FROM users WHERE id = ?', [userId]);
         if (!user) return res.status(404).json({ error: 'Пользователь не найден' });
 
         if (String(confirm_username) !== user.username) {
@@ -1087,6 +1068,7 @@ app.delete('/api/profile/account', async (req, res) => {
             return res.status(403).json({ error: 'Администратор не может удалить аккаунт. Сначала передайте роль другому пользователю.' });
         }
 
+        if (user.password_set === 0) return res.status(400).json({ code: 'password_required', error: 'Сначала установите пароль в настройках аккаунта.' });
         const ok = await bcrypt.compare(String(password), user.password);
         if (!ok) return res.status(403).json({ error: 'Неверный пароль' });
 
@@ -1374,7 +1356,7 @@ app.post('/api/login', authLimiter, async (req, res) => {
 
     try {
         const user = await db.get('SELECT * FROM users WHERE username = ?', [username]);
-        if (!user) return res.status(400).json({ error: 'Неверный логин или пароль!' });
+        if (!user || user.password_set === 0 || typeof password !== 'string' || !password) return res.status(400).json({ error: 'Неверный логин или пароль!' });
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ error: 'Неверный логин или пароль!' });
@@ -1385,7 +1367,6 @@ app.post('/api/login', authLimiter, async (req, res) => {
             }
         }
 
-        console.log('[DIAG login]', { secure: req.secure, proto: req.headers['x-forwarded-proto'], env: process.env.NODE_ENV, hasCookie: !!req.headers.cookie, sid: req.sessionID });
         // Регенерация session ID — защита от session fixation
         req.session.regenerate((err) => {
             if (err) {
@@ -1412,7 +1393,6 @@ app.post('/api/logout', (req, res) => {
 });
 
 app.get('/api/me', (req, res) => {
-    console.log('[DIAG me]', { secure: req.secure, hasCookie: !!req.headers.cookie, sid: req.sessionID, hasUser: !!req.session?.user });
     if (req.session.user) {
         res.json({ loggedIn: true, user: req.session.user });
     } else {
@@ -2220,7 +2200,8 @@ async function startServer() {
         await addColumnIfNotExists('submissions', 'final_filename', 'TEXT');
 
         await initRooms(db); // таблицы комнат, жалоб и мута
-        await initMailAuth(db); // колонки email и уникальный индекс
+        await initMailAuth(db);
+        await initGoogleAuth(db); // Google identity and optional password migration
         await initFeatures(db, { videosDir: VIDEOS_DIR, allowedExtensions: ALLOWED_UPLOAD_EXTENSIONS });
         await initMusicExt(db, {
             soundsDir: SOUNDS_DIR,

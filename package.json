@@ -15,6 +15,11 @@
     "node-telegram-bot-api": "^1.2.0",
     "sqlite": "^5.1.1",
     "sqlite3": "^6.0.1",
-    "telegraf": "^4.16.3"
+    "telegraf": "^4.16.3",
+    "google-auth-library": "^10.9.1",
+    "archiver": "^7.0.1"
+  },
+  "scripts": {
+    "test:google-auth": "node --test test/google-auth.test.js test/google-auth-server.test.js"
   }
 }
