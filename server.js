@@ -218,7 +218,14 @@ mountMusicExt(app, {
 // ПРИМЕЧАНИЕ: /submissions больше НЕ отдаётся статически — там лежат
 // заявки на модерации, и они были доступны любому по прямой ссылке.
 // ============================================================
-app.use(express.static(path.join(__dirname, 'public')));
+function freshSiteHtml(res, file) {
+    if (path.extname(file) === '.html' && path.basename(file) !== 'music.html') {
+        res.setHeader('Cache-Control', 'no-cache, max-age=0, must-revalidate');
+        res.setHeader('CDN-Cache-Control', 'no-store');
+        res.setHeader('Cloudflare-CDN-Cache-Control', 'no-store');
+    }
+}
+app.use(express.static(path.join(__dirname, 'public'), { setHeaders: freshSiteHtml }));
 app.use('/uploads', express.static(UPLOADS_DIR));
 
 for (const dir of [VIDEOS_DIR, SOUNDS_DIR, UPLOADS_DIR, THUMB_DIR, AVATAR_DIR, SUBMISSIONS_DIR]) {
@@ -396,7 +403,10 @@ mountGoogleAuth(app, { getDb: () => db, bcrypt, authLimiter, USERNAME_REGEX, RES
 // ============================================================
 // СТРАНИЦЫ
 // ============================================================
-const pub = (file) => (req, res) => res.sendFile(path.join(__dirname, 'public', file));
+const pub = (file) => (req, res) => {
+    freshSiteHtml(res, file);
+    res.sendFile(path.join(__dirname, 'public', file));
+};
 
 app.get('/', pub('index.html'));
 // ПРИМЕЧАНИЕ: в первом документе /music было закрыто (503), во втором — открыто. Оставлено открытым.

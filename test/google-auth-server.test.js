@@ -44,6 +44,16 @@ test('real server migrations, password login, Google-only login guard and email 
         if (response.headers.get('set-cookie')) cookie = response.headers.get('set-cookie').split(';')[0];
         return response;
     }
+    for (const url of ['/', '/index.html', '/auth', '/auth.html', '/profile']) {
+        const html = await request(url);
+        assert.match(html.headers.get('cache-control'), /no-cache/);
+        assert.equal(html.headers.get('cloudflare-cdn-cache-control'), 'no-store');
+        const body = await html.text();
+        assert.match(body, /ui\.css\?v=[0-9a-f]{12}/);
+    }
+    const player = await request('/music/');
+    assert.equal(player.headers.get('cloudflare-cdn-cache-control'), null);
+    await player.arrayBuffer();
     assert.equal((await request('/api/login', 'POST', { username: 'googleonly', password: '' })).status, 400);
     assert.equal((await request('/api/login', 'POST', { username: 'googleonly', password: 'anything' })).status, 400);
     assert.equal((await request('/api/login', 'POST', { username: 'ordinary', password: 'ordinary-password' })).status, 200);

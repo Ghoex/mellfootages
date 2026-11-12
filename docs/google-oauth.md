@@ -38,3 +38,9 @@ npm run test:google-auth
 Тесты используют локальную SQLite и подменённого провайдера Google. Финальная проверка реального Google-входа требует настроенных redirect URIs, consent screen и пользовательского входа в браузере.
 
 Документация Google: [серверный OAuth flow](https://developers.google.com/identity/protocols/oauth2/web-server), [проверка ID token и авторитетности email](https://developers.google.com/identity/sign-in/web/backend-auth).
+
+## Обновления интерфейса и Cloudflare
+
+URL общих CSS/JS в HTML содержат `?v=` с хешем содержимого файла. При изменении UI-ресурсов выполните `npm run assets:version` и включите обновлённый HTML в коммит. Это даёт браузеру и CDN новый ключ кэша, в том числе для `script.js`, который формирует вкладку профиля на главной.
+
+HTML сайта отдаётся с обязательной перепроверкой и запретом хранения в CDN, чтобы страницы ссылались на актуальные версии файлов. Кэширование медиа и плеера не меняется. Уже закэшированный HTML при принудительном Cache Everything может потребовать разовой очистки кэша Cloudflare после выкладки.
