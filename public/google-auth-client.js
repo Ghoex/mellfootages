@@ -94,7 +94,7 @@
     }
     const slots = new WeakMap();
     async function renderAccount(slot) {
-        const danger = slot.closest('.profile-settings')?.querySelector('.google-danger-slot') || document.querySelector('#settings-modal .google-danger-slot');
+        const danger = slot.closest('#profile-content')?.querySelector('.google-danger-slot') || document.querySelector('#settings-modal .google-danger-slot');
         if (danger) {
             danger.replaceChildren();
             const section = danger.closest('.google-danger-section');

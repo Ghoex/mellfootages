@@ -1869,6 +1869,7 @@ async function loadProfile() {
                 </div>
             </div>
             <div id="profile-collections"></div>
+            <div class="google-account-slot"></div>
             <div id="profile-settings"></div>`;
 
         const profAvatarEl = document.getElementById('prof-avatar');
@@ -2277,8 +2278,6 @@ function renderProfileSettings({ username, avatarUrl, activityOn, hasPassword = 
                 <div class="ps-row-text"><strong>${escapeHtml(pt('changeAvatar'))}</strong></div>
                 <button type="button" class="btn-outline ps-danger" id="ps-avatar-remove" ${avatarUrl ? '' : 'disabled'}>${escapeHtml(pt('removeAvatar'))}</button>
             </div>
-
-            <div class="google-account-slot"></div>
 
             <div class="ps-danger-zone">
                 <div class="ps-row-text">
