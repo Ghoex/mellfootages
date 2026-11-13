@@ -1502,10 +1502,10 @@ function renderGrid() {
                     <button type="button" class="action-btn like-btn" data-name="${escapeHtml(filename)}" onclick="toggleLike('${escapeJs(encoded)}', this, event)">
                         ♥ <span class="like-count">${initStats.likes}</span>
                     </button>
+                    <a href="/videos/${encoded}" download="${escapeHtml(filename)}" class="action-btn download-btn" onclick="trackDownload('${escapeJs(encoded)}')">⬇</a>
                     <div class="more-wrap">
                         <button type="button" class="action-btn more-btn" aria-label="Ещё" aria-expanded="false" onclick="toggleCardMenu(this, event)">⋯</button>
                         <div class="card-menu" role="menu">
-                            <a href="/videos/${encoded}" download="${escapeHtml(filename)}" class="card-menu-item download-btn" role="menuitem" onclick="trackDownload('${escapeJs(encoded)}')">⬇ Скачать</a>
                             <button type="button" class="card-menu-item collection-btn" role="menuitem" onclick="closeCardMenus(); openCollectionModal('${escapeJs(filename)}')">✚ В сборник</button>
                             ${isCurrentUserAdmin() ? `
                             <button type="button" class="card-menu-item edit-video-btn" role="menuitem" onclick="closeCardMenus(); renameVideo('${escapeJs(encoded)}', event)">✎ ${t('editVideo')}</button>
