@@ -156,11 +156,12 @@ function enhanceCard(card, video) {
     if (actions) {
         const fav = document.createElement('button');
         fav.type = 'button';
-        fav.className = 'action-btn fav-btn' + (localFavs.has(name) ? ' on' : '');
+        fav.className = 'card-menu-item fav-btn' + (localFavs.has(name) ? ' on' : '');
         fav.title = 'Сохранить в этом браузере';
-        fav.textContent = '★';
+        fav.textContent = '★ В избранное';
         fav.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleLocalFav(name, fav); });
-        actions.appendChild(fav);
+        const menuEl = card.querySelector('.card-menu');
+        (menuEl || actions).appendChild(fav);
     }
 
     // Теги для модераторов
@@ -169,10 +170,11 @@ function enhanceCard(card, video) {
         if (info) {
             const btn = document.createElement('button');
             btn.type = 'button';
-            btn.className = 'action-btn tag-video-btn';
-            btn.textContent = 'Теги';
-            btn.addEventListener('click', (e) => { e.stopPropagation(); openTagModal(name); });
-            info.appendChild(btn);
+            btn.className = 'card-menu-item tag-video-btn';
+            btn.textContent = '🏷 Теги';
+            btn.addEventListener('click', (e) => { e.stopPropagation(); closeCardMenus(); openTagModal(name); });
+            const menuEl = card.querySelector('.card-menu');
+            if (menuEl) menuEl.appendChild(btn); else info.appendChild(btn);
         }
     }
 

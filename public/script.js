@@ -1499,17 +1499,20 @@ function renderGrid() {
                     <span class="dl-count">⬇ ${initStats.downloads}</span>
                 </div>
                 <div class="card-actions">
-                    <a href="/videos/${encoded}" download="${escapeHtml(filename)}" class="action-btn download-btn" onclick="trackDownload('${escapeJs(encoded)}')">⬇</a>
                     <button type="button" class="action-btn like-btn" data-name="${escapeHtml(filename)}" onclick="toggleLike('${escapeJs(encoded)}', this, event)">
                         ♥ <span class="like-count">${initStats.likes}</span>
                     </button>
-                    <button type="button" class="action-btn collection-btn" onclick="openCollectionModal('${escapeJs(filename)}')">✚</button>
+                    <div class="more-wrap">
+                        <button type="button" class="action-btn more-btn" aria-label="Ещё" aria-expanded="false" onclick="toggleCardMenu(this, event)">⋯</button>
+                        <div class="card-menu" role="menu">
+                            <a href="/videos/${encoded}" download="${escapeHtml(filename)}" class="card-menu-item download-btn" role="menuitem" onclick="trackDownload('${escapeJs(encoded)}')">⬇ Скачать</a>
+                            <button type="button" class="card-menu-item collection-btn" role="menuitem" onclick="closeCardMenus(); openCollectionModal('${escapeJs(filename)}')">✚ В сборник</button>
+                            ${isCurrentUserAdmin() ? `
+                            <button type="button" class="card-menu-item edit-video-btn" role="menuitem" onclick="closeCardMenus(); renameVideo('${escapeJs(encoded)}', event)">✎ ${t('editVideo')}</button>
+                            <button type="button" class="card-menu-item danger delete-video-btn" role="menuitem" onclick="closeCardMenus(); deleteVideo('${escapeJs(encoded)}', event)">${t('deleteVideo')}</button>` : ''}
+                        </div>
+                    </div>
                 </div>
-                ${isCurrentUserAdmin() ? `
-                    <div class="admin-video-actions">
-                        <button type="button" class="action-btn edit-video-btn" onclick="renameVideo('${escapeJs(encoded)}', event)">✎ ${t('editVideo')}</button>
-                        <button type="button" class="action-btn delete-video-btn" onclick="deleteVideo('${escapeJs(encoded)}', event)">${t('deleteVideo')}</button>
-                    </div>` : ''}
             </div>`;
 
         container.appendChild(card);
@@ -2440,3 +2443,35 @@ function verifiedBadgeSvg() {
         <path fill="#fff" d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
     </svg>`;
 }
+
+/* ── Меню «⋯» на карточке футажа ── */
+function toggleCardMenu(btn, ev) {
+    if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+    const wrap = btn.closest('.more-wrap');
+    const menu = wrap && wrap.querySelector('.card-menu');
+    if (!menu) return;
+    const wasOpen = menu.classList.contains('open');
+    closeCardMenus();
+    if (wasOpen) return;
+    menu.__owner = wrap;
+    document.body.appendChild(menu);       // вне карточки, чтобы не обрезалось overflow:hidden
+    menu.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    const r = btn.getBoundingClientRect();
+    const w = menu.offsetWidth, h = menu.offsetHeight;
+    let left = Math.min(r.right - w, window.innerWidth - w - 8);
+    let top = r.top - h - 6;
+    if (top < 8) top = r.bottom + 6;
+    menu.style.left = Math.max(8, left) + 'px';
+    menu.style.top = top + 'px';
+}
+function closeCardMenus() {
+    document.querySelectorAll('.card-menu.open').forEach(m => {
+        m.classList.remove('open');
+        if (m.__owner) m.__owner.appendChild(m);
+    });
+    document.querySelectorAll('.more-btn[aria-expanded="true"]').forEach(b => b.setAttribute('aria-expanded', 'false'));
+}
+document.addEventListener('click', e => { if (!e.target.closest('.more-wrap, .card-menu')) closeCardMenus(); });
+window.addEventListener('scroll', closeCardMenus, { passive: true });
+window.addEventListener('resize', closeCardMenus);
