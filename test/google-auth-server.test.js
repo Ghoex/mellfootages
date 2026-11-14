@@ -9,6 +9,7 @@ const crypto = require('node:crypto');
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const bcrypt = require('bcryptjs');
+const hostRequest = require('./helpers/http-request');
 
 test('real server migrations, password login, Google-only login guard and email password recovery work together', { timeout: 30000 }, async t => {
     const root = path.resolve(__dirname, '..'), temp = await fs.mkdtemp(path.join(os.tmpdir(), 'mell-google-auth-'));
@@ -20,7 +21,7 @@ test('real server migrations, password login, Google-only login guard and email 
     await fs.symlink(path.join(root, 'public'), path.join(temp, 'public'), 'dir');
     await fs.mkdir(path.join(temp, 'sounds'));
     let logs = '';
-    const server = spawn(process.execPath, ['server.js'], { cwd: temp, env: { ...process.env, NODE_PATH: [path.join(root, 'node_modules'), process.env.NODE_PATH].filter(Boolean).join(path.delimiter), NODE_ENV: 'development', PORT: String(port), SESSION_SECRET: crypto.randomBytes(32).toString('hex'), SITE_URL: `http://127.0.0.1:${port}`, GOOGLE_CLIENT_ID: 'test-client', GOOGLE_CLIENT_SECRET: 'test-secret', GOOGLE_REDIRECT_URI: `http://127.0.0.1:${port}/auth/google/callback` }, stdio: ['ignore', 'pipe', 'pipe'] });
+    const server = spawn(process.execPath, ['server.js'], { cwd: temp, env: { ...process.env, NODE_PATH: [path.join(root, 'node_modules'), process.env.NODE_PATH].filter(Boolean).join(path.delimiter), NODE_ENV: 'development', PORT: String(port), SESSION_SECRET: crypto.randomBytes(32).toString('hex'), SITE_URL: `http://127.0.0.1:${port}`, GOOGLE_CLIENT_ID: 'test-client', GOOGLE_CLIENT_SECRET: 'test-secret', GOOGLE_REDIRECT_URI: `http://127.0.0.1:${port}/auth/google/callback`, GOOGLE_REDIRECT_URIS: `http://127.0.0.1:${port}/auth/google/callback,https://mellfootages.online/auth/google/callback` }, stdio: ['ignore', 'pipe', 'pipe'] });
     server.stdout.on('data', chunk => { logs += chunk; }); server.stderr.on('data', chunk => { logs += chunk; });
     let db, sessions;
     t.after(async () => {
@@ -61,7 +62,11 @@ test('real server migrations, password login, Google-only login guard and email 
     assert.equal((await request('/api/profile/password', 'PATCH', { current_password: 'ordinary-password', new_password: 'changed-password' })).status, 200);
     await request('/api/logout', 'POST', {}); cookie = '';
     // Inject the server-side mail challenge instead of sending a real email in this integration test.
-    assert.equal((await request('/auth/google')).status, 302);
+    const googleStart = await request('/auth/google');
+    assert.equal(googleStart.status, 302);
+    assert.equal(new URL(googleStart.headers.get('location')).searchParams.get('redirect_uri'), `http://127.0.0.1:${port}/auth/google/callback`);
+    const secondDomain = await hostRequest(`http://127.0.0.1:${port}/auth/google`, { headers: { host: 'mellfootages.online', 'X-Forwarded-Proto': 'https' } });
+    assert.equal(new URL(secondDomain.headers.get('location')).searchParams.get('redirect_uri'), 'https://mellfootages.online/auth/google/callback');
     const signed = decodeURIComponent(cookie.slice(cookie.indexOf('=') + 1));
     const sid = signed.slice(2, signed.lastIndexOf('.'));
     sessions = await open({ filename: path.join(temp, 'sessions.db'), driver: sqlite3.Database });

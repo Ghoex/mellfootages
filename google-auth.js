@@ -19,10 +19,19 @@ const digest = (code, salt) => crypto.createHash('sha256').update(salt + ':' + c
 
 function googleConfig(env = process.env) {
     try {
-        const redirect = new URL(env.GOOGLE_REDIRECT_URI || '/auth/google/callback', env.SITE_URL);
-        if (redirect.protocol !== 'https:' && !(redirect.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(redirect.hostname))) return null;
-        if (redirect.username || redirect.password || redirect.search || redirect.hash || !env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) return null;
-        return { clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET, redirectUri: redirect.href, origin: redirect.origin };
+        if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) return null;
+        const values = env.GOOGLE_REDIRECT_URIS?.trim()
+            ? env.GOOGLE_REDIRECT_URIS.split(',').map(value => value.trim())
+            : [env.GOOGLE_REDIRECT_URI || '/auth/google/callback'];
+        const redirects = values.map(value => {
+            if (!value) throw new Error('empty_redirect');
+            const redirect = new URL(value, env.SITE_URL);
+            if (redirect.protocol !== 'https:' && !(redirect.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(redirect.hostname))) throw new Error('insecure_redirect');
+            if (redirect.username || redirect.password || redirect.search || redirect.hash || redirect.pathname !== '/auth/google/callback') throw new Error('invalid_redirect');
+            return redirect.href;
+        });
+        return { clientId: env.GOOGLE_CLIENT_ID, clientSecret: env.GOOGLE_CLIENT_SECRET,
+            redirectUri: redirects[0], redirectUris: [...new Set(redirects)] };
     } catch { return null; }
 }
 
@@ -52,10 +61,13 @@ function mountGoogleAuth(app, deps) {
     const db = { get: (...a) => getDb().get(...a), all: (...a) => getDb().all(...a), run: (...a) => getDb().run(...a) };
     const now = () => Date.now();
     const fresh = pending => pending && now() - pending.authenticatedAt < FLOW_TTL;
+    const requestOrigin = req => `${req.protocol}://${(req.get('host') || '').toLowerCase()}`;
+    // Match only configured origins. Never construct a callback from an arbitrary Host.
+    const redirectFor = req => config?.redirectUris.find(uri => new URL(uri).origin === requestOrigin(req));
     function trusted(req) {
         const origin = req.get('origin');
         // Browsers send Origin for these JSON writes. Non-browser clients may omit it.
-        return !origin || origin === config?.origin || origin === `${req.protocol}://${req.get('host')}`;
+        return !origin || origin === requestOrigin(req);
     }
     const emailUsers = email => db.all('SELECT * FROM users WHERE lower(email) = ? LIMIT 2', [email]);
     async function signIn(req, user, sub, authenticatedAt = now()) {
@@ -105,24 +117,25 @@ function mountGoogleAuth(app, deps) {
     }
 
     app.get('/api/auth/google/config', (req, res) => {
-        res.set('Cache-Control', 'no-store').json({ enabled: !!client });
+        res.set('Cache-Control', 'no-store').json({ enabled: !!client && !!redirectFor(req) });
     });
 
     app.get('/auth/google', authLimiter, async (req, res) => {
         res.set('Cache-Control', 'no-store');
-        if (!client) return res.redirect('/auth?google_error=not_configured');
+        const redirectUri = redirectFor(req);
+        if (!client || !redirectUri) return res.redirect('/auth?google_error=not_configured');
         const mode = req.query.mode || 'login';
         if (!['login', 'link', 'reauth'].includes(mode)) return res.redirect('/auth?google_error=invalid_request');
         if (mode !== 'login' && !req.session.user) return res.redirect('/auth?google_error=login_required');
         if (mode === 'login' && req.session.user) return res.redirect('/profile');
         try {
             const verifier = random();
-            const flow = { state: random(), nonce: random(), verifier, mode, userId: req.session.user?.id || null, createdAt: now() };
+            const flow = { state: random(), nonce: random(), verifier, redirectUri, mode, userId: req.session.user?.id || null, createdAt: now() };
             delete req.session.pendingGoogle;
             req.session.googleFlow = flow;
             await save(req);
             const url = client.generateAuthUrl({
-                scope: ['openid', 'email', 'profile'], response_type: 'code',
+                scope: ['openid', 'email', 'profile'], response_type: 'code', redirect_uri: flow.redirectUri,
                 access_type: 'online', prompt: 'select_account', state: flow.state, nonce: flow.nonce,
                 code_challenge_method: 'S256', code_challenge: crypto.createHash('sha256').update(verifier).digest('base64url')
             });
@@ -133,7 +146,7 @@ function mountGoogleAuth(app, deps) {
     app.get('/auth/google/callback', authLimiter, async (req, res) => {
         res.set({ 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' });
         const flow = req.session.googleFlow;
-        if (!client || !flow || now() - flow.createdAt > FLOW_TTL || !equal(req.query.state, flow.state)) {
+        if (!client || !flow || !flow.redirectUri || flow.redirectUri !== redirectFor(req) || now() - flow.createdAt > FLOW_TTL || !equal(req.query.state, flow.state)) {
             return res.redirect('/auth?google_error=invalid_state');
         }
         const target = flow.mode === 'login' ? '/auth' : '/profile';
@@ -143,7 +156,7 @@ function mountGoogleAuth(app, deps) {
             if (req.query.error) return res.redirect(target + '?google_error=cancelled');
             if (typeof req.query.code !== 'string' || req.query.code.length > 4096) throw new Error('invalid_code');
             if ((flow.userId || null) !== (req.session.user?.id || null)) throw new Error('session_changed');
-            const { tokens } = await client.getToken({ code: req.query.code, codeVerifier: flow.verifier, redirect_uri: config.redirectUri });
+            const { tokens } = await client.getToken({ code: req.query.code, codeVerifier: flow.verifier, redirect_uri: flow.redirectUri });
             if (!tokens.id_token) throw new Error('missing_id_token');
             const ticket = await client.verifyIdToken({ idToken: tokens.id_token, audience: config.clientId });
             const claims = ticket.getPayload();
@@ -274,7 +287,7 @@ function mountGoogleAuth(app, deps) {
         if (!user) return fail(res, 401, 'login_required', 'Нужно войти.');
         req.session.googleProfileCsrf ||= random();
         await save(req);
-        res.json({ enabled: !!client, linked: !!user.google_sub, email: user.google_email || null, has_password: user.password_set !== 0,
+        res.json({ enabled: !!client && !!redirectFor(req), linked: !!user.google_sub, email: user.google_email || null, has_password: user.password_set !== 0,
             csrf: req.session.googleProfileCsrf,
             recent_google_auth: !!user.google_sub && req.session.googleAuthenticatedSub === user.google_sub && now() - (req.session.googleAuthenticatedAt || 0) < FLOW_TTL });
     });

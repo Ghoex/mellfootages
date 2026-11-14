@@ -6,9 +6,10 @@ const session = require('express-session');
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const bcrypt = require('bcryptjs');
+const hostRequest = require('./helpers/http-request');
 const { mountGoogleAuth, initGoogleAuth, googleConfig, googlePicture } = require('../google-auth');
 
-async function fixture(t, enabled = true) {
+async function fixture(t, enabled = true, extraEnv = {}) {
     const db = await open({ filename: ':memory:', driver: sqlite3.Database });
     await db.exec(`CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE NOT NULL, password TEXT NOT NULL,
@@ -27,7 +28,7 @@ async function fixture(t, enabled = true) {
             const entry = codes.get(options.code);
             assert(entry, 'unknown authorization code');
             assert.equal(crypto.createHash('sha256').update(options.codeVerifier).digest('base64url'), entry.challenge);
-            assert.equal(options.redirect_uri, 'https://example.com/auth/google/callback');
+            assert.equal(options.redirect_uri, entry.redirectUri);
             return { tokens: { id_token: options.code, access_token: 'must-not-persist', refresh_token: 'must-not-persist' } };
         },
         async verifyIdToken({ idToken, audience }) {
@@ -38,6 +39,7 @@ async function fixture(t, enabled = true) {
         }
     };
     const app = express();
+    app.set('trust proxy', 1);
     app.use(express.json());
     app.use(session({ secret: crypto.randomBytes(32).toString('hex'), resave: false, saveUninitialized: false, cookie: { httpOnly: true, sameSite: 'lax' } }));
     app.get('/test/login/:id', async (req, res) => {
@@ -55,19 +57,21 @@ async function fixture(t, enabled = true) {
     mountGoogleAuth(app, {
         getDb: () => db, bcrypt, authLimiter: (req, res, next) => next(),
         USERNAME_REGEX: /^[a-zA-Z0-9_-]{3,15}$/, RESERVED_USERNAMES: ['admin', 'root'], TERMS_VERSION: 'test-terms', client,
-        env: enabled ? { GOOGLE_CLIENT_ID: 'test-client', GOOGLE_CLIENT_SECRET: 'test-secret', SITE_URL: 'https://example.com' } : {},
+        env: enabled ? { GOOGLE_CLIENT_ID: 'test-client', GOOGLE_CLIENT_SECRET: 'test-secret', SITE_URL: 'https://example.com', ...extraEnv } : {},
         sendMail: async message => mail.push(message)
     });
     const server = app.listen(0, '127.0.0.1');
     await new Promise(resolve => server.once('listening', resolve));
     const base = 'http://127.0.0.1:' + server.address().port;
     t.after(async () => { await new Promise(resolve => server.close(resolve)); await db.close(); });
-    function browser() {
+    function browser(site = 'https://example.com') {
         let cookie = '';
         return {
             get cookie() { return cookie; },
-            async request(path, method = 'GET', body, origin) {
-                const response = await fetch(base + path, { method, redirect: 'manual', headers: {
+            async request(path, method = 'GET', body, origin, requestSite = site) {
+                const address = new URL(requestSite);
+                const response = await hostRequest(base + path, { method, headers: {
+                    host: address.host, 'X-Forwarded-Proto': address.protocol.slice(0, -1),
                     ...(cookie ? { cookie } : {}), ...(body ? { 'Content-Type': 'application/json' } : {}), ...(origin ? { origin } : {})
                 }, ...(body ? { body: JSON.stringify(body) } : {}) });
                 if (response.headers.get('set-cookie')) cookie = response.headers.get('set-cookie').split(';')[0];
@@ -89,7 +93,8 @@ async function fixture(t, enabled = true) {
         assert.equal(url.searchParams.get('code_challenge_method'), 'S256');
         assert.equal(url.searchParams.get('scope'), 'openid email profile');
         const code = crypto.randomBytes(12).toString('hex');
-        codes.set(code, { badSignature, challenge: url.searchParams.get('code_challenge'), claims: {
+        assert.equal(new URL(url.searchParams.get('redirect_uri')).pathname, '/auth/google/callback');
+        codes.set(code, { badSignature, redirectUri: url.searchParams.get('redirect_uri'), challenge: url.searchParams.get('code_challenge'), claims: {
             iss: 'https://accounts.google.com', aud: 'test-client', exp: Date.now() / 1000 + 3600,
             nonce: url.searchParams.get('nonce'), sub: 'google-1', email: 'person@gmail.com', email_verified: true,
             picture: 'https://lh3.googleusercontent.com/photo', ...claims
@@ -112,6 +117,50 @@ test('configuration requires server credentials and an exact HTTPS or localhost 
     assert.equal(googleConfig({ GOOGLE_CLIENT_ID: 'x', GOOGLE_CLIENT_SECRET: 'y', GOOGLE_REDIRECT_URI: 'http://localhost:3000/auth/google/callback' }).redirectUri, 'http://localhost:3000/auth/google/callback');
     for (const picture of ['javascript:alert(1)', 'https://evilgoogleusercontent.com/a', 'http://lh3.googleusercontent.com/a', 'https://evil.example/a', 'https://user:pass@lh3.googleusercontent.com/a']) assert.equal(googlePicture(picture), null);
     assert.equal(googlePicture('https://lh3.googleusercontent.com/photo'), 'https://lh3.googleusercontent.com/photo');
+});
+
+test('multiple callbacks are validated as a whole and override the legacy single callback', () => {
+    const env = { GOOGLE_CLIENT_ID: 'x', GOOGLE_CLIENT_SECRET: 'y', GOOGLE_REDIRECT_URI: 'https://old.example/auth/google/callback' };
+    const uris = 'https://burmolda.ru/auth/google/callback, https://mellfootages.online/auth/google/callback';
+    assert.deepEqual(googleConfig({ ...env, GOOGLE_REDIRECT_URIS: uris }).redirectUris, uris.split(', '));
+    for (const invalid of ['http://evil.example/auth/google/callback', 'https://safe.example/wrong', 'https://user:pass@safe.example/auth/google/callback', 'https://safe.example/auth/google/callback?x=1', 'https://safe.example/auth/google/callback#fragment', '']) {
+        assert.equal(googleConfig({ ...env, GOOGLE_REDIRECT_URIS: uris + ',' + invalid }), null);
+    }
+    assert.equal(googleConfig(env).redirectUri, env.GOOGLE_REDIRECT_URI);
+});
+
+test('both domains select their own callback and independently sign into the same account', async t => {
+    const domains = ['https://burmolda.ru', 'https://mellfootages.online'];
+    const f = await fixture(t, true, { GOOGLE_REDIRECT_URIS: domains.map(d => d + '/auth/google/callback').join(',') });
+    const id = await f.user('person', 'person@gmail.com');
+    const browsers = domains.map(domain => f.browser(domain));
+    const callbacks = await Promise.all(browsers.map(b => f.flow(b)));
+    for (const [i, b] of browsers.entries()) {
+        assert.equal((await b.json('/api/auth/google/config')).body.enabled, true);
+        // Even a copied session/state must not allow completing on a different host or protocol.
+        for (const wrongSite of [domains[1 - i], 'https://evil.example', domains[i].replace('https:', 'http:')]) {
+            const denied = await b.request(callbacks[i], 'GET', undefined, undefined, wrongSite);
+            assert.equal(denied.headers.get('location'), '/auth?google_error=invalid_state');
+        }
+        assert.equal(f.tokenCalls(), i);
+        assert.equal((await b.request(callbacks[i])).headers.get('location'), '/');
+        assert.equal((await b.json('/test/session')).body.user.id, id);
+    }
+    assert.notEqual(browsers[0].cookie, browsers[1].cookie);
+    assert.equal((await f.db.get('SELECT count(*) AS n FROM users')).n, 1);
+    const unknown = f.browser('https://evil.example');
+    assert.equal((await unknown.json('/api/auth/google/config')).body.enabled, false);
+    assert.equal((await unknown.request('/auth/google')).headers.get('location'), '/auth?google_error=not_configured');
+});
+
+test('linking and reauthentication also preserve the second domain callback', async t => {
+    const f = await fixture(t, true, { GOOGLE_REDIRECT_URIS: 'https://example.com/auth/google/callback,https://mellfootages.online/auth/google/callback' });
+    const id = await f.user('person', 'person@gmail.com'), b = f.browser('https://mellfootages.online');
+    await b.request('/test/login/' + id);
+    for (const mode of ['link', 'reauth']) {
+        assert.equal((await f.callback(b, {}, mode)).headers.get('location'), '/profile?google=linked');
+        assert.equal((await b.json('/api/profile/google')).body.recent_google_auth, true);
+    }
 });
 
 test('verified Gmail matches an existing email case-insensitively, links without creating another user and regenerates the session', async t => {

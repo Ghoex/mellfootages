@@ -4,6 +4,7 @@
 
 ```text
 https://burmolda.ru/auth/google/callback
+https://mellfootages.online/auth/google/callback
 ```
 
 Для локального тестирования отдельно добавьте:
@@ -15,6 +16,22 @@ http://localhost:3000/auth/google/callback
 Нужен полный адрес callback с `/auth/google/callback`. Домен без этого пути не подойдёт. Для серверного redirect-flow добавлять JavaScript origin не требуется.
 
 В `.env` задайте `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `SITE_URL` и постоянный `SESSION_SECRET`; шаблон — в `.env.example`. Значения ID и секрета находятся в `web.client_id` и `web.client_secret` скачанного JSON. В локальном окружении разработки используйте локальный redirect и `NODE_ENV=development`; на сайте за HTTPS-прокси — production. После изменения конфигурации перезапустите сервер. Установите зависимости командой `npm install`.
+
+## Два домена
+
+Для входа на обоих доменах добавьте в серверный `.env`:
+
+```dotenv
+GOOGLE_REDIRECT_URIS=https://burmolda.ru/auth/google/callback,https://mellfootages.online/auth/google/callback
+```
+
+Непустой `GOOGLE_REDIRECT_URIS` имеет приоритет над одиночным `GOOGLE_REDIRECT_URI`. Если список отсутствует или пуст, сохраняется настройка одного адреса через `GOOGLE_REDIRECT_URI` (либо callback относительно `SITE_URL`). `SITE_URL` остаётся основным адресом сайта для ссылок в уведомлениях; менять его ради второго домена не требуется. Ошибка в любом адресе списка отключает Google-вход до исправления конфигурации. Разрешены только HTTPS callback с точным путём `/auth/google/callback`; HTTP допускается для localhost.
+
+Backend выбирает callback из списка по протоколу и Host входящего запроса. На неизвестных доменах Google-вход отключён. Выбранный адрес сохраняется в сессии и используется и при переходе к Google, и при обмене кода; завершение на другом домене отклоняется. Вход, регистрация, привязка и повторное подтверждение остаются на исходном домене.
+
+Оба домена должны вести на один backend с общей базой пользователей и хранилищем сессий. HTTPS-прокси должен передавать исходный `Host` и `X-Forwarded-Proto: https` (например, nginx: `proxy_set_header Host $host;` и `proxy_set_header X-Forwarded-Proto $scheme;`). Не перенаправляйте новый домен на старый на уровне прокси или Cloudflare, если хотите сохранять домен входа. Cookies остаются отдельными для каждого домена: аккаунт общий, входить в него на каждом домене нужно отдельно. В Google используйте один OAuth client с обоими точными Authorized redirect URIs.
+
+После обновления кода настройте `.env` на сервере и перезапустите процесс приложения. Изменения базы данных для поддержки второго домена не нужны.
 
 Секреты не передаются браузеру и не включаются в Git. На хостинге задайте те же переменные отдельно: локальный `.env` не попадает в push. JSON `client_secret*.json`, `.env` и файлы SQLite исключены из Git. Если consent screen ещё в Testing, добавьте нужные Google-аккаунты в Test users.
 
