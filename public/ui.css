@@ -701,3 +701,290 @@ body[data-ui] .google-danger-slot .google-unlink-form { margin-top: 0; }
 body[data-ui] .google-danger-section[hidden] { display: none; }
 body[data-ui] .profile-settings .google-account-block { background: var(--ui-bg); box-shadow: none; padding: 18px; }
 body[data-ui] .ps-danger-actions > #ps-delete-open { margin-top: 0; }
+
+/* ===== BENTO: новая главная — витрина + лента футажей ===== */
+
+/* --- сетка плиток --- */
+body[data-ui="catalog"] .bento {
+    display: grid;
+    gap: 12px;
+    margin: 4px 0 22px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr) minmax(0, 1fr);
+    grid-template-areas:
+        "footages best rooms"
+        "player   best profile";
+    grid-template-rows: repeat(2, minmax(112px, 1fr));
+}
+
+body[data-ui="catalog"] .bento-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 16px 10px;
+    min-height: 112px;
+    border-radius: 22px;
+    text-decoration: none;
+    color: var(--ui-text);
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    box-shadow: 0 2px 10px rgb(29 48 33 / 6%);
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+    overflow: hidden;
+}
+body[data-ui="catalog"] .bento-tile:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--ui-accent) 40%, var(--ui-border));
+    box-shadow: 0 16px 32px rgb(29 48 33 / 16%);
+}
+body[data-ui="catalog"] .bento-tile:active { transform: scale(.985); }
+
+/* «плашка приложения» — глянцевая цветная иконка на тёмном тайле */
+body[data-ui="catalog"] .bento-icon {
+    position: static;
+    width: 56px; height: 56px;
+    border-radius: 15px;
+    display: block;
+    object-fit: cover;
+    box-shadow: 0 8px 16px rgb(16 24 19 / 26%);
+    pointer-events: none;
+}
+body[data-ui="catalog"] .bento-title {
+    font-weight: 700; font-size: .85rem; line-height: 1.15;
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+body[data-ui="catalog"] .bento-sub {
+    font-size: .72rem; line-height: 1.1; color: var(--ui-muted);
+    text-align: center;
+    max-width: 100%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+body[data-ui="catalog"] .bt-footages { grid-area: footages; }
+body[data-ui="catalog"] .bt-player   { grid-area: player; }
+body[data-ui="catalog"] .bt-rooms    { grid-area: rooms; }
+body[data-ui="catalog"] .bt-profile  { grid-area: profile; }
+
+/* --- крупная плитка «лучший футаж дня» --- */
+body[data-ui="catalog"] .bt-best {
+    grid-area: best;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: 18px;
+    isolation: isolate;
+    background:
+        radial-gradient(120% 80% at 100% 0%, color-mix(in srgb, var(--ui-accent) 18%, transparent), transparent 60%),
+        var(--ui-surface);
+}
+body[data-ui="catalog"] .bt-best::before {
+    content: "";
+    position: absolute; inset: 0;
+    z-index: 0;
+    background-image: var(--bento-best-thumb, none);
+    background-size: cover;
+    background-position: center;
+    opacity: .18;
+    filter: saturate(1.1);
+    transition: opacity .25s ease;
+    pointer-events: none;
+}
+body[data-ui="catalog"] .bt-best:hover::before { opacity: .3; }
+body[data-ui="catalog"] .bt-best::after {
+    content: "";
+    position: absolute; inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, transparent 34%, color-mix(in srgb, var(--ui-surface) 82%, transparent) 76%);
+}
+body[data-ui="catalog"].dark-theme .bt-best::after {
+    background: linear-gradient(180deg, transparent 30%, rgb(20 20 22 / 82%) 74%);
+}
+body[data-ui="catalog"] .bt-best > * { position: relative; z-index: 1; }
+body[data-ui="catalog"] .bt-best .bento-title {
+    font-size: 1.05rem; text-align: left; white-space: normal;
+    margin-top: auto; margin-bottom: 4px;
+}
+body[data-ui="catalog"] .bento-badge {
+    position: absolute; top: 16px; left: 18px;
+    z-index: 2;
+    font-size: .64rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px;
+    background: color-mix(in srgb, var(--ui-accent) 18%, transparent);
+    color: var(--ui-accent);
+}
+body[data-ui="catalog"] .bt-best-icon {
+    position: absolute; right: 14px; bottom: 14px;
+    z-index: 1;
+    width: 46px; height: 46px; border-radius: 13px;
+    opacity: .96;
+}
+body[data-ui="catalog"] .bento-best-inner {
+    margin-top: 0;
+    display: flex; flex-direction: column; gap: 3px;
+    padding-right: 58px;
+    min-height: 34px;
+    justify-content: flex-end;
+}
+body[data-ui="catalog"] .bento-best-inner .bb-name {
+    font-weight: 700; font-size: .88rem; line-height: 1.25;
+    overflow: hidden; text-overflow: ellipsis; display: -webkit-box;
+    -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+body[data-ui="catalog"] .bento-best-inner .bb-meta {
+    font-size: .73rem; color: var(--ui-muted);
+    display: flex; align-items: center; gap: 8px;
+}
+body[data-ui="catalog"] .bento-best-inner .bb-play {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-weight: 700; color: var(--ui-accent);
+}
+
+/* тёмная тема — плитки как в мокапе */
+body[data-ui="catalog"].dark-theme .bento-tile {
+    background: #1c1c1e;
+    border-color: #2c2c30;
+    box-shadow: 0 2px 14px rgb(0 0 0 / 40%);
+}
+body[data-ui="catalog"].dark-theme .bento-tile:hover {
+    border-color: #3d3d43;
+    box-shadow: 0 16px 34px rgb(0 0 0 / 55%);
+}
+body[data-ui="catalog"].dark-theme .bt-best {
+    background:
+        radial-gradient(120% 80% at 100% 0%, rgb(126 195 132 / 16%), transparent 60%),
+        #1c1c1e;
+}
+body[data-ui="catalog"].dark-theme .bento-sub { color: #98989f; }
+
+/* --- шапка ленты: заголовок + плотность --- */
+body[data-ui="catalog"] .feed-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+    margin: 6px 0 12px;
+}
+body[data-ui="catalog"] .feed-title {
+    display: flex; align-items: baseline; gap: 8px;
+    font-size: 1.05rem; font-weight: 800; letter-spacing: -.01em;
+    color: var(--ui-text);
+}
+body[data-ui="catalog"] .feed-count {
+    font-size: .78rem; font-weight: 600; color: var(--ui-muted);
+}
+body[data-ui="catalog"] .feed-head .density-switch-group { margin: 0; }
+
+/* --- чипсы: сортировка + категории --- */
+body[data-ui="catalog"] .chip-strip {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-bottom: 20px;
+}
+body[data-ui="catalog"] .chip-scroll {
+    display: flex; gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+}
+body[data-ui="catalog"] .chip-scroll::-webkit-scrollbar { display: none; }
+body[data-ui="catalog"] .chip-strip .chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-weight: 600; font-size: .8rem;
+    background: var(--ui-surface);
+    border: 1px solid var(--ui-border);
+    color: var(--ui-muted);
+    box-shadow: none;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+body[data-ui="catalog"] .chip-strip .chip svg {
+    width: 15px; height: 15px;
+    stroke: currentColor;
+    opacity: .85;
+}
+body[data-ui="catalog"] .chip-strip .chip:hover {
+    color: var(--ui-text);
+    border-color: color-mix(in srgb, var(--ui-accent) 40%, var(--ui-border));
+}
+body[data-ui="catalog"] .chip-strip .chip.active {
+    color: #fff;
+    background: var(--ui-accent);
+    border-color: var(--ui-accent);
+}
+body[data-ui="catalog"].dark-theme .chip-strip .chip.active { color: #10231a; }
+body[data-ui="catalog"] .chip-strip .category-chips {
+    display: flex; gap: 8px; flex-wrap: wrap;
+}
+body[data-ui="catalog"] .chip-strip .category-chips:empty { display: none; }
+/* display:flex перебивает атрибут hidden — гасим ряд категорий, когда их нет */
+body[data-ui="catalog"] .chip-strip .category-chips[hidden] { display: none; }
+/* светлая тема: витрина остаётся «мокапом» — тёмные тайлы с глянцевыми иконками */
+body[data-ui="catalog"]:not(.dark-theme) .bento-tile {
+    background: linear-gradient(180deg, #262629, #1c1c1e);
+    border-color: #34343a;
+    color: #f2f2f4;
+}
+body[data-ui="catalog"]:not(.dark-theme) .bento-tile:hover { border-color: #4b4b53; }
+body[data-ui="catalog"]:not(.dark-theme) .bento-sub { color: #a3a3aa; }
+body[data-ui="catalog"]:not(.dark-theme) .bt-best {
+    background:
+        radial-gradient(120% 80% at 100% 0%, rgb(126 195 132 / 20%), transparent 60%),
+        linear-gradient(180deg, #262629, #1c1c1e);
+}
+body[data-ui="catalog"]:not(.dark-theme) .bt-best::after {
+    background: linear-gradient(180deg, transparent 30%, rgb(20 20 22 / 78%) 74%);
+}
+body[data-ui="catalog"]:not(.dark-theme) .bento-badge {
+    background: rgb(126 195 132 / 22%);
+    color: #a8e7b0;
+}
+body[data-ui="catalog"] .chip-strip .chip[data-sort="default"] {
+    color: var(--ui-text);
+}
+body[data-ui="catalog"] .chip-strip .chip[data-sort="default"].active {
+    color: #fff;
+    background: var(--ui-accent);
+    border-color: var(--ui-accent);
+}
+
+/* --- телефон: витрина 2 колонки, лента ниже --- */
+@media (max-width: 720px) {
+    body[data-ui="catalog"] .bento {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-areas:
+            "best   best"
+            "footages rooms"
+            "player profile";
+        grid-template-rows: none;
+        gap: 9px;
+        margin-bottom: 18px;
+    }
+    body[data-ui="catalog"] .bento-tile { min-height: 104px; padding: 13px 8px; border-radius: 20px; }
+    body[data-ui="catalog"] .bento-tile.bt-best { min-height: 176px; padding: 16px; }
+    body[data-ui="catalog"] .bt-best .bento-title { font-size: .98rem; }
+    body[data-ui="catalog"] .bt-best-icon { width: 42px; height: 42px; right: 12px; bottom: 12px; }
+    body[data-ui="catalog"] .bento-icon { width: 50px; height: 50px; border-radius: 14px; }
+    body[data-ui="catalog"] .bento-title { font-size: .8rem; }
+    body[data-ui="catalog"] .bento-sub { font-size: .68rem; }
+    body[data-ui="catalog"] .feed-head { margin: 2px 0 10px; }
+    body[data-ui="catalog"] .feed-title { font-size: .98rem; }
+}
+
+/* ===== ВЕРХНЯЯ ПАНЕЛЬ: прячется при скролле вниз, возвращается при скролле вверх ===== */
+body[data-ui="catalog"] .top-bar {
+    will-change: transform;
+    transition: transform .28s cubic-bezier(.4, 0, .2, 1), box-shadow .2s ease;
+}
+body[data-ui="catalog"] .top-bar.top-bar--hidden {
+    transform: translateY(calc(-100% - 14px));
+    box-shadow: none;
+}
+/* не дёргаем анимацию у тех, кому движение мешает */
+@media (prefers-reduced-motion: reduce) {
+    body[data-ui="catalog"] .top-bar { transition: none; }
+    body[data-ui="catalog"] .top-bar.top-bar--hidden { transform: none; opacity: 0; pointer-events: none; }
+}

@@ -8,7 +8,7 @@
     <link rel="icon" href="/favicon.ico" sizes="96x96">
     <link rel="stylesheet" href="style1.css">
     <script src="/ui.js?v=fec303e038e9"></script>
-    <link rel="stylesheet" href="/ui.css?v=33a1ec0884cf">
+    <link rel="stylesheet" href="/ui.css?v=2d2dc338af6f">
     <script src="/google-auth-client.js?v=f81b2668880f" defer></script>
 </head>
 
@@ -92,16 +92,53 @@
     </div>
         <div id="footages-page" class="page-section active">
 
-            <div class="filter-bar">
-                <div class="category-chips" id="category-chips">
-                    <button class="chip active" onclick="selectCategory('all', this)"
-                        data-i18n="categoryAll">All</button>
-                </div>
+            <div id="bento-home" class="bento">
+                <a class="bento-tile bt-footages" href="#video-container"
+                    onclick="scrollToGrid(this); return false;" aria-label="Футажи">
+                    <img class="bento-icon" src="/bento/ic-footages.png" alt="" loading="lazy" width="128" height="128">
+                    <span class="bento-title" data-i18n="bentoFootages">Футажи</span>
+                    <span class="bento-sub" id="bento-count">—</span>
+                </a>
 
-                <!-- Быстрый переключатель плотности сетки -->
+                <a class="bento-tile bt-player" href="/music" aria-label="Плеер Mell">
+                    <img class="bento-icon" src="/bento/ic-player.png" alt="" loading="lazy" width="128" height="128">
+                    <span class="bento-title" data-i18n="bentoPlayer">Плеер Mell</span>
+                    <span class="bento-sub" data-i18n="bentoPlayerSub">музыка и треки</span>
+                </a>
+
+                <a class="bento-tile bt-best" href="#" id="bento-best" onclick="openBestOfDay(); return false;"
+                    aria-label="Лучший футаж дня">
+                    <span class="bento-badge" id="bento-badge" data-i18n="bentoBestBadge">Сегодня</span>
+                    <span class="bento-title" data-i18n="bentoBest">Лучший футаж дня</span>
+                    <div class="bento-best-inner" id="bento-best-inner">
+                        <span class="bento-sub" data-i18n="loading">Загрузка…</span>
+                    </div>
+                    <img class="bento-icon bt-best-icon" id="bento-best-icon" src="/bento/ic-best.png" alt=""
+                        loading="lazy" width="128" height="128">
+                </a>
+
+                <a class="bento-tile bt-rooms" href="/rooms" aria-label="Комнаты">
+                    <img class="bento-icon" src="/bento/ic-rooms.png" alt="" loading="lazy" width="128" height="128">
+                    <span class="bento-title" data-i18n="bentoRooms">Комнаты</span>
+                    <span class="bento-sub" data-i18n="bentoRoomsSub">чат</span>
+                </a>
+
+                <a class="bento-tile bt-profile" href="#" onclick="navigateTo('profile'); return false;"
+                    aria-label="Профиль">
+                    <img class="bento-icon" src="/bento/ic-profile.png" alt="" loading="lazy" width="128" height="128">
+                    <span class="bento-title" data-i18n="bentoProfile">Профиль</span>
+                    <span class="bento-sub" id="bento-profile-sub">—</span>
+                </a>
+            </div>
+
+            <div class="feed-head">
+                <div class="feed-title">
+                    <span id="feed-title-text" data-i18n="bentoFootages">Футажи</span>
+                    <span class="feed-count" id="feed-count"></span>
+                </div>
                 <div class="density-switch-group" title="Grid Density">
                     <button class="density-btn" id="qdensity-compact-btn" onclick="setGridDensity('compact')"
-                        title="Compact">
+                        title="Compact" aria-label="Compact">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="7" height="7"></rect>
                             <rect x="14" y="3" width="7" height="7"></rect>
@@ -110,29 +147,65 @@
                         </svg>
                     </button>
                     <button class="density-btn" id="qdensity-standard-btn" onclick="setGridDensity('standard')"
-                        title="Standard">
+                        title="Standard" aria-label="Standard">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="3" width="8" height="18"></rect>
                             <rect x="13" y="3" width="8" height="18"></rect>
                         </svg>
                     </button>
-                    <button class="density-btn" id="qdensity-large-btn" onclick="setGridDensity('large')" title="Large">
+                    <button class="density-btn" id="qdensity-large-btn" onclick="setGridDensity('large')" title="Large"
+                        aria-label="Large">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="4" y="4" width="16" height="16" rx="2"></rect>
                         </svg>
                     </button>
                 </div>
-
-
-
             </div>
 
-            <div class="sort-row" id="sort-group">
-                <button class="chip active" data-sort="default" onclick="setSort('default', this)">Все</button>
-                <button class="chip" data-sort="newest" onclick="setSort('newest', this)">Новые</button>
-                <button class="chip" data-sort="popular" onclick="setSort('popular', this)">Популярные</button>
-                <button class="chip" id="local-fav-btn" onclick="toggleLocalOnly(this)">★ Сохранённое</button>
-                <button class="chip" id="select-mode-btn" onclick="toggleSelectMode()">☑ Выбрать</button>
+            <div class="chip-strip" aria-label="Filters">
+                <div class="chip-scroll" id="sort-group">
+                    <button class="chip chip-sort" data-sort="default" onclick="setSort('default', this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4 7h16M4 12h10M4 17h6"></path>
+                        </svg>
+                        <span>Все</span>
+                    </button>
+                    <button class="chip" data-sort="newest" onclick="setSort('newest', this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M12 3v18M6 15l6 6 6-6"></path>
+                        </svg>
+                        <span data-i18n="sortNewest">Новые</span>
+                    </button>
+                    <button class="chip" data-sort="popular" onclick="setSort('popular', this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M13 2 4 14h7l-1 8 9-12h-7z"></path>
+                        </svg>
+                        <span data-i18n="sortPopular">Популярные</span>
+                    </button>
+                    <button class="chip" id="local-fav-btn" onclick="toggleLocalOnly(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m12 3 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.9l1.1-6.5L2.6 9.8l6.5-.9z"></path>
+                        </svg>
+                        <span data-i18n="localFav">Сохранённое</span>
+                    </button>
+                    <button class="chip" id="select-mode-btn" onclick="toggleSelectMode()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="3" width="18" height="18" rx="4"></rect>
+                            <path d="m8 12 3 3 5-6"></path>
+                        </svg>
+                        <span data-i18n="selectMode">Выбрать</span>
+                    </button>
+                </div>
+
+                <div class="category-chips" id="category-chips">
+                    <button class="chip active" onclick="selectCategory('all', this)"
+                        data-i18n="categoryAll">All</button>
+                </div>
             </div>
 
             <div id="video-container">
@@ -691,7 +764,7 @@
 
     <script src="notifier.js"></script>
     <script src="terms-gate.js"></script>
-    <script src="script.js?v=79ac911e5fcb"></script>
+    <script src="script.js?v=e88fc132187e"></script>
     <script src="video-features.js"></script>
 </body>
 
