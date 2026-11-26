@@ -28,7 +28,7 @@ const translations = {
         settingsBeta: "Beta functions", settingDockMode: "Dock-style navigation",
         settingDockModeHint: "Floating bottom menu, like on macOS", settingDockShape: "Button shape",
         settingDockShapeHint: "Round or square icons for the dock", settingDockRound: "Round",
-        settingDockSquare: "Square", settingDockSize: "Icon size", settingDockSizeHint: "How big the dock buttons are", settingDockSizeS: "Small", settingDockSizeM: "Medium", settingDockSizeL: "Large", settingDockPos: "Dock position", settingDockPosHint: "Where the floating menu sticks", settingDockPosCenter: "Center", settingDockPosRight: "Bottom right", settingDockLabels: "Show captions", settingDockLabelsHint: "Text under the dock icons", dockItems: "Dock items", dockItemsHint: "Which buttons to show in the bottom menu", dockShowAll: "Show all", settingsDev: "Dev functions", settingPhoneMode: "Phone mode",
+        settingDockSquare: "Square", settingDockSize: "Icon size", settingDockSizeHint: "How big the dock buttons are", settingDockSizeS: "Small", settingDockSizeM: "Medium", settingDockSizeL: "Large", settingDockPos: "Dock position", settingDockPosHint: "Where the floating menu sticks", settingDockPosCenter: "Center", settingDockPosRight: "Bottom right", settingDockLabels: "Show captions", settingDockLabelsHint: "Text under the dock icons", dockItems: "Dock items", dockItemsHint: "Which buttons to show in the bottom menu", bentoFootages: "Footages", bentoPlayer: "Mell Player", bentoPlayerSub: "music and tracks", bentoBest: "Best footage of the day", bentoBestBadge: "Today", bentoRooms: "Rooms", bentoRoomsSub: "chat", bentoProfile: "Profile", localFav: "Saved", selectMode: "Select", dockShowAll: "Show all", bentoFeed: "Footages", bentoBestNone: "No footages today yet", bentoBestMeta: "likes", bentoBestPlay: "Watch", bentoLogin: "sign in", bentoItems: "items", bentoEmpty: "empty", bentoCountLikes: "likes", bentoCountDl: "downloads", settingsDev: "Dev functions", settingPhoneMode: "Phone mode",
         settingPhoneModeHint: "Frames the app like a phone screen, for testing", settingPhoneModeToggle: "Toggle",
         sortTitle: "Sort", sortNewest: "Newest", sortPopular: "Popular", sortLikes: "Most liked",
         sortDownloads: "Most downloaded", editVideo: "Edit name", deleteVideo: "Delete",
@@ -88,7 +88,7 @@ const translations = {
         settingsBeta: "Бета-функції", settingDockMode: "Меню у стилі Dock",
         settingDockModeHint: "Плаваюче нижнє меню, як на macOS", settingDockShape: "Форма кнопок",
         settingDockShapeHint: "Круглі або квадратні іконки для dock", settingDockRound: "Круглі",
-        settingDockSquare: "Квадратні", settingDockSize: "Розмір іконок", settingDockSizeHint: "Наскільки великі кнопки в доку", settingDockSizeS: "Малі", settingDockSizeM: "Середні", settingDockSizeL: "Великі", settingDockPos: "Позиція доку", settingDockPosHint: "Де закріплене плаваюче меню", settingDockPosCenter: "По центру", settingDockPosRight: "Справа знизу", settingDockLabels: "Показувати підписи", settingDockLabelsHint: "Текст під іконками доку", dockItems: "Пункти в доку", dockItemsHint: "Які кнопки показувати в нижньому меню", dockShowAll: "Показати всі", settingsDev: "Dev-функції", settingPhoneMode: "Режим телефону",
+        settingDockSquare: "Квадратні", settingDockSize: "Розмір іконок", settingDockSizeHint: "Наскільки великі кнопки в доку", settingDockSizeS: "Малі", settingDockSizeM: "Середні", settingDockSizeL: "Великі", settingDockPos: "Позиція доку", settingDockPosHint: "Де закріплене плаваюче меню", settingDockPosCenter: "По центру", settingDockPosRight: "Справа знизу", settingDockLabels: "Показувати підписи", settingDockLabelsHint: "Текст під іконками доку", dockItems: "Пункти в доку", dockItemsHint: "Які кнопки показувати в нижньому меню", bentoFootages: "Футажі", bentoPlayer: "Плеєр Mell", bentoPlayerSub: "музика та треки", bentoBest: "Найкращий футаж дня", bentoBestBadge: "Сьогодні", bentoRooms: "Кімнати", bentoRoomsSub: "чат", bentoProfile: "Профіль", localFav: "Збережене", selectMode: "Обрати", dockShowAll: "Показати всі", bentoFeed: "Футажі", bentoBestNone: "Сьогодні ще немає футажів", bentoBestMeta: "вподобань", bentoBestPlay: "Дивитись", bentoLogin: "увійти в акаунт", bentoItems: "шт.", bentoEmpty: "порожньо", bentoCountLikes: "вподобання", bentoCountDl: "завантаження", settingsDev: "Dev-функції", settingPhoneMode: "Режим телефону",
         settingPhoneModeHint: "Обрамлює застосунок як екран телефону, для тестування",
         settingPhoneModeToggle: "Перемкнути",
         sortTitle: "Сортування", sortNewest: "Нові", sortPopular: "Популярні", sortLikes: "За лайками",
@@ -149,7 +149,7 @@ const translations = {
         settingsBeta: "Beta функции", settingDockMode: "Меню в стиле Dock",
         settingDockModeHint: "Плавающее нижнее меню, как на macOS", settingDockShape: "Форма кнопок",
         settingDockShapeHint: "Круглые или квадратные иконки для dock", settingDockRound: "Круглые",
-        settingDockSquare: "Квадратные", settingDockSize: "Размер иконок", settingDockSizeHint: "Насколько крупные кнопки в доке", settingDockSizeS: "Маленькие", settingDockSizeM: "Средние", settingDockSizeL: "Крупные", settingDockPos: "Положение дока", settingDockPosHint: "Где закреплено плавающее меню", settingDockPosCenter: "По центру", settingDockPosRight: "Справа снизу", settingDockLabels: "Показывать подписи", settingDockLabelsHint: "Текст под иконками дока", dockItems: "Пункты в доке", dockItemsHint: "Какие кнопки показывать в нижнем меню", dockShowAll: "Показать все", settingsDev: "Dev функции", settingPhoneMode: "Режим телефона",
+        settingDockSquare: "Квадратные", settingDockSize: "Размер иконок", settingDockSizeHint: "Насколько крупные кнопки в доке", settingDockSizeS: "Маленькие", settingDockSizeM: "Средние", settingDockSizeL: "Крупные", settingDockPos: "Положение дока", settingDockPosHint: "Где закреплено плавающее меню", settingDockPosCenter: "По центру", settingDockPosRight: "Справа снизу", settingDockLabels: "Показывать подписи", settingDockLabelsHint: "Текст под иконками дока", dockItems: "Пункты в доке", dockItemsHint: "Какие кнопки показывать в нижнем меню", bentoFootages: "Футажи", bentoPlayer: "Плеер Mell", bentoPlayerSub: "музыка и треки", bentoBest: "Лучший футаж дня", bentoBestBadge: "Сегодня", bentoRooms: "Комнаты", bentoRoomsSub: "чат", bentoProfile: "Профиль", localFav: "Сохранённое", selectMode: "Выбрать", dockShowAll: "Показать все", bentoFeed: "Футажи", bentoBestNone: "Сегодня ещё нет футажей", bentoBestMeta: "лайков", bentoBestPlay: "Смотреть", bentoLogin: "войти в аккаунт", bentoItems: "шт.", bentoEmpty: "пока пусто", bentoCountLikes: "лайков", bentoCountDl: "скачиваний", settingsDev: "Dev функции", settingPhoneMode: "Режим телефона",
         settingPhoneModeHint: "Обрамляет приложение как экран телефона, для тестирования",
         settingPhoneModeToggle: "Переключить",
         sortTitle: "Сортировка", sortNewest: "Новые", sortPopular: "Популярные", sortLikes: "По лайкам",
@@ -316,6 +316,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await checkAuth();
     renderAuthArea();
     loadVideos();
+
+    initAutoHideTopBar();
 });
 
 // ================= SETTINGS =================
@@ -1149,6 +1151,8 @@ function buildCategoryChips() {
     const categories = [...new Set(rawVideos.flatMap(getVideoCategories))].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
     const allActive = currentCategory === 'all';
     container.innerHTML = `<button class="chip ${allActive ? 'active' : ''}" onclick="selectCategory('all', this)" data-i18n="categoryAll">${escapeHtml(t('categoryAll'))}</button>`;
+    // одна кнопка «Все» без реальных категорий ничего не фильтрует — не дублируем её отдельной строкой
+    container.hidden = categories.length === 0;
 
     categories.forEach(category => {
         const btn = document.createElement('button');
@@ -1430,7 +1434,121 @@ async function loadCardStats(filename, card) {
     } catch (_) { /* DOM уже показывает кэш или нули */ }
 }
 
-// ================= RENDER GRID =================
+// ---------- Бенто-плитки на главной ----------
+// «Футаж дня»: больше всего лайков, при равенстве — свежее
+function bestOfDayVideo() {
+    const src = (typeof filteredVideos !== 'undefined' && filteredVideos.length)
+        ? filteredVideos
+        : ((typeof rawVideos !== 'undefined') ? rawVideos : []);
+    const list = src.slice();
+    if (!list.length) return null;
+    const likesOf = v => {
+        const cached = (typeof statsCache !== 'undefined') ? statsCache[v && v.name] : null;
+        return Number(cached ? cached.likes : (v.likesIncrement ?? v.likes ?? 0)) || 0;
+    };
+    const dateOf = v => (new Date((v && (v.createdAt || v.uploaded_at)) || 0).getTime()) || 0;
+    return list.sort((a, b) => (likesOf(b) - likesOf(a)) || (dateOf(b) - dateOf(a)))[0];
+}
+
+function statsOfVideo(v) {
+    const cached = (typeof statsCache !== 'undefined') ? statsCache[v && v.name] : null;
+    return {
+        likes: Number(cached ? cached.likes : (v.likesIncrement ?? v.likes ?? 0)) || 0,
+        downloads: Number(cached ? cached.downloads : (v.downloads ?? 0)) || 0
+    };
+}
+
+function thumbUrlOf(v) {
+    if (!v || !v.name) return null;
+    if (/\.(jpg|jpeg|png|gif|webp)$/i.test(v.name)) return '/videos/' + encodeURIComponent(v.name);
+    return '/api/thumb/' + encodeURIComponent(v.name);
+}
+
+function prettyVideoName(v) {
+    const raw = String((v && (v.displayName || v.name || v.title)) || '');
+    return raw.replace(/\.[^/.]+$/, '');
+}
+
+function updateBento() {
+    const src = (typeof rawVideos !== 'undefined' && rawVideos) ? rawVideos : [];
+
+    // плитка «Футажи» — сколько всего
+    const cnt = document.getElementById('bento-count');
+    if (cnt) cnt.textContent = src.length ? (src.length + ' ' + t('bentoItems')) : t('bentoEmpty');
+
+    // заголовок ленты
+    const feedCount = document.getElementById('feed-count');
+    if (feedCount) {
+        const shown = (typeof filteredVideos !== 'undefined' && filteredVideos) ? filteredVideos.length : src.length;
+        feedCount.textContent = shown ? '· ' + shown : '';
+    }
+
+    // крупная плитка «лучший футаж дня»
+    const box = document.getElementById('bento-best-inner');
+    const best = bestOfDayVideo();
+    const badge = document.getElementById('bento-badge');
+    if (badge) badge.textContent = t('bentoBestBadge');
+
+    if (box) {
+        box.innerHTML = '';
+        if (!best) {
+            const empty = document.createElement('span');
+            empty.className = 'bento-sub';
+            empty.textContent = t('bentoBestNone');
+            box.appendChild(empty);
+        } else {
+            const st = statsOfVideo(best);
+            const title = document.createElement('div');
+            title.className = 'bb-name';
+            title.textContent = prettyVideoName(best);
+
+            const meta = document.createElement('div');
+            meta.className = 'bb-meta';
+            const likes = document.createElement('span');
+            likes.textContent = '♥ ' + st.likes;
+            const dl = document.createElement('span');
+            dl.textContent = '⬇ ' + st.downloads;
+            meta.append(likes, dl);
+            box.append(title, meta);
+        }
+    }
+
+    // фоном — кадр этого футажа
+    const bestTile = document.getElementById('bento-best');
+    if (bestTile) {
+        const thumb = best ? thumbUrlOf(best) : null;
+        if (thumb) bestTile.style.setProperty('--bento-best-thumb', `url("${thumb}")`);
+        else bestTile.style.removeProperty('--bento-best-thumb');
+    }
+
+    // плитка «Профиль» — кто вошёл
+    const prof = document.getElementById('bento-profile-sub');
+    if (prof) {
+        const u = (typeof currentUserData !== 'undefined' && currentUserData && currentUserData.loggedIn)
+            ? (currentUserData.user || currentUserData) : null;
+        prof.textContent = u ? (u.username || 'аккаунт') : t('bentoLogin');
+    }
+}
+
+// клик по плитке «Футажи» — плавно к ленте
+function scrollToGrid(el) {
+    const feed = document.querySelector('.feed-head');
+    if (feed) feed.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el && el.blur) el.blur();
+}
+
+// клик по «лучшему футажу дня» — открыть его
+function openBestOfDay() {
+    const v = bestOfDayVideo();
+    if (!v) {
+        if (typeof showToast === 'function') showToast(t('bentoBestNone'), 'warning');
+        return;
+    }
+    const name = prettyVideoName(v);
+    if (!name) return;
+    location.href = '/footage/' + encodeURIComponent(name);
+}
+
 function renderGrid() {
     const container = document.getElementById('video-container');
     const loadMoreBtn = document.getElementById('load-more-btn');
@@ -1530,6 +1648,8 @@ function renderGrid() {
     });
 
     loadMoreBtn.style.display = (end >= filteredVideos.length) ? 'none' : 'block';
+
+    updateBento();
 }
 
 function loadMore() { currentPageNum++; renderGrid(); }
@@ -2425,6 +2545,72 @@ function escapeJs(s) {
     return String(s ?? '').replaceAll('\\', '\\\\').replaceAll("'", "\\'").replaceAll('\n', '\\n');
 }
 
+// ================= ВЕРХНЯЯ ПАНЕЛЬ: автоскрытие при скролле =================
+// Скроллим вниз — панель уезжает вверх, скроллим вверх — возвращается.
+// У самого верха страницы панель всегда на месте.
+let topBarScrollBound = false;
+
+function initAutoHideTopBar() {
+    if (topBarScrollBound) return;
+    // на главной это .top-bar, на других страницах — .topnav / header.top
+    const bar = ['.top-bar', '.topnav', 'header.top']
+        .map(sel => Array.from(document.querySelectorAll(sel)))
+        .flat()
+        .find(el => el.getClientRects().length > 0);
+    if (!bar) return;
+    topBarScrollBound = true;
+
+    const HIDE_AFTER = 72;   // ниже этой точки — прячем, выше — всегда показываем/оставляем
+    const DELTA = 6;         // минимальный сдвиг, чтобы не дёргалась от мелкого дрожания
+
+    // В этом интерфейсе скроллится body (html overflow: hidden), поэтому читаем максимум из всех
+    function scrollTop() {
+        return Math.max(
+            window.scrollY || 0,
+            document.body ? document.body.scrollTop : 0,
+            document.documentElement ? document.documentElement.scrollTop : 0
+        );
+    }
+
+    let lastY = scrollTop();
+    let ticking = false;
+
+    function setHidden(hidden) {
+        bar.classList.toggle('top-bar--hidden', hidden);
+        document.body.classList.toggle('topbar-hidden', hidden);
+    }
+
+    function update() {
+        ticking = false;
+        const y = Math.max(0, scrollTop());
+        const delta = y - lastY;
+
+        // пока в панели что-то набрано/выбрано (поиск, меню языка) — не прячем
+        const busy = bar.contains(document.activeElement) || bar.matches(':focus-within');
+
+        if (y <= 4 || busy) {
+            setHidden(false);                 // у самого верха — всегда видна
+        } else if (delta > DELTA && y > HIDE_AFTER) {
+            setHidden(true);                  // вниз — прячем
+        } else if (delta < -DELTA) {
+            setHidden(false);                 // вверх — показываем
+        }
+
+        lastY = y;
+    }
+
+    function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(update);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    if (document.body) document.body.addEventListener('scroll', onScroll, { passive: true });
+    if (document.documentElement) document.documentElement.addEventListener('scroll', onScroll, { passive: true });
+
+    setHidden(false);
+}
 // ================= VERIFIED BADGE =================
 let __vbUid = 0;
 function verifiedBadgeSvg() {
